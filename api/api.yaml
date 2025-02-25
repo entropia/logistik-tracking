@@ -22,11 +22,8 @@ paths:
     post:
       operationId: createNewCrate
       summary: "Create a new crate."
-      parameters:
-        - name: "SessionKey"
-          in: header
-          schema:
-            type: string
+      security:
+        - springCookieAuth: [ ]
       requestBody:
         required: true
         content:
@@ -44,6 +41,8 @@ paths:
           description: "Provided crate information does not match specifications."
         "401":
           description: "User did not provide valid session details and cannot create a new crate."
+        "403":
+          description: "User does not have permission to create new crates."
         "409":
           description: "A crate with this combination of name and OC already exists."
 
@@ -69,14 +68,12 @@ paths:
     put:
       operationId: modifyCrate
       summary: "Apply changes to the selected crate."
+      security:
+        - springCookieAuth: [ ]
       parameters:
         - name: "crateId"
           in: path
           required: true
-          schema:
-            type: string
-        - name: "SessionKey"
-          in: header
           schema:
             type: string
       requestBody:
@@ -120,7 +117,7 @@ paths:
         "404":
           description: "Selected pallet does not exist."
 
-  /pallet:
+  /api/pallet:
     get:
       operationId: getAllPallets
       summary: "Get all pallets without their crates."
@@ -136,11 +133,8 @@ paths:
     post:
       operationId: createPallet
       summary: "Create a new pallet."
-      parameters:
-        - name: "SessionKey"
-          in: header
-          schema:
-            type: string
+      security:
+        - springCookieAuth: [ ]
       requestBody:
         required: true
         content:
@@ -158,6 +152,8 @@ paths:
           description: "Provided pallet information does not match specifications."
         "401":
           description: "User did not provide valid session details and cannot create a new pallet."
+        "403":
+          description: "User does not have permission to create new pallets."
 
   /pallet/{palletId}:
     get:
@@ -181,11 +177,9 @@ paths:
     put:
       operationId: modifyPallet
       summary: "Change the details of a pallet but not its crates."
+      security:
+        - springCookieAuth: [ ]
       parameters:
-        - name: "SessionKey"
-          in: header
-          schema:
-            type: string
         - name: "palletId"
           in: path
           required: true
@@ -215,11 +209,9 @@ paths:
     put:
       operationId: addCrateToPallet
       summary: "Add the selected crate to the pallet."
+      security:
+        - springCookieAuth: [ ]
       parameters:
-        - name: "SessionKey"
-          in: header
-          schema:
-            type: string
         - name: "palletId"
           in: path
           required: true
@@ -239,6 +231,8 @@ paths:
                 $ref: "#/components/schemas/PalletDto"
         "401":
           description: "User did not provide valid session details and add a crate to the pallet."
+        "403":
+          description: "User does not have permission to add crates to pallets."
         "404":
           description: "Selected pallet or selected crate do not exist."
         "409":
@@ -246,11 +240,9 @@ paths:
     delete:
       operationId: removeCrateFromPallet
       summary: "Remove the selected crate from the pallet."
+      security:
+        - springCookieAuth: []
       parameters:
-        - name: "SessionKey"
-          in: header
-          schema:
-            type: string
         - name: "palletId"
           in: path
           required: true
@@ -270,13 +262,15 @@ paths:
                 $ref: "#/components/schemas/PalletDto"
         "401":
           description: "User did not provide valid session details and remove a crate from the pallet."
+        "403":
+          description: "User does not have permission to remove crates from pallets."
         "404":
           description: "Selected pallet or selected crate do not exist or selected crate does not belong to pallet."
 
-  /pallet/{palletId}/print:
+  /pallet/{palletId}/print/detailed:
     get:
-      operationId: printPallet
-      summary: "Generate a printable document for the pallet."
+      operationId: printPalletDetailed
+      summary: "Generate a detailed DIN A4 printable document for the pallet."
       parameters:
         - name: "palletId"
           in: path
@@ -294,8 +288,28 @@ paths:
         "404":
           description: "Selected pallet does not exist."
 
+  /pallet/{palletId}/print/short:
+    get:
+      operationId: printPalletShort
+      summary: "Generate a short DIN A5 printable document for the pallet base."
+      parameters:
+        - name: "palletId"
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "Successfully generated the pallet document."
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        "404":
+          description: "Selected pallet does not exist."
 
-  /session:
+  /login:
     post:
       operationId: login
       summary: "Login and create an authenticated session."
@@ -306,8 +320,13 @@ paths:
             schema:
               $ref: "#/components/schemas/LoginDto"
       responses:
-        "200":
+        "301":
           description: "Successfully logged in and created a session."
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+                example: JSESSIONID=abcde12345; Path=/; HttpOnly
           content:
             application/json:
               schema:
@@ -318,6 +337,12 @@ paths:
           description: "Provided login details were not sufficient to create a new session."
 
 components:
+  securitySchemes:
+    springCookieAuth:
+      type: apiKey
+      in: cookie
+      name: JSESSIONID
+
   schemas:
     NewCrateDto:
       type: object
@@ -336,10 +361,13 @@ components:
           format: date
         information:
           description: "Free-form text describing the contents of the crate."
+        location:
+          $ref: "#/components/schemas/LocationDto"
       required:
         - operationCenter
         - name
         - returnBy
+        - location
 
     CrateDto:
       allOf:
@@ -347,14 +375,18 @@ components:
         - type: object
           properties:
             belongsTo:
-              description: "To which pallet is the crate associated if it is associated to any pallet."
               $ref: "#/components/schemas/BasicPalletDto"
 
     NewPalletDto:
       type: object
       properties:
         information:
+          type: string
           description: "Free-form text describing the pallet"
+        location:
+          $ref: "#/components/schemas/LocationDto"
+      required:
+        - location
 
     BasicPalletDto:
       allOf:
@@ -387,6 +419,68 @@ components:
           required:
             - crates
 
+    LocationDto:
+      type: object
+      description: "
+        If location=OperationCenter, operationCenter needs to be not null.
+        If location=SomewhereElse, somewhereElse needs to be not null.
+      "
+      properties:
+        location:
+          $ref: "#/components/schemas/LocationEnumDto"
+        operationCenter:
+          $ref: "#/components/schemas/OperationCenterDto"
+        somewhereElse:
+          type: string
+      required:
+        - location
+
+    LocationEnumDto:
+      type: string
+      enum:
+        - 'Entropia'
+        - 'InTransit'
+        - 'ArrivedAtGate'
+        - 'ReturnedToGate'
+        - 'OperationCenterAtGPN'
+        - 'SomewhereElse'
+
+    OperationCenterDto:
+      type: string
+      description: "TODO: Sollte Logistik hier auch drin sein?"
+      enum:
+        - "Finanzen"
+        - "Backoffice"
+        - "Content"
+        - "Heralding"
+        - "DesignUndMotto"
+        - "PresseUndSocialMedia"
+        - "LoungeControl"
+        - "LoungeTechnik"
+        - "Infodesk"
+        - "Merchdesk"
+        - "Schilder"
+        - "Badges"
+        - "Trolle"
+        - "Küche"
+        - "WOC"
+        - "Fruehstueck"
+        - "RaumDer1000Namen"
+        - "Bar"
+        - "Spaeti"
+        - "Aussenbar"
+        - "Kaffeebar"
+        - "Cocktailbar"
+        - "NOC"
+        - "POC"
+        - "VOC"
+        - "BuildupAndTeardown"
+        - "Infrastruktur"
+        - "Deko"
+        - "safeR"
+        - "SilentHacking"
+        - "Projektleitung"
+
     LoginDto:
       type: object
       properties:
@@ -402,7 +496,13 @@ components:
     SessionDto:
       type: object
       properties:
-        sessionKey:
-          type: string
+        permissionGroup:
+          $ref: "#/components/schemas/PermissionGroupEnumDto"
       required:
         - sessionKey
+
+    PermissionGroupEnumDto:
+      type: string
+      enum:
+        - 'RegularUser'
+        - 'Organizer'
