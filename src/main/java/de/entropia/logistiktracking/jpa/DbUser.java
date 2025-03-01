@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.User;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -16,16 +16,17 @@ import java.util.List;
 @AllArgsConstructor
 // setter sind für jpa; data access. sollte nicht direkt mit feld gemacht werden
 @Setter
-public class User implements UserDetails {
+public class DbUser {
 
 	/**
 	 * @deprecated Soll NUR von hibernate benutzt werden. Bitte nutze den vollen constructor
 	 */
 	@Deprecated
-	public User() {
+	public DbUser() {
 
 	}
 
+	@Getter
 	@Id
 	@Column(name = "username", nullable = false, unique = true)
 	private String username;
@@ -38,26 +39,20 @@ public class User implements UserDetails {
 	@Getter
 	private List<String> roles = new ArrayList<>();
 
+	@Getter
 	@Column(name = "enabled", nullable = false)
 	private boolean enabled;
 
-	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		return getRoles().stream().map(s -> new SimpleGrantedAuthority("ROLE_"+s)).toList();
 	}
 
-	@Override
+	public User toUser() {
+		return new User(getUsername(), getPassword(), isEnabled(), true, true, true, getAuthorities());
+	}
+
 	public String getPassword() {
 		return hashedPw;
 	}
 
-	@Override
-	public String getUsername() {
-		return username;
-	}
-
-	@Override
-	public boolean isEnabled() {
-		return enabled;
-	}
 }

@@ -15,6 +15,6 @@ public class UserRepoAuthProvider implements UserDetailsService {
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		return userRepo.findById(username)
-				.orElseThrow(() -> new UsernameNotFoundException("Username not found: " + username));
+				.orElseThrow(() -> new UsernameNotFoundException("Username not found: " + username)).toUser();
 	}
 }

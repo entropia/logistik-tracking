@@ -13,11 +13,7 @@ public class AuthConfiguration {
 	public SecurityFilterChain securityFilterChain(HttpSecurity security) throws Exception {
 		return security
 				.authorizeHttpRequests(auth -> auth
-						.requestMatchers("/no_need_auth").permitAll() // FIXME testing
-//						.requestMatchers("/need_admin_role").hasRole("admin")
-
-						.requestMatchers("/public/**").permitAll() // allow everyone to access /public/**
-						.anyRequest().authenticated() // authenticate everything else
+						.anyRequest().permitAll() // per default allow everything, secure routes individually
 				)
 				.formLogin(fl -> fl.permitAll()) // default login site, make sure everything related to auth is allowed to be accessed by everyone
 				.build();
