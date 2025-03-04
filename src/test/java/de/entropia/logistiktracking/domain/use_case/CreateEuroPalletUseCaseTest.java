@@ -1,7 +1,7 @@
 package de.entropia.logistiktracking.domain.use_case;
 
 import de.entropia.logistiktracking.domain.euro_pallet.EuroPallet;
-import de.entropia.logistiktracking.domain.location.Location;
+import de.entropia.logistiktracking.domain.location.SomewhereLocation;
 import de.entropia.logistiktracking.jpa.repo.EuroPalletDatabaseService;
 import de.entropia.logistiktracking.utility.Result;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,7 +28,7 @@ class CreateEuroPalletUseCaseTest {
 
     @Test
     public void canCreateEuroPallet() {
-        Result<EuroPallet, CreateEuroPalletError> result = createEuroPalletUseCase.createEuroPallet(new Location());
+        Result<EuroPallet, CreateEuroPalletError> result = createEuroPalletUseCase.createEuroPallet(new SomewhereLocation("over there"));
 
         assertThat(result).isInstanceOf(Result.Ok.class);
         EuroPallet euroPallet = uncheckedOk(result);

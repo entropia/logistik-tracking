@@ -2,7 +2,7 @@ package de.entropia.logistiktracking.domain.use_case;
 
 import de.entropia.logistiktracking.domain.delivery_state.DeliveryState;
 import de.entropia.logistiktracking.domain.euro_pallet.EuroPallet;
-import de.entropia.logistiktracking.domain.location.Location;
+import de.entropia.logistiktracking.domain.location.SomewhereLocation;
 import de.entropia.logistiktracking.domain.packing_list.PackingList;
 import de.entropia.logistiktracking.jpa.repo.EuroPalletDatabaseService;
 import de.entropia.logistiktracking.jpa.repo.PackingListDatabaseService;
@@ -48,7 +48,7 @@ class CreatePackingListUseCaseTest {
 
     @Test
     public void failsToCreatePackingListWithEmptyName() {
-        long palletId = uncheckedOk(createEuroPalletUseCase.createEuroPallet(new Location())).getPalletId();
+        long palletId = uncheckedOk(createEuroPalletUseCase.createEuroPallet(new SomewhereLocation("over there"))).getPalletId();
 
         Result<PackingList, CreateNewPackingListError> result = createPackingListUseCase.createNewPackingListUseCase(
                 "",
@@ -62,7 +62,7 @@ class CreatePackingListUseCaseTest {
 
     @Test
     public void canCreateNewPackingList() {
-        EuroPallet euroPallet = uncheckedOk(createEuroPalletUseCase.createEuroPallet(new Location()));
+        EuroPallet euroPallet = uncheckedOk(createEuroPalletUseCase.createEuroPallet(new SomewhereLocation("somewhere else")));
 
         Result<PackingList, CreateNewPackingListError> result = createPackingListUseCase.createNewPackingListUseCase(
                 "finanzen",

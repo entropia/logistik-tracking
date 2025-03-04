@@ -1,4 +1,4 @@
 package de.entropia.logistiktracking.domain.location;
 
-public class Location {
+public sealed interface Location permits LogisticsLocation, OperationCenterLocation, SomewhereLocation {
 }
