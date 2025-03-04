@@ -3,6 +3,8 @@ package de.entropia.logistiktracking.domain.packing_list;
 import de.entropia.logistiktracking.domain.delivery_state.DeliveryState;
 import de.entropia.logistiktracking.domain.euro_pallet.EuroPallet;
 
+import java.util.Collections;
+
 
 public class PackingListBuilder {
     private long packingListId;
@@ -50,6 +52,6 @@ public class PackingListBuilder {
         if (packedOn == null) {
             throw new IllegalArgumentException("packedOn has to be set");
         }
-        return new PackingList(packingListId, name, deliveryState, packedOn);
+        return new PackingList(packingListId, name, deliveryState, packedOn, Collections.emptyList());
     }
 }

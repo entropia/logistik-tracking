@@ -29,7 +29,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/NewEuroCrateDto'
+              $ref: '#/components/schemas/EuroCrateDto'
       responses:
         "200":
           description: "Successfully created a new euro crate."
@@ -533,7 +533,7 @@ components:
       name: JSESSIONID
 
   schemas:
-    NewEuroCrateDto:
+    EuroCrateDto:
       type: object
       properties:
         operationCenter:
@@ -558,14 +558,6 @@ components:
         - name
         - returnBy
         - location
-
-    EuroCrateDto:
-      allOf:
-        - $ref: '#/components/schemas/NewEuroCrateDto'
-        - type: object
-          properties:
-            belongsTo:
-              $ref: "#/components/schemas/BasicPackingListDto"
 
     NewEuroPalletDto:
       type: object

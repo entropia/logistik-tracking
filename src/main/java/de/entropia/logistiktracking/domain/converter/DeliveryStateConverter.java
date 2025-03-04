@@ -16,4 +16,18 @@ public class DeliveryStateConverter {
             case Delivered -> DeliveryStateDto.DELIVERED;
         };
     }
+
+    public DeliveryState from(DeliveryStateDto deliveryState) {
+        if (deliveryState == null) {
+            throw new IllegalArgumentException("DeliveryState cannot be null");
+        }
+        return switch (deliveryState) {
+            case PACKING -> DeliveryState.Packing;
+            case WAITING_FOR_DELIVERY -> DeliveryState.WaitingForDelivery;
+            case TRAVELING_TO_GPN -> DeliveryState.TravelingToGPN;
+            case WAITING_AT_GPN -> DeliveryState.WaitingAtGPN;
+            case IN_DELIVERY -> DeliveryState.InDelivery;
+            case DELIVERED -> DeliveryState.Delivered;
+        };
+    }
 }
