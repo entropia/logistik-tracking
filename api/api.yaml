@@ -317,7 +317,7 @@ paths:
         "404":
           description: "Selected pallet does not exist."
 
-  /packinglist:
+  /packingList:
     get:
       operationId: getAllPackingLists
       summary: "Get all packing lists without their crates."
@@ -354,7 +354,7 @@ paths:
         "403":
           description: "User does not have permission to create new packing lists."
 
-  /packinglist/{packingListId}:
+  /packingList/{packingListId}:
     get:
       operationId: getPackingList
       summary: "Get packing list"
@@ -476,7 +476,7 @@ paths:
         "409":
           description: "The selected packing list is not in the state 'Packing' and cannot be modified."
 
-  /packinglist/{packingListId}/print:
+  /packingList/{packingListId}/print:
     get:
       operationId: printPackingList
       summary: "Generate a detailed DIN A4 printable document for the packing list."
