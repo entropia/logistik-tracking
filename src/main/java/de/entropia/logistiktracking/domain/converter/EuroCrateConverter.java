@@ -51,4 +51,15 @@ public class EuroCrateConverter {
                 .location(locationConverter.from(newCrateElement.getLocation()))
                 .build();
     }
+
+    public EuroCrate from(EuroCrateDto euroCrateDto) {
+        return EuroCrate.builder()
+                .operationCenter(operationCenterConverter.from(euroCrateDto.getOperationCenter()))
+                .name(euroCrateDto.getName())
+                .returnBy(euroCrateDto.getReturnBy())
+                .information(euroCrateDto.getInformation().orElse(""))
+                .deliveryState(deliveryStateConverter.from(euroCrateDto.getDeliveryState().orElse(null)))
+                .location(locationConverter.from(euroCrateDto.getLocation()))
+                .build();
+    }
 }
