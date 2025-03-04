@@ -9,6 +9,9 @@ import jakarta.persistence.Converter;
 public class DeliveryStateColumnConverter implements AttributeConverter<DeliveryState, String> {
     @Override
     public String convertToDatabaseColumn(DeliveryState deliveryState) {
+        if (deliveryState == null) {
+            return null;
+        }
         return deliveryState.toString();
     }
 
@@ -19,6 +22,6 @@ public class DeliveryStateColumnConverter implements AttributeConverter<Delivery
                 return deliveryState;
             }
         }
-        throw new IllegalArgumentException("DeliveryState not found: " + s);
+        return null;
     }
 }

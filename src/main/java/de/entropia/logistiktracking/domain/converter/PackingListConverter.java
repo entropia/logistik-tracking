@@ -5,16 +5,23 @@ import de.entropia.logistiktracking.domain.euro_pallet.EuroPallet;
 import de.entropia.logistiktracking.domain.packing_list.PackingList;
 import de.entropia.logistiktracking.jpa.EuroPalletDatabaseElement;
 import de.entropia.logistiktracking.jpa.PackingListDatabaseElement;
+import de.entropia.logistiktracking.openapi.model.PackingListDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.stream.Collectors;
 
 @Component
 public class PackingListConverter {
     private final EuroPalletConverter euroPalletConverter;
+    private final DeliveryStateConverter deliveryStateConverter;
+    private final EuroCrateConverter euroCrateConverter;
 
     @Autowired
-    public PackingListConverter(EuroPalletConverter euroPalletConverter) {
+    public PackingListConverter(EuroPalletConverter euroPalletConverter, DeliveryStateConverter deliveryStateConverter, EuroCrateConverter euroCrateConverter) {
         this.euroPalletConverter = euroPalletConverter;
+        this.deliveryStateConverter = deliveryStateConverter;
+        this.euroCrateConverter = euroCrateConverter;
     }
 
     public PackingListDatabaseElement toDatabaseElement(PackingList packingList) {
@@ -31,5 +38,17 @@ public class PackingListConverter {
                 .deliveryState(databaseElement.getDeliveryState())
                 .packedOn(packedOn)
                 .build();
+    }
+
+    public PackingListDto toDto(PackingList packingList) {
+        return new PackingListDto()
+                .packingListId(packingList.getHumanReadableIdentifier())
+                .packedOn(euroPalletConverter.toDto(packingList.getPackedOn()))
+                .deliveryState(deliveryStateConverter.toDto(packingList.getDeliveryState()))
+                .packedCrates(packingList
+                        .getPackedCrates()
+                        .stream()
+                        .map(euroCrateConverter::toDto)
+                        .collect(Collectors.toList()));
     }
 }

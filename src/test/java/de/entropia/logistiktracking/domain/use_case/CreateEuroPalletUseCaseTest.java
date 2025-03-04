@@ -1,13 +1,17 @@
 package de.entropia.logistiktracking.domain.use_case;
 
-import de.entropia.logistiktracking.domain.euro_pallet.EuroPallet;
-import de.entropia.logistiktracking.domain.location.Location;
 import de.entropia.logistiktracking.jpa.repo.EuroPalletDatabaseService;
+import de.entropia.logistiktracking.openapi.model.EuroPalletDto;
+import de.entropia.logistiktracking.openapi.model.LocationDto;
+import de.entropia.logistiktracking.openapi.model.LocationTypeDto;
+import de.entropia.logistiktracking.openapi.model.NewEuroPalletDto;
 import de.entropia.logistiktracking.utility.Result;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import java.util.Objects;
 
 import static de.entropia.logistiktracking.utility.Result.uncheckedError;
 import static de.entropia.logistiktracking.utility.Result.uncheckedOk;
@@ -28,17 +32,19 @@ class CreateEuroPalletUseCaseTest {
 
     @Test
     public void canCreateEuroPallet() {
-        Result<EuroPallet, CreateEuroPalletError> result = createEuroPalletUseCase.createEuroPallet(new Location());
+        Result<EuroPalletDto, CreateEuroPalletError> result = createEuroPalletUseCase.createEuroPallet(
+                new NewEuroPalletDto().location(new LocationDto().locationType(LocationTypeDto.SOMEWHERE_ELSE).somewhereElse("somewhere"))
+        );
 
         assertThat(result).isInstanceOf(Result.Ok.class);
-        EuroPallet euroPallet = uncheckedOk(result);
+        EuroPalletDto euroPallet = uncheckedOk(result);
 
-        assertThat(euroPalletDatabaseService.findAll()).anyMatch(element -> euroPallet.getPalletId() == element.getPalletId());
+        assertThat(euroPalletDatabaseService.findAll()).anyMatch(element -> Objects.equals(euroPallet.getEuroPalletId(), Long.toString(element.getPalletId())));
     }
 
     @Test
     public void failsToCreateEuroPalletOnMissingLocation() {
-        Result<EuroPallet, CreateEuroPalletError> result = createEuroPalletUseCase.createEuroPallet(null);
+        Result<EuroPalletDto, CreateEuroPalletError> result = createEuroPalletUseCase.createEuroPallet(null);
 
         assertThat(result).isInstanceOf(Result.Error.class);
         CreateEuroPalletError error = uncheckedError(result);

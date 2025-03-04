@@ -317,7 +317,7 @@ paths:
         "404":
           description: "Selected pallet does not exist."
 
-  /packinglist:
+  /packingList:
     get:
       operationId: getAllPackingLists
       summary: "Get all packing lists without their crates."
@@ -336,6 +336,7 @@ paths:
       security:
         - springCookieAuth: [ ]
       requestBody:
+        required: true
         content:
           application/json:
             schema:
@@ -354,12 +355,12 @@ paths:
         "403":
           description: "User does not have permission to create new packing lists."
 
-  /packinglist/{packingListId}:
+  /packingList/{packingListId}:
     get:
       operationId: getPackingList
       summary: "Get packing list"
       parameters:
-        - in: header
+        - in: path
           description: "Identifier of packing list."
           name: packingListId
           schema:
@@ -385,7 +386,7 @@ paths:
       security:
         - springCookieAuth: [ ]
       parameters:
-        - in: header
+        - in: path
           description: "Identifier of packing list."
           name: packingListId
           schema:
@@ -410,7 +411,7 @@ paths:
 
   /packingList/{packingListId}/euroCrate/{euroCrateId}:
     put:
-      operationId: addEuroCrateToEuroPallet
+      operationId: addEuroCrateToPackingList
       summary: "Add the selected euro crate to a packing list if the packing list is in the state 'Packing'"
       security:
         - springCookieAuth: [ ]
@@ -476,7 +477,7 @@ paths:
         "409":
           description: "The selected packing list is not in the state 'Packing' and cannot be modified."
 
-  /packinglist/{packingListId}/print:
+  /packingList/{packingListId}/print:
     get:
       operationId: printPackingList
       summary: "Generate a detailed DIN A4 printable document for the packing list."
@@ -690,7 +691,7 @@ components:
         - "Schilder"
         - "Badges"
         - "Trolle"
-        - "Küche"
+        - "Kueche"
         - "WOC"
         - "Fruehstueck"
         - "RaumDer1000Namen"
@@ -705,7 +706,7 @@ components:
         - "BuildupAndTeardown"
         - "Infrastruktur"
         - "Deko"
-        - "safeR"
+        - "SafeR"
         - "SilentHacking"
         - "Projektleitung"
 
