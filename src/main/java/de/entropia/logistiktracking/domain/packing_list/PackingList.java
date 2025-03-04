@@ -5,7 +5,6 @@ import de.entropia.logistiktracking.domain.euro_crate.EuroCrate;
 import de.entropia.logistiktracking.domain.euro_pallet.EuroPallet;
 import lombok.Getter;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -14,21 +13,21 @@ public class PackingList {
     @Getter
     private final String name;
     @Getter
-    private DeliveryState deliveryState;
+    private final DeliveryState deliveryState;
     @Getter
     private final EuroPallet packedOn;
-    private List<EuroCrate> packedCrates;
+    private final List<EuroCrate> packedCrates;
 
     public static PackingListBuilder builder() {
         return new PackingListBuilder();
     }
 
-    PackingList(long packingListId, String name, DeliveryState deliveryState, EuroPallet packedOn) {
+    PackingList(long packingListId, String name, DeliveryState deliveryState, EuroPallet packedOn, List<EuroCrate> packedCrates) {
         this.packingListId = packingListId;
         this.name = name;
         this.deliveryState = deliveryState;
         this.packedOn = packedOn;
-        this.packedCrates = new ArrayList<>();
+        this.packedCrates = packedCrates;
     }
 
     public String getHumanReadableIdentifier() {
