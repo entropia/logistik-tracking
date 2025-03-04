@@ -19,6 +19,7 @@ public class CreateEuroCrateUseCase {
         this.euroCrateRepository = euroCrateRepository;
     }
 
+    // TODO: We might not want to initialize the deliveryState manually for a new euro crate.
     public Result<EuroCrateDto, CreateEuroCrateError> createEuroCrate(EuroCrateDto euroCrateDto) {
         EuroCrate euroCrate;
         try {
