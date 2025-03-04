@@ -690,7 +690,7 @@ components:
         - "Schilder"
         - "Badges"
         - "Trolle"
-        - "Küche"
+        - "Kueche"
         - "WOC"
         - "Fruehstueck"
         - "RaumDer1000Namen"
@@ -705,7 +705,7 @@ components:
         - "BuildupAndTeardown"
         - "Infrastruktur"
         - "Deko"
-        - "safeR"
+        - "SafeR"
         - "SilentHacking"
         - "Projektleitung"
 

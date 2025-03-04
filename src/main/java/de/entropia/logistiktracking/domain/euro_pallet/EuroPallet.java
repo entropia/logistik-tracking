@@ -8,13 +8,15 @@ import lombok.Getter;
 public class EuroPallet {
     private final long palletId;
     private final Location location;
+    private final String information;
 
     public static EuroPalletBuilder builder() {
         return new EuroPalletBuilder();
     }
 
-    EuroPallet(long palletId, Location location) {
+    EuroPallet(long palletId, Location location, String information) {
         this.palletId = palletId;
         this.location = location;
+        this.information = information;
     }
 }

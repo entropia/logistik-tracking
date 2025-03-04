@@ -1,14 +1,21 @@
 package de.entropia.logistiktracking.domain.converter;
 
-import de.entropia.logistiktracking.domain.location.Location;
-import de.entropia.logistiktracking.domain.location.LogisticsLocation;
-import de.entropia.logistiktracking.domain.location.OperationCenterLocation;
-import de.entropia.logistiktracking.domain.location.SomewhereLocation;
+import de.entropia.logistiktracking.domain.location.*;
 import de.entropia.logistiktracking.jpa.LocationDatabaseElement;
+import de.entropia.logistiktracking.openapi.model.LocationDto;
+import de.entropia.logistiktracking.openapi.model.LocationTypeDto;
 import org.springframework.stereotype.Component;
 
 @Component
 public class LocationConverter {
+    private final LogisticsLocationTypeConverter logisticsLocationTypeConverter;
+    private final OperationCenterConverter operationCenterConverter;
+
+    public LocationConverter(LogisticsLocationTypeConverter logisticsLocationTypeConverter, OperationCenterConverter operationCenterConverter) {
+        this.logisticsLocationTypeConverter = logisticsLocationTypeConverter;
+        this.operationCenterConverter = operationCenterConverter;
+    }
+
     public LocationDatabaseElement toDatabaseElement(Location location) {
         return switch (location) {
             case LogisticsLocation logisticsLocation -> new LocationDatabaseElement(0, logisticsLocation.type(), null, null);
@@ -35,5 +42,35 @@ public class LocationConverter {
         }
 
         throw new IllegalArgumentException("At least one of the location fields needs to be not null.");
+    }
+
+    public Location from(LocationDto location) {
+        if (location == null) {
+            throw new IllegalArgumentException("Provided location cannot be null.");
+        }
+
+        return switch (location.getLocationType()) {
+            case LOGISTICS -> new LogisticsLocation(logisticsLocationTypeConverter.from(location.getLogisticsLocation().orElse(null)));
+            case AT_OPERATION_CENTER -> new OperationCenterLocation(operationCenterConverter.from(location.getOperationCenter().orElse(null)));
+            case SOMEWHERE_ELSE -> new SomewhereLocation(location.getSomewhereElse().orElse(null));
+        };
+    }
+
+    public LocationDto toDto(Location location) {
+        if (location == null) {
+            throw new IllegalArgumentException("Provided location cannot be null.");
+        }
+
+        return switch (location) {
+            case LogisticsLocation logisticsLocation -> new LocationDto()
+                    .locationType(LocationTypeDto.LOGISTICS)
+                    .logisticsLocation(logisticsLocationTypeConverter.toDto(logisticsLocation.type()));
+            case OperationCenterLocation operationCenterLocation -> new LocationDto()
+                    .locationType(LocationTypeDto.AT_OPERATION_CENTER)
+                    .operationCenter(operationCenterConverter.toDto(operationCenterLocation.operationCenter()));
+            case SomewhereLocation somewhereLocation -> new LocationDto()
+                    .locationType(LocationTypeDto.SOMEWHERE_ELSE)
+                    .somewhereElse(somewhereLocation.somewhereElse());
+        };
     }
 }

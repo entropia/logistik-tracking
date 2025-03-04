@@ -1,11 +1,13 @@
 package de.entropia.logistiktracking.domain.use_case;
 
 import de.entropia.logistiktracking.domain.delivery_state.DeliveryState;
-import de.entropia.logistiktracking.domain.euro_pallet.EuroPallet;
-import de.entropia.logistiktracking.domain.location.SomewhereLocation;
 import de.entropia.logistiktracking.domain.packing_list.PackingList;
 import de.entropia.logistiktracking.jpa.repo.EuroPalletDatabaseService;
 import de.entropia.logistiktracking.jpa.repo.PackingListDatabaseService;
+import de.entropia.logistiktracking.openapi.model.EuroPalletDto;
+import de.entropia.logistiktracking.openapi.model.LocationDto;
+import de.entropia.logistiktracking.openapi.model.LocationTypeDto;
+import de.entropia.logistiktracking.openapi.model.NewEuroPalletDto;
 import de.entropia.logistiktracking.utility.Result;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -48,7 +50,9 @@ class CreatePackingListUseCaseTest {
 
     @Test
     public void failsToCreatePackingListWithEmptyName() {
-        long palletId = uncheckedOk(createEuroPalletUseCase.createEuroPallet(new SomewhereLocation("over there"))).getPalletId();
+        long palletId = Long.parseLong(uncheckedOk(createEuroPalletUseCase.createEuroPallet(
+                new NewEuroPalletDto().location(new LocationDto().locationType(LocationTypeDto.SOMEWHERE_ELSE).somewhereElse("somewhere"))
+        )).getEuroPalletId());
 
         Result<PackingList, CreateNewPackingListError> result = createPackingListUseCase.createNewPackingListUseCase(
                 "",
@@ -62,17 +66,19 @@ class CreatePackingListUseCaseTest {
 
     @Test
     public void canCreateNewPackingList() {
-        EuroPallet euroPallet = uncheckedOk(createEuroPalletUseCase.createEuroPallet(new SomewhereLocation("somewhere else")));
+        EuroPalletDto euroPallet = uncheckedOk(createEuroPalletUseCase.createEuroPallet(
+                new NewEuroPalletDto().location(new LocationDto().locationType(LocationTypeDto.SOMEWHERE_ELSE).somewhereElse("somewhere"))
+        ));
 
         Result<PackingList, CreateNewPackingListError> result = createPackingListUseCase.createNewPackingListUseCase(
                 "finanzen",
-                euroPallet.getPalletId()
+                Long.parseLong(euroPallet.getEuroPalletId())
         );
 
         assertThat(result).isInstanceOf(Result.Ok.class);
         PackingList packingList = uncheckedOk(result);
         assertThat(packingList.getHumanReadableIdentifier()).matches("finanzen-\\d+");
-        assertThat(packingList.getPackedOn()).usingRecursiveComparison().isEqualTo(euroPallet);
+        assertThat(packingList.getPackedOn().getPalletId()).usingRecursiveComparison().isEqualTo(Long.parseLong(euroPallet.getEuroPalletId()));
         assertThat(packingList.getDeliveryState()).isEqualTo(DeliveryState.Packing);
     }
 
