@@ -336,6 +336,7 @@ paths:
       security:
         - springCookieAuth: [ ]
       requestBody:
+        required: true
         content:
           application/json:
             schema:
@@ -410,7 +411,7 @@ paths:
 
   /packingList/{packingListId}/euroCrate/{euroCrateId}:
     put:
-      operationId: addEuroCrateToEuroPallet
+      operationId: addEuroCrateToPackingList
       summary: "Add the selected euro crate to a packing list if the packing list is in the state 'Packing'"
       security:
         - springCookieAuth: [ ]

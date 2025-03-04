@@ -1,13 +1,8 @@
 package de.entropia.logistiktracking.domain.use_case;
 
-import de.entropia.logistiktracking.domain.delivery_state.DeliveryState;
-import de.entropia.logistiktracking.domain.packing_list.PackingList;
 import de.entropia.logistiktracking.jpa.repo.EuroPalletDatabaseService;
 import de.entropia.logistiktracking.jpa.repo.PackingListDatabaseService;
-import de.entropia.logistiktracking.openapi.model.EuroPalletDto;
-import de.entropia.logistiktracking.openapi.model.LocationDto;
-import de.entropia.logistiktracking.openapi.model.LocationTypeDto;
-import de.entropia.logistiktracking.openapi.model.NewEuroPalletDto;
+import de.entropia.logistiktracking.openapi.model.*;
 import de.entropia.logistiktracking.utility.Result;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -38,10 +33,10 @@ class CreatePackingListUseCaseTest {
 
     @Test
     public void failsToCreatePackingListWithBadEuroPalletId() {
-        Result<PackingList, CreateNewPackingListError> result = createPackingListUseCase.createNewPackingListUseCase(
-                "finanzen",
-                2
-        );
+        Result<PackingListDto, CreateNewPackingListError> result = createPackingListUseCase.createNewPackingListUseCase(
+                new NewPackingListDto()
+                        .name("finanzen")
+                        .packedOnPallet("2"));
 
         assertThat(result).isInstanceOf(Result.Error.class);
         CreateNewPackingListError error = uncheckedError(result);
@@ -50,14 +45,14 @@ class CreatePackingListUseCaseTest {
 
     @Test
     public void failsToCreatePackingListWithEmptyName() {
-        long palletId = Long.parseLong(uncheckedOk(createEuroPalletUseCase.createEuroPallet(
+        String palletId = uncheckedOk(createEuroPalletUseCase.createEuroPallet(
                 new NewEuroPalletDto().location(new LocationDto().locationType(LocationTypeDto.SOMEWHERE_ELSE).somewhereElse("somewhere"))
-        )).getEuroPalletId());
+        )).getEuroPalletId();
 
-        Result<PackingList, CreateNewPackingListError> result = createPackingListUseCase.createNewPackingListUseCase(
-                "",
-                palletId
-        );
+        Result<PackingListDto, CreateNewPackingListError> result = createPackingListUseCase.createNewPackingListUseCase(
+                new NewPackingListDto()
+                        .name("")
+                        .packedOnPallet(palletId));
 
         assertThat(result).isInstanceOf(Result.Error.class);
         CreateNewPackingListError error = uncheckedError(result);
@@ -70,16 +65,17 @@ class CreatePackingListUseCaseTest {
                 new NewEuroPalletDto().location(new LocationDto().locationType(LocationTypeDto.SOMEWHERE_ELSE).somewhereElse("somewhere"))
         ));
 
-        Result<PackingList, CreateNewPackingListError> result = createPackingListUseCase.createNewPackingListUseCase(
-                "finanzen",
-                Long.parseLong(euroPallet.getEuroPalletId())
+        Result<PackingListDto, CreateNewPackingListError> result = createPackingListUseCase.createNewPackingListUseCase(
+                new NewPackingListDto()
+                        .name("finanzen")
+                        .packedOnPallet(euroPallet.getEuroPalletId())
         );
 
         assertThat(result).isInstanceOf(Result.Ok.class);
-        PackingList packingList = uncheckedOk(result);
-        assertThat(packingList.getHumanReadableIdentifier()).matches("finanzen-\\d+");
-        assertThat(packingList.getPackedOn().getPalletId()).usingRecursiveComparison().isEqualTo(Long.parseLong(euroPallet.getEuroPalletId()));
-        assertThat(packingList.getDeliveryState()).isEqualTo(DeliveryState.Packing);
+        PackingListDto packingList = uncheckedOk(result);
+        assertThat(packingList.getPackingListId()).matches("finanzen-\\d+");
+        assertThat(packingList.getPackedOn()).usingRecursiveComparison().isEqualTo(euroPallet);
+        assertThat(packingList.getDeliveryState()).isEqualTo(DeliveryStateDto.PACKING);
     }
 
 }

@@ -1,10 +1,13 @@
 package de.entropia.logistiktracking.domain.use_case;
 
 
+import de.entropia.logistiktracking.domain.converter.PackingListConverter;
 import de.entropia.logistiktracking.domain.euro_pallet.EuroPallet;
 import de.entropia.logistiktracking.domain.packing_list.PackingList;
 import de.entropia.logistiktracking.domain.repository.EuroPalletRepository;
 import de.entropia.logistiktracking.domain.repository.PackingListRepository;
+import de.entropia.logistiktracking.openapi.model.NewPackingListDto;
+import de.entropia.logistiktracking.openapi.model.PackingListDto;
 import de.entropia.logistiktracking.utility.Result;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Component;
@@ -17,15 +20,22 @@ import java.util.Optional;
 public class CreatePackingListUseCase {
     private final EuroPalletRepository euroPalletRepository;
     private final PackingListRepository packingListRepository;
+    private final PackingListConverter packingListConverter;
 
-    public CreatePackingListUseCase(EuroPalletRepository euroPalletRepository, PackingListRepository packingListRepository) {
+    public CreatePackingListUseCase(EuroPalletRepository euroPalletRepository, PackingListRepository packingListRepository, PackingListConverter packingListConverter) {
         this.euroPalletRepository = euroPalletRepository;
         this.packingListRepository = packingListRepository;
+        this.packingListConverter = packingListConverter;
     }
 
-    public Result<PackingList, CreateNewPackingListError> createNewPackingListUseCase(
-        String packingListName, long placedOnPalletId
-    ) {
+    public Result<PackingListDto, CreateNewPackingListError> createNewPackingListUseCase(NewPackingListDto newPackingListDto) {
+        long placedOnPalletId;
+        try {
+            placedOnPalletId = Long.parseLong(newPackingListDto.getPackedOnPallet());
+        } catch (NumberFormatException e) {
+            return new Result.Error<>(CreateNewPackingListError.BadArguments);
+        }
+
         Optional<EuroPallet> placedOnPallet = euroPalletRepository.findEuroPallet(placedOnPalletId);
         if (placedOnPallet.isEmpty()) {
             return new Result.Error<>(CreateNewPackingListError.TargetPalletNotFound);
@@ -35,14 +45,14 @@ public class CreatePackingListUseCase {
         try {
             packingList = PackingList
                     .builder()
-                    .name(packingListName)
+                    .name(newPackingListDto.getName())
                     .packedOn(placedOnPallet.get())
                     .build();
         } catch (IllegalArgumentException e) {
             return new Result.Error<>(CreateNewPackingListError.BadArguments);
         }
 
-        packingList =packingListRepository.createNewPackingList(packingList);
-        return new Result.Ok<>(packingList);
+        packingList = packingListRepository.createNewPackingList(packingList);
+        return new Result.Ok<>(packingListConverter.toDto(packingList));
     }
 }
