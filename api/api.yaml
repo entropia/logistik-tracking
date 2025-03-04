@@ -359,7 +359,7 @@ paths:
       operationId: getPackingList
       summary: "Get packing list"
       parameters:
-        - in: header
+        - in: path
           description: "Identifier of packing list."
           name: packingListId
           schema:
@@ -385,7 +385,7 @@ paths:
       security:
         - springCookieAuth: [ ]
       parameters:
-        - in: header
+        - in: path
           description: "Identifier of packing list."
           name: packingListId
           schema:
