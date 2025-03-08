@@ -1,4 +1,4 @@
-package de.entropia.logistiktracking.domain.use_case;
+package de.entropia.logistiktracking.domain.packing_list.use_case;
 
 public enum CreateNewPackingListError {
     TargetPalletNotFound,

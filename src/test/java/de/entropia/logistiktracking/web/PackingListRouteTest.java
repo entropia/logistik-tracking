@@ -1,6 +1,6 @@
 package de.entropia.logistiktracking.web;
 
-import de.entropia.logistiktracking.domain.use_case.CreateEuroPalletUseCase;
+import de.entropia.logistiktracking.domain.euro_pallet.use_case.CreateEuroPalletUseCase;
 import de.entropia.logistiktracking.openapi.model.*;
 import de.entropia.logistiktracking.utility.Result;
 import org.junit.jupiter.api.Test;

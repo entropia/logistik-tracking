@@ -1,4 +1,4 @@
-package de.entropia.logistiktracking.domain.use_case;
+package de.entropia.logistiktracking.domain.euro_pallet.use_case;
 
 import de.entropia.logistiktracking.domain.converter.EuroPalletConverter;
 import de.entropia.logistiktracking.domain.euro_pallet.EuroPallet;

@@ -1,9 +1,9 @@
 package de.entropia.logistiktracking.web;
 
-import de.entropia.logistiktracking.domain.use_case.CreateNewPackingListError;
-import de.entropia.logistiktracking.domain.use_case.CreatePackingListUseCase;
-import de.entropia.logistiktracking.domain.use_case.FindPackingListError;
-import de.entropia.logistiktracking.domain.use_case.FindPackingListUseCase;
+import de.entropia.logistiktracking.domain.packing_list.use_case.CreateNewPackingListError;
+import de.entropia.logistiktracking.domain.packing_list.use_case.CreatePackingListUseCase;
+import de.entropia.logistiktracking.domain.packing_list.use_case.FindPackingListError;
+import de.entropia.logistiktracking.domain.packing_list.use_case.FindPackingListUseCase;
 import de.entropia.logistiktracking.openapi.api.PackingListApi;
 import de.entropia.logistiktracking.openapi.model.BasicPackingListDto;
 import de.entropia.logistiktracking.openapi.model.NewPackingListDto;

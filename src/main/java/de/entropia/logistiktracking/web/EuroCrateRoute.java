@@ -1,9 +1,9 @@
 package de.entropia.logistiktracking.web;
 
-import de.entropia.logistiktracking.domain.use_case.CreateEuroCrateError;
-import de.entropia.logistiktracking.domain.use_case.CreateEuroCrateUseCase;
-import de.entropia.logistiktracking.domain.use_case.FindEuroCrateError;
-import de.entropia.logistiktracking.domain.use_case.FindEuroCrateUseCase;
+import de.entropia.logistiktracking.domain.euro_crate.use_case.CreateEuroCrateError;
+import de.entropia.logistiktracking.domain.euro_crate.use_case.CreateEuroCrateUseCase;
+import de.entropia.logistiktracking.domain.euro_crate.use_case.FindEuroCrateError;
+import de.entropia.logistiktracking.domain.euro_crate.use_case.FindEuroCrateUseCase;
 import de.entropia.logistiktracking.openapi.api.EuroCrateApi;
 import de.entropia.logistiktracking.openapi.model.EuroCrateDto;
 import de.entropia.logistiktracking.openapi.model.OperationCenterDto;
