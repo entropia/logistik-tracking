@@ -5,6 +5,7 @@ import de.entropia.logistiktracking.domain.euro_crate.EuroCrate;
 import de.entropia.logistiktracking.domain.operation_center.OperationCenter;
 import de.entropia.logistiktracking.jpa.EuroCrateDatabaseElement;
 import de.entropia.logistiktracking.jpa.repo.EuroCrateDatabaseService;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -13,25 +14,18 @@ import java.util.Optional;
 import java.util.stream.StreamSupport;
 
 @Component
+@AllArgsConstructor
 public class EuroCrateRepository {
     private final EuroCrateDatabaseService euroCrateDatabaseService;
     private final EuroCrateConverter euroCrateConverter;
 
-    @Autowired
-    public EuroCrateRepository(EuroCrateDatabaseService euroCrateDatabaseService, EuroCrateConverter euroCrateConverter) {
-        this.euroCrateDatabaseService = euroCrateDatabaseService;
-        this.euroCrateConverter = euroCrateConverter;
-    }
-
     public Optional<EuroCrate> createNewEuroCrate(EuroCrate euroCrate) {
-        Optional<EuroCrateDatabaseElement> potentialOverlap = euroCrateDatabaseService.findById(new EuroCrateDatabaseElement.EuroCrateDatabaseElementId(
-                euroCrate.getOperationCenter(),
-                euroCrate.getName()
-        ));
-
-        if (potentialOverlap.isPresent()) {
-            return Optional.empty();
-        }
+		if (euroCrateDatabaseService.existsById(new EuroCrateDatabaseElement.EuroCrateDatabaseElementId(
+				euroCrate.getOperationCenter(),
+				euroCrate.getName()
+		))) {
+			return Optional.empty();
+		}
 
         EuroCrateDatabaseElement newCrateElement = euroCrateDatabaseService.save(
             euroCrateConverter.toDatabaseElement(euroCrate)
@@ -41,7 +35,7 @@ public class EuroCrateRepository {
     }
 
     public List<EuroCrate> findAllEuroCrates() {
-        return StreamSupport.stream(euroCrateDatabaseService.findAll().spliterator(), false)
+        return euroCrateDatabaseService.findAll().stream()
                 .map(euroCrateConverter::from)
                 .toList();
     }

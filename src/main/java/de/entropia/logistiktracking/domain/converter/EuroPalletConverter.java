@@ -4,17 +4,14 @@ import de.entropia.logistiktracking.domain.euro_pallet.EuroPallet;
 import de.entropia.logistiktracking.jpa.EuroPalletDatabaseElement;
 import de.entropia.logistiktracking.jpa.LocationDatabaseElement;
 import de.entropia.logistiktracking.openapi.model.EuroPalletDto;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
+@AllArgsConstructor
 public class EuroPalletConverter {
     private final LocationConverter locationConverter;
-
-    @Autowired
-    public EuroPalletConverter(LocationConverter locationConverter) {
-        this.locationConverter = locationConverter;
-    }
 
     public EuroPalletDatabaseElement toDatabaseElement(EuroPallet euroPallet) {
         LocationDatabaseElement locationDatabaseElement = locationConverter.toDatabaseElement(euroPallet.getLocation());

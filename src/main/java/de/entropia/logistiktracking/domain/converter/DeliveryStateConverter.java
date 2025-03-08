@@ -2,11 +2,12 @@ package de.entropia.logistiktracking.domain.converter;
 
 import de.entropia.logistiktracking.domain.delivery_state.DeliveryState;
 import de.entropia.logistiktracking.openapi.model.DeliveryStateDto;
+import lombok.NonNull;
 import org.springframework.stereotype.Component;
 
 @Component
 public class DeliveryStateConverter {
-    public DeliveryStateDto toDto(DeliveryState deliveryState) {
+    public DeliveryStateDto toDto(@NonNull DeliveryState deliveryState) {
         return switch (deliveryState) {
             case Packing -> DeliveryStateDto.PACKING;
             case WaitingForDelivery -> DeliveryStateDto.WAITING_FOR_DELIVERY;
@@ -17,10 +18,7 @@ public class DeliveryStateConverter {
         };
     }
 
-    public DeliveryState from(DeliveryStateDto deliveryState) {
-        if (deliveryState == null) {
-            throw new IllegalArgumentException("DeliveryState cannot be null");
-        }
+    public DeliveryState from(@NonNull DeliveryStateDto deliveryState) {
         return switch (deliveryState) {
             case PACKING -> DeliveryState.Packing;
             case WAITING_FOR_DELIVERY -> DeliveryState.WaitingForDelivery;

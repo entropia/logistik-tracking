@@ -1,9 +1,8 @@
 package de.entropia.logistiktracking.web;
 
 import de.entropia.logistiktracking.TestHelper;
-import de.entropia.logistiktracking.domain.euro_pallet.use_case.CreateEuroPalletUseCase;
+import de.entropia.logistiktracking.domain.euro_pallet.use_case.EuroPalletUseCase;
 import de.entropia.logistiktracking.openapi.model.*;
-import de.entropia.logistiktracking.utility.Result;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +19,7 @@ class PackingListRouteTest {
     @Autowired
     private PackingListRoute route;
     @Autowired
-    private CreateEuroPalletUseCase createEuroPalletUseCase;
+    private EuroPalletUseCase createEuroPalletUseCase;
     @Autowired
     private TestHelper testHelper;
 
@@ -32,9 +31,8 @@ class PackingListRouteTest {
     @Test
     @WithMockUser(roles = {"admin"})
     public void canCreateNewPackingList() {
-        String euroPalletId = Result.uncheckedOk(createEuroPalletUseCase.createEuroPallet(
-                new NewEuroPalletDto().location(new LocationDto().locationType(LocationTypeDto.SOMEWHERE_ELSE).somewhereElse("123")))
-        ).getEuroPalletId();
+		String euroPalletId = createEuroPalletUseCase.createEuroPallet(
+				new NewEuroPalletDto().location(new LocationDto().locationType(LocationTypeDto.SOMEWHERE_ELSE).somewhereElse("123"))).result().getEuroPalletId();
 
         ResponseEntity<PackingListDto> response = route.createPackingList(new NewPackingListDto().name("finanzen").packedOnPallet(euroPalletId));
 

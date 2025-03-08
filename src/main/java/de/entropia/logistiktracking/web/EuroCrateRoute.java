@@ -1,13 +1,11 @@
 package de.entropia.logistiktracking.web;
 
-import de.entropia.logistiktracking.domain.euro_crate.use_case.CreateEuroCrateError;
-import de.entropia.logistiktracking.domain.euro_crate.use_case.CreateEuroCrateUseCase;
-import de.entropia.logistiktracking.domain.euro_crate.use_case.FindEuroCrateError;
-import de.entropia.logistiktracking.domain.euro_crate.use_case.FindEuroCrateUseCase;
+import de.entropia.logistiktracking.domain.euro_crate.use_case.EuroCrateUseCase;
 import de.entropia.logistiktracking.openapi.api.EuroCrateApi;
 import de.entropia.logistiktracking.openapi.model.EuroCrateDto;
 import de.entropia.logistiktracking.openapi.model.OperationCenterDto;
 import de.entropia.logistiktracking.utility.Result;
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -16,23 +14,18 @@ import org.springframework.stereotype.Controller;
 import java.util.List;
 
 @Controller("/euroCrate")
+@AllArgsConstructor
 public class EuroCrateRoute implements EuroCrateApi {
-    private final CreateEuroCrateUseCase createEuroCrateUseCase;
-    private final FindEuroCrateUseCase findEuroCrateUseCase;
-
-    public EuroCrateRoute(CreateEuroCrateUseCase createEuroCrateUseCase, FindEuroCrateUseCase findEuroCrateUseCase) {
-        this.createEuroCrateUseCase = createEuroCrateUseCase;
-        this.findEuroCrateUseCase = findEuroCrateUseCase;
-    }
+    private final EuroCrateUseCase euroCrateUseCase;
 
     @Override
     @PreAuthorize("hasRole('admin')")
     public ResponseEntity<EuroCrateDto> createNewEuroCrate(EuroCrateDto euroCrateDto) {
-        Result<EuroCrateDto, CreateEuroCrateError> result = createEuroCrateUseCase.createEuroCrate(euroCrateDto);
+        Result<EuroCrateDto, EuroCrateUseCase.CreateEuroCrateError> result = euroCrateUseCase.createEuroCrate(euroCrateDto);
 
         return switch (result) {
-            case Result.Ok<EuroCrateDto, CreateEuroCrateError> ok -> new ResponseEntity<>(ok.result(), HttpStatus.CREATED);
-            case Result.Error<EuroCrateDto, CreateEuroCrateError> error -> switch (error.error()) {
+            case Result.Ok<EuroCrateDto, EuroCrateUseCase.CreateEuroCrateError> ok -> new ResponseEntity<>(ok.result(), HttpStatus.CREATED);
+            case Result.Error<EuroCrateDto, EuroCrateUseCase.CreateEuroCrateError> error -> switch (error.error()) {
                 case BadArguments -> ResponseEntity.badRequest().build();
                 case EuroCrateWithIdAlreadyExists -> ResponseEntity.status(HttpStatus.CONFLICT).build();
             };
@@ -41,16 +34,16 @@ public class EuroCrateRoute implements EuroCrateApi {
 
     @Override
     public ResponseEntity<List<EuroCrateDto>> getAllEuroCrates() {
-        return ResponseEntity.ok(findEuroCrateUseCase.findAllEuroCrates());
+        return ResponseEntity.ok(euroCrateUseCase.findAllEuroCrates());
     }
 
     @Override
     public ResponseEntity<EuroCrateDto> getEuroCrate(OperationCenterDto operationCenter, String euroCrateName) {
-        Result<EuroCrateDto, FindEuroCrateError> result = findEuroCrateUseCase.findEuroCrate(operationCenter, euroCrateName);
+        Result<EuroCrateDto, EuroCrateUseCase.FindEuroCrateError> result = euroCrateUseCase.findEuroCrate(operationCenter, euroCrateName);
 
         return switch (result) {
-            case Result.Ok<EuroCrateDto, FindEuroCrateError> ok -> ResponseEntity.ok(ok.result());
-            case Result.Error<EuroCrateDto, FindEuroCrateError> error -> switch (error.error()) {
+            case Result.Ok<EuroCrateDto, EuroCrateUseCase.FindEuroCrateError> ok -> ResponseEntity.ok(ok.result());
+            case Result.Error<EuroCrateDto, EuroCrateUseCase.FindEuroCrateError> error -> switch (error.error()) {
                 case BadArguments -> ResponseEntity.badRequest().build();
                 case CrateNotFound -> ResponseEntity.notFound().build();
             };

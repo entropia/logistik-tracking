@@ -22,7 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 class CreateEuroPalletUseCaseTest {
     @Autowired
-    private CreateEuroPalletUseCase createEuroPalletUseCase;
+    private EuroPalletUseCase createEuroPalletUseCase;
     @Autowired
     private EuroPalletDatabaseService euroPalletDatabaseService;
     @Autowired
@@ -35,7 +35,7 @@ class CreateEuroPalletUseCaseTest {
 
     @Test
     public void canCreateEuroPallet() {
-        Result<EuroPalletDto, CreateEuroPalletError> result = createEuroPalletUseCase.createEuroPallet(
+        Result<EuroPalletDto, EuroPalletUseCase.CreateEuroPalletError> result = createEuroPalletUseCase.createEuroPallet(
                 new NewEuroPalletDto().location(new LocationDto().locationType(LocationTypeDto.SOMEWHERE_ELSE).somewhereElse("somewhere"))
         );
 
@@ -47,12 +47,12 @@ class CreateEuroPalletUseCaseTest {
 
     @Test
     public void failsToCreateEuroPalletOnMissingLocation() {
-        Result<EuroPalletDto, CreateEuroPalletError> result = createEuroPalletUseCase.createEuroPallet(null);
+        Result<EuroPalletDto, EuroPalletUseCase.CreateEuroPalletError> result = createEuroPalletUseCase.createEuroPallet(null);
 
         assertThat(result).isInstanceOf(Result.Error.class);
-        CreateEuroPalletError error = uncheckedError(result);
+        EuroPalletUseCase.CreateEuroPalletError error = uncheckedError(result);
 
-        assertThat(error).isEqualTo(CreateEuroPalletError.BadArguments);
+        assertThat(error).isEqualTo(EuroPalletUseCase.CreateEuroPalletError.BadArguments);
     }
 
 }

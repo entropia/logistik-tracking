@@ -10,23 +10,20 @@ import de.entropia.logistiktracking.openapi.model.EuroPalletDto;
 import de.entropia.logistiktracking.openapi.model.NewEuroPalletDto;
 import de.entropia.logistiktracking.utility.Result;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.Optional;
 
 
 @Transactional
 @Component
-public class CreateEuroPalletUseCase {
+@AllArgsConstructor
+public class EuroPalletUseCase {
     private final EuroPalletRepository euroPalletRepository;
     private final LocationConverter locationConverter;
     private final EuroPalletConverter euroPalletConverter;
-
-    @Autowired
-    public CreateEuroPalletUseCase(EuroPalletRepository euroPalletRepository, LocationConverter locationConverter, EuroPalletConverter euroPalletConverter) {
-        this.euroPalletRepository = euroPalletRepository;
-        this.locationConverter = locationConverter;
-        this.euroPalletConverter = euroPalletConverter;
-    }
 
     public Result<EuroPalletDto, CreateEuroPalletError> createEuroPallet(NewEuroPalletDto newEuroPalletDto) {
         if (newEuroPalletDto == null) {
@@ -53,5 +50,42 @@ public class CreateEuroPalletUseCase {
         newEuroPallet = euroPalletRepository.createNewEuroPallet(newEuroPallet);
 
         return new Result.Ok<>(euroPalletConverter.toDto(newEuroPallet));
+    }
+
+    public List<EuroPalletDto> findAllEuroPallets() {
+        return euroPalletRepository.findAllEuroPallets()
+                .stream()
+                .map(euroPalletConverter::toDto)
+                .toList();
+    }
+
+    public Result<EuroPalletDto, FindEuroPalletError> findEuroPallet(String euroPalletId) {
+        if (euroPalletId == null) {
+            return new Result.Error<>(FindEuroPalletError.BadArguments);
+        }
+
+        long id;
+        try {
+            id = Long.parseLong(euroPalletId);
+        } catch (NumberFormatException e) {
+            return new Result.Error<>(FindEuroPalletError.BadArguments);
+        }
+
+        Optional<EuroPallet> euroPallet = euroPalletRepository.findEuroPallet(id);
+
+        if (euroPallet.isEmpty()) {
+            return new Result.Error<>(FindEuroPalletError.PalletNotFound);
+        }
+
+        return new Result.Ok<>(euroPalletConverter.toDto(euroPallet.get()));
+    }
+
+    public enum FindEuroPalletError {
+        BadArguments,
+        PalletNotFound
+    }
+
+    public enum CreateEuroPalletError {
+        BadArguments
     }
 }

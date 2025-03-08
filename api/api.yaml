@@ -409,7 +409,7 @@ paths:
         "404":
           description: "Selected packing list does not exist."
 
-  /packingList/{packingListId}/euroCrate//{operationCenter}-{euroCrateName}:
+  /packingList/{packingListId}/euroCrate/{operationCenter}-{euroCrateName}:
     put:
       operationId: addEuroCrateToPackingList
       summary: "Add the selected euro crate to a packing list if the packing list is in the state 'Packing'"

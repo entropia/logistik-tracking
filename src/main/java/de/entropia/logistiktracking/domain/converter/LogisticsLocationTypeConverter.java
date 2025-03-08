@@ -2,14 +2,12 @@ package de.entropia.logistiktracking.domain.converter;
 
 import de.entropia.logistiktracking.domain.location.LogisticsLocationType;
 import de.entropia.logistiktracking.openapi.model.LogisticsLocationDto;
+import lombok.NonNull;
 import org.springframework.stereotype.Component;
 
 @Component
 public class LogisticsLocationTypeConverter {
-    LogisticsLocationType from(LogisticsLocationDto dto) {
-        if (dto == null) {
-            throw new IllegalArgumentException("LogisticsLocationType cannot be null.");
-        }
+    LogisticsLocationType from(@NonNull LogisticsLocationDto dto) {
         return switch (dto) {
             case ENTROPIA -> LogisticsLocationType.Entropia;
             case LOC -> LogisticsLocationType.LogisticsOperationCenter;
@@ -18,11 +16,7 @@ public class LogisticsLocationTypeConverter {
         };
     }
 
-    public LogisticsLocationDto toDto(LogisticsLocationType type) {
-        if (type == null) {
-            throw new IllegalArgumentException("Type cannot be null.");
-        }
-
+    public LogisticsLocationDto toDto(@NonNull LogisticsLocationType type) {
         return switch (type) {
             case Entropia -> LogisticsLocationDto.ENTROPIA;
             case InTransport -> LogisticsLocationDto.IN_TRANSPORT;

@@ -5,6 +5,7 @@ import de.entropia.logistiktracking.domain.converter.EuroPalletConverter;
 import de.entropia.logistiktracking.domain.euro_pallet.EuroPallet;
 import de.entropia.logistiktracking.jpa.EuroPalletDatabaseElement;
 import de.entropia.logistiktracking.jpa.repo.EuroPalletDatabaseService;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -14,15 +15,10 @@ import java.util.stream.StreamSupport;
 
 
 @Component
+@AllArgsConstructor
 public class EuroPalletRepository {
     private final EuroPalletDatabaseService euroPalletDatabaseService;
     private final EuroPalletConverter euroPalletConverter;
-
-    @Autowired
-    public EuroPalletRepository(EuroPalletDatabaseService euroPalletDatabaseService, EuroPalletConverter euroPalletConverter) {
-        this.euroPalletDatabaseService = euroPalletDatabaseService;
-        this.euroPalletConverter = euroPalletConverter;
-    }
 
     public EuroPallet createNewEuroPallet(EuroPallet newEuroPallet) throws IllegalArgumentException {
         if (newEuroPallet.getPalletId() != 0) {
@@ -37,7 +33,7 @@ public class EuroPalletRepository {
     }
 
     public List<EuroPallet> findAllEuroPallets() {
-        return StreamSupport.stream(euroPalletDatabaseService.findAll().spliterator(), false)
+        return euroPalletDatabaseService.findAll().stream()
                 .map(euroPalletConverter::from)
                 .toList();
     }

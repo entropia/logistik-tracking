@@ -2,15 +2,12 @@ package de.entropia.logistiktracking.domain.converter;
 
 import de.entropia.logistiktracking.domain.operation_center.OperationCenter;
 import de.entropia.logistiktracking.openapi.model.OperationCenterDto;
+import lombok.NonNull;
 import org.springframework.stereotype.Component;
 
 @Component
 public class OperationCenterConverter {
-    public OperationCenter from(OperationCenterDto dto) {
-        if (dto == null) {
-            throw new IllegalArgumentException("Operation center cannot be null");
-        }
-
+    public OperationCenter from(@NonNull OperationCenterDto dto) {
         return switch (dto) {
             case FINANZEN -> OperationCenter.Finanzen;
             case BACKOFFICE -> OperationCenter.Backoffice;
@@ -46,43 +43,7 @@ public class OperationCenterConverter {
         };
     }
 
-    public OperationCenterDto toDto(OperationCenter operationCenter) {
-        if (operationCenter == null) {
-            throw new IllegalArgumentException("operationCenter cannot be null");
-        }
-
-        return switch (operationCenter) {
-            case Finanzen -> OperationCenterDto.FINANZEN;
-            case Backoffice -> OperationCenterDto.BACKOFFICE;
-            case Content -> OperationCenterDto.CONTENT;
-            case Heralding -> OperationCenterDto.HERALDING;
-            case DesignUndMotto -> OperationCenterDto.DESIGN_UND_MOTTO;
-            case PresseUndSocialMedia -> OperationCenterDto.PRESSE_UND_SOCIAL_MEDIA;
-            case LoungeControl -> OperationCenterDto.LOUNGE_CONTROL;
-            case LoungeTechnik -> OperationCenterDto.LOUNGE_TECHNIK;
-            case Infodesk -> OperationCenterDto.INFODESK;
-            case Merchdesk -> OperationCenterDto.MERCHDESK;
-            case Schilder -> OperationCenterDto.SCHILDER;
-            case Badges -> OperationCenterDto.BADGES;
-            case Trolle -> OperationCenterDto.TROLLE;
-            case Kueche -> OperationCenterDto.KUECHE;
-            case WOC -> OperationCenterDto.WOC;
-            case Fruehstueck -> OperationCenterDto.FRUEHSTUECK;
-            case RaumDer1000Namen -> OperationCenterDto.RAUM_DER1000_NAMEN;
-            case Bar -> OperationCenterDto.BAR;
-            case Spaeti -> OperationCenterDto.SPAETI;
-            case Aussenbar -> OperationCenterDto.AUSSENBAR;
-            case Kaffeebar -> OperationCenterDto.KAFFEEBAR;
-            case Cocktailbar -> OperationCenterDto.COCKTAILBAR;
-            case NOC -> OperationCenterDto.NOC;
-            case POC -> OperationCenterDto.POC;
-            case VOC -> OperationCenterDto.VOC;
-            case BuildupAndTeardown -> OperationCenterDto.BUILDUP_AND_TEARDOWN;
-            case Infrastruktur -> OperationCenterDto.INFRASTRUKTUR;
-            case Deko -> OperationCenterDto.DEKO;
-            case SafeR -> OperationCenterDto.SAFE_R;
-            case SilentHacking -> OperationCenterDto.SILENT_HACKING;
-            case Projektleitung -> OperationCenterDto.PROJEKTLEITUNG;
-        };
+    public OperationCenterDto toDto(@NonNull OperationCenter operationCenter) {
+        return operationCenter.getDtoEquiv();
     }
 }

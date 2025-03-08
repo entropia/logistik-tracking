@@ -1,15 +1,43 @@
 package de.entropia.logistiktracking.utility;
 
+import java.io.IOException;
+import java.util.function.Function;
+
 @SuppressWarnings("unused")
 public sealed interface Result<O, E> {
-    record Ok<O, E>(O result) implements Result<O, E> {}
-    record Error<O, E>(E error) implements Result<O, E> {}
+    record Ok<O, E>(O result) implements Result<O, E> {
+        @Override
+        public E error() {
+            throw new UnsupportedOperationException("Is an ok: "+result);
+        }
 
-    static <O> O uncheckedOk(Result<O, ?> result) {
-        return ((Result.Ok<O, ?>) result).result();
+        @Override
+        public <EX extends Throwable> Result<O, E> ifOk(Action<Ok<O, E>, EX> action) throws EX {
+            action.consume(this);
+            return this;
+        }
+    }
+    record Error<O, E>(E error) implements Result<O, E> {
+        @Override
+        public O result() {
+            throw new UnsupportedOperationException("Is an error: "+error);
+        }
+
+        @Override
+        public <EX extends Throwable> Result<O, E> ifErr(Action<Error<O, E>, EX> action) throws EX {
+            action.consume(this);
+            return this;
+        }
     }
 
-    static <E> E uncheckedError(Result<?, E> result) {
-        return ((Result.Error<?, E>) result).error();
+    // Achtung: throws EX ist nötig damit die impls werfen können. idea schnallt das scheinbar nicht
+    default <EX extends Throwable> Result<O, E> ifOk(Action<Ok<O, E>, EX> action) throws EX { return this; }
+    default <EX extends Throwable> Result<O, E> ifErr(Action<Error<O, E>, EX> action) throws EX { return this; }
+
+    O result();
+    E error();
+
+    interface Action<C, E extends Throwable> {
+        void consume(C c) throws E;
     }
 }

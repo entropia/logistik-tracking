@@ -1,6 +1,5 @@
 package de.entropia.logistiktracking.domain.euro_crate.use_case;
 
-
 import de.entropia.logistiktracking.domain.converter.EuroCrateConverter;
 import de.entropia.logistiktracking.domain.converter.OperationCenterConverter;
 import de.entropia.logistiktracking.domain.euro_crate.EuroCrate;
@@ -9,23 +8,34 @@ import de.entropia.logistiktracking.domain.repository.EuroCrateRepository;
 import de.entropia.logistiktracking.openapi.model.EuroCrateDto;
 import de.entropia.logistiktracking.openapi.model.OperationCenterDto;
 import de.entropia.logistiktracking.utility.Result;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
 
 @Component
-public class FindEuroCrateUseCase {
-    private final EuroCrateRepository euroCrateRepository;
+@AllArgsConstructor
+public class EuroCrateUseCase {
     private final EuroCrateConverter euroCrateConverter;
+    private final EuroCrateRepository euroCrateRepository;
     private final OperationCenterConverter operationCenterConverter;
 
-    @Autowired
-    public FindEuroCrateUseCase(EuroCrateRepository euroCrateRepository, EuroCrateConverter euroCrateConverter, OperationCenterConverter operationCenterConverter) {
-        this.euroCrateRepository = euroCrateRepository;
-        this.euroCrateConverter = euroCrateConverter;
-        this.operationCenterConverter = operationCenterConverter;
+    // TODO: We might not want to initialize the deliveryState manually for a new euro crate.
+    public Result<EuroCrateDto, CreateEuroCrateError> createEuroCrate(EuroCrateDto euroCrateDto) {
+        EuroCrate euroCrate;
+        try {
+            euroCrate = euroCrateConverter.from(euroCrateDto);
+        } catch (IllegalArgumentException e) {
+            return new Result.Error<>(CreateEuroCrateError.BadArguments);
+        }
+
+        Optional<EuroCrate> newEuroCrate = euroCrateRepository.createNewEuroCrate(euroCrate);
+        if (newEuroCrate.isEmpty()) {
+            return new Result.Error<>(CreateEuroCrateError.EuroCrateWithIdAlreadyExists);
+        }
+
+        return new Result.Ok<>(euroCrateConverter.toDto(newEuroCrate.get()));
     }
 
     public List<EuroCrateDto> findAllEuroCrates() {
@@ -55,5 +65,15 @@ public class FindEuroCrateUseCase {
         }
 
         return new Result.Ok<>(euroCrateConverter.toDto(euroCrate.get()));
+    }
+
+    public enum FindEuroCrateError {
+        BadArguments,
+        CrateNotFound,
+    }
+
+    public enum CreateEuroCrateError {
+        BadArguments,
+        EuroCrateWithIdAlreadyExists,
     }
 }

@@ -16,7 +16,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 class CreateEuroCrateUseCaseTest {
     @Autowired
-    private CreateEuroCrateUseCase createEuroCrateUseCase;
+    private EuroCrateUseCase createEuroCrateUseCase;
     @Autowired
     private TestHelper testHelper;
 

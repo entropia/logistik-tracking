@@ -4,17 +4,14 @@ import de.entropia.logistiktracking.domain.location.*;
 import de.entropia.logistiktracking.jpa.LocationDatabaseElement;
 import de.entropia.logistiktracking.openapi.model.LocationDto;
 import de.entropia.logistiktracking.openapi.model.LocationTypeDto;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
+@AllArgsConstructor
 public class LocationConverter {
     private final LogisticsLocationTypeConverter logisticsLocationTypeConverter;
     private final OperationCenterConverter operationCenterConverter;
-
-    public LocationConverter(LogisticsLocationTypeConverter logisticsLocationTypeConverter, OperationCenterConverter operationCenterConverter) {
-        this.logisticsLocationTypeConverter = logisticsLocationTypeConverter;
-        this.operationCenterConverter = operationCenterConverter;
-    }
 
     public LocationDatabaseElement toDatabaseElement(Location location) {
         return switch (location) {

@@ -7,6 +7,7 @@ import de.entropia.logistiktracking.domain.packing_list.PackingList;
 import de.entropia.logistiktracking.jpa.EuroCrateDatabaseElement;
 import de.entropia.logistiktracking.jpa.PackingListDatabaseElement;
 import de.entropia.logistiktracking.jpa.repo.PackingListDatabaseService;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -14,16 +15,11 @@ import java.util.Optional;
 import java.util.stream.StreamSupport;
 
 @Component
+@AllArgsConstructor
 public class PackingListRepository {
     private final PackingListDatabaseService packingListDatabaseService;
     private final PackingListConverter packingListConverter;
     private final EuroCrateConverter euroCrateConverter;
-
-    public PackingListRepository(PackingListDatabaseService packingListDatabaseService, PackingListConverter packingListConverter, EuroCrateConverter euroCrateConverter) {
-        this.packingListDatabaseService = packingListDatabaseService;
-        this.packingListConverter = packingListConverter;
-        this.euroCrateConverter = euroCrateConverter;
-    }
 
     public PackingList createNewPackingList(PackingList packingList) {
         PackingListDatabaseElement databaseElement = packingListConverter.toDatabaseElement(packingList);
@@ -32,7 +28,7 @@ public class PackingListRepository {
     }
 
     public List<PackingList> findAllPackingLists() {
-        return StreamSupport.stream(packingListDatabaseService.findAll().spliterator(), false)
+        return packingListDatabaseService.findAll().stream()
                 .map(packingListConverter::from)
                 .toList();
     }

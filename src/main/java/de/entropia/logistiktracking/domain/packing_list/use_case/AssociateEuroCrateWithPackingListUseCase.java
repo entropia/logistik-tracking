@@ -11,29 +11,23 @@ import de.entropia.logistiktracking.domain.repository.PackingListRepository;
 import de.entropia.logistiktracking.openapi.model.OperationCenterDto;
 import de.entropia.logistiktracking.openapi.model.PackingListDto;
 import de.entropia.logistiktracking.utility.Result;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
 @Component
+@AllArgsConstructor
 public class AssociateEuroCrateWithPackingListUseCase {
     private final PackingListRepository packingListRepository;
     private final EuroCrateRepository euroCrateRepository;
     private final OperationCenterConverter operationCenterConverter;
     private final PackingListConverter packingListConverter;
 
-    public AssociateEuroCrateWithPackingListUseCase(PackingListRepository packingListRepository, EuroCrateRepository euroCrateRepository, OperationCenterConverter operationCenterConverter, PackingListConverter packingListConverter) {
-        this.packingListRepository = packingListRepository;
-        this.euroCrateRepository = euroCrateRepository;
-        this.operationCenterConverter = operationCenterConverter;
-        this.packingListConverter = packingListConverter;
-    }
-
     public Result<PackingListDto, AddEuroCrateToPackingListError> addEuroCrateToPackingList(String humanReadablePackingListId, OperationCenterDto operationCenterDto, String crateName) {
         if (humanReadablePackingListId == null || operationCenterDto == null || crateName == null) {
             return new Result.Error<>(AddEuroCrateToPackingListError.BadArguments);
         }
-
         OperationCenter operationCenter;
         try {
             operationCenter = operationCenterConverter.from(operationCenterDto);
@@ -85,5 +79,18 @@ public class AssociateEuroCrateWithPackingListUseCase {
         }
         packingListRepository.updatePackingList(packingList);
         return new Result.Ok<>(packingListConverter.toDto(packingList));
+    }
+
+    public enum AddEuroCrateToPackingListError {
+        BadArguments,
+        CrateNotFound,
+        PackingListNotFound,
+        CrateIsAlreadyAssociated
+    }
+
+    public enum RemoveEuroCrateFromPackingListError {
+        BadArguments,
+        PackingListNotFound,
+        CrateNotFound
     }
 }

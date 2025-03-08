@@ -3,22 +3,17 @@ package de.entropia.logistiktracking.domain.converter;
 import de.entropia.logistiktracking.domain.euro_crate.EuroCrate;
 import de.entropia.logistiktracking.jpa.EuroCrateDatabaseElement;
 import de.entropia.logistiktracking.openapi.model.EuroCrateDto;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 
 @Component
+@AllArgsConstructor
 public class EuroCrateConverter {
     private final OperationCenterConverter operationCenterConverter;
     private final LocationConverter locationConverter;
     private final DeliveryStateConverter deliveryStateConverter;
-
-    @Autowired
-    public EuroCrateConverter(OperationCenterConverter operationCenterConverter, LocationConverter locationConverter, DeliveryStateConverter deliveryStateConverter) {
-        this.operationCenterConverter = operationCenterConverter;
-        this.locationConverter = locationConverter;
-        this.deliveryStateConverter = deliveryStateConverter;
-    }
 
     public EuroCrateDto toDto(EuroCrate euroCrate) {
         return new EuroCrateDto()

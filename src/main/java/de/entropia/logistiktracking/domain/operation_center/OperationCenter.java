@@ -1,42 +1,51 @@
 package de.entropia.logistiktracking.domain.operation_center;
 
+import de.entropia.logistiktracking.openapi.model.OperationCenterDto;
+import lombok.Getter;
+import lombok.NonNull;
+
+import static de.entropia.logistiktracking.openapi.model.OperationCenterDto.*;
+
+@Getter
 public enum OperationCenter {
-    Finanzen("Finanzen"),
-    Backoffice("Backoffice"),
-    Content("Content"),
-    Heralding("Heralding"),
-    DesignUndMotto("DesignUndMotto"),
-    PresseUndSocialMedia("PresseUndSocialMedia"),
-    LoungeControl("LoungeControl"),
-    LoungeTechnik("LoungeTechnik"),
-    Infodesk("Infodesk"),
-    Merchdesk("Merchdesk"),
-    Schilder("Schilder"),
-    Badges("Badges"),
-    Trolle("Trolle"),
-    Kueche("Kueche"),
-    WOC("WOC"),
-    Fruehstueck("Fruehstueck"),
-    RaumDer1000Namen("RaumDer1000Namen"),
-    Bar("Bar"),
-    Spaeti("Spaeti"),
-    Aussenbar("Aussenbar"),
-    Kaffeebar("Kaffeebar"),
-    Cocktailbar("Cocktailbar"),
-    NOC("NOC"),
-    POC("POC"),
-    VOC("VOC"),
-    BuildupAndTeardown("BuildupAndTeardown"),
-    Infrastruktur("Infrastruktur"),
-    Deko("Deko"),
-    SafeR("SafeR"),
-    SilentHacking("SilentHacking"),
-    Projektleitung("Projektleitung");
+    Finanzen("Finanzen", FINANZEN),
+    Backoffice("Backoffice", BACKOFFICE),
+    Content("Content", CONTENT),
+    Heralding("Heralding", HERALDING),
+    DesignUndMotto("DesignUndMotto", DESIGN_UND_MOTTO),
+    PresseUndSocialMedia("PresseUndSocialMedia", PRESSE_UND_SOCIAL_MEDIA),
+    LoungeControl("LoungeControl", LOUNGE_CONTROL),
+    LoungeTechnik("LoungeTechnik", LOUNGE_TECHNIK),
+    Infodesk("Infodesk", INFODESK),
+    Merchdesk("Merchdesk", MERCHDESK),
+    Schilder("Schilder", SCHILDER),
+    Badges("Badges", BADGES),
+    Trolle("Trolle", TROLLE),
+    Kueche("Kueche", KUECHE),
+    WOC("WOC", OperationCenterDto.WOC),
+    Fruehstueck("Fruehstueck", FRUEHSTUECK),
+    RaumDer1000Namen("RaumDer1000Namen", RAUM_DER1000_NAMEN),
+    Bar("Bar", BAR),
+    Spaeti("Spaeti", SPAETI),
+    Aussenbar("Aussenbar", AUSSENBAR),
+    Kaffeebar("Kaffeebar", KAFFEEBAR),
+    Cocktailbar("Cocktailbar", COCKTAILBAR),
+    NOC("NOC", OperationCenterDto.NOC),
+    POC("POC", OperationCenterDto.POC),
+    VOC("VOC", OperationCenterDto.VOC),
+    BuildupAndTeardown("BuildupAndTeardown", BUILDUP_AND_TEARDOWN),
+    Infrastruktur("Infrastruktur", INFRASTRUKTUR),
+    Deko("Deko", DEKO),
+    SafeR("SafeR", SAFE_R),
+    SilentHacking("SilentHacking", SILENT_HACKING),
+    Projektleitung("Projektleitung", PROJEKTLEITUNG);
 
     private final String name;
+    private final OperationCenterDto dtoEquiv;
 
-    OperationCenter(String name) {
+    OperationCenter(@NonNull String name, @NonNull OperationCenterDto dtoEquiv) {
         this.name = name;
+        this.dtoEquiv = dtoEquiv;
     }
 
     @Override
