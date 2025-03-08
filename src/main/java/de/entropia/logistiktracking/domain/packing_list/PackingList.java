@@ -8,8 +8,10 @@ import lombok.Getter;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 public class PackingList {
+    @Getter
     private final long packingListId;
     @Getter
     private final String name;
@@ -29,6 +31,19 @@ public class PackingList {
         this.deliveryState = deliveryState;
         this.packedOn = packedOn;
         this.packedCrates = packedCrates;
+    }
+
+    public static Optional<Long> extractIdFromHumanReadableIdentifier(String identifier) {
+        String[] tokens = identifier.trim().split("-");
+        if (tokens.length != 2) {
+            return Optional.empty();
+        }
+
+        try {
+            return Optional.of(Long.parseLong(tokens[0]));
+        } catch (NumberFormatException e) {
+            return Optional.empty();
+        }
     }
 
     public String getHumanReadableIdentifier() {

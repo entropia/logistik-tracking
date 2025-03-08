@@ -34,17 +34,17 @@ public class FindPackingListUseCase {
                 .toList();
     }
 
-    public Result<PackingListDto, FindPackingListError> findPackingList(String packingListId, Optional<OperationCenterDto> operationCenterDto) {
-        if (packingListId == null) {
+    public Result<PackingListDto, FindPackingListError> findPackingList(String humanReadablePackingListId, Optional<OperationCenterDto> operationCenterDto) {
+        if (humanReadablePackingListId == null) {
             return new Result.Error<>(FindPackingListError.BadArguments);
         }
 
-        long id;
-        try {
-            id = Long.parseLong(packingListId);
-        } catch (NumberFormatException e) {
+        Optional<Long> idOpt = PackingList.extractIdFromHumanReadableIdentifier(humanReadablePackingListId);
+        if (idOpt.isEmpty()) {
             return new Result.Error<>(FindPackingListError.BadArguments);
         }
+
+        long id = idOpt.get();
 
         Optional<OperationCenter> operationCenter;
         try {

@@ -50,8 +50,8 @@ public class PackingListRoute implements PackingListApi {
     }
 
     @Override
-    public ResponseEntity<PackingListDto> getPackingList(String packingListId, Optional<OperationCenterDto> oc) {
-        Result<PackingListDto, FindPackingListError> result = findPackingListUseCase.findPackingList(packingListId, oc);
+    public ResponseEntity<PackingListDto> getPackingList(String humanReadablePackingListId, Optional<OperationCenterDto> operationCenterDto) {
+        Result<PackingListDto, FindPackingListError> result = findPackingListUseCase.findPackingList(humanReadablePackingListId, operationCenterDto);
         return switch (result) {
             case Result.Ok<PackingListDto, FindPackingListError> ok -> ResponseEntity.ok(ok.result());
             case Result.Error<PackingListDto, FindPackingListError> error -> switch (error.error()) {

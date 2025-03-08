@@ -8,6 +8,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Setter
@@ -29,4 +31,8 @@ public class PackingListDatabaseElement {
     @OneToOne(optional = false, fetch = FetchType.EAGER)
     @JoinColumn(name = "packed_on", nullable = false)
     private EuroPalletDatabaseElement packedOn;
+
+    @OneToMany(fetch = FetchType.EAGER)
+    @JoinColumn(name = "packed_crates", nullable = false)
+    private List<EuroCrateDatabaseElement> packedCrates;
 }

@@ -1,9 +1,11 @@
 package de.entropia.logistiktracking.domain.packing_list;
 
 import de.entropia.logistiktracking.domain.delivery_state.DeliveryState;
+import de.entropia.logistiktracking.domain.euro_crate.EuroCrate;
 import de.entropia.logistiktracking.domain.euro_pallet.EuroPallet;
 
 import java.util.Collections;
+import java.util.List;
 
 
 public class PackingListBuilder {
@@ -11,6 +13,7 @@ public class PackingListBuilder {
     private String name;
     private DeliveryState deliveryState;
     private EuroPallet packedOn;
+    private List<EuroCrate> packedCrates;
 
     PackingListBuilder() {
         this.packingListId = 0;
@@ -39,6 +42,11 @@ public class PackingListBuilder {
         return this;
     }
 
+    public PackingListBuilder packedCrates(List<EuroCrate> packedCrates) {
+        this.packedCrates = packedCrates;
+        return this;
+    }
+
     public PackingList build() throws IllegalArgumentException {
         if (packingListId < 0) {
             throw new IllegalArgumentException("Packing list id cannot be negative");
@@ -52,6 +60,6 @@ public class PackingListBuilder {
         if (packedOn == null) {
             throw new IllegalArgumentException("packedOn has to be set");
         }
-        return new PackingList(packingListId, name, deliveryState, packedOn, Collections.emptyList());
+        return new PackingList(packingListId, name, deliveryState, packedOn, packedCrates == null ? Collections.emptyList() : packedCrates);
     }
 }

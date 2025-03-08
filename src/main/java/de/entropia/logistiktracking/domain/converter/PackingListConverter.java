@@ -27,7 +27,13 @@ public class PackingListConverter {
 
     public PackingListDatabaseElement toDatabaseElement(PackingList packingList) {
         EuroPalletDatabaseElement euroPallet = euroPalletConverter.toDatabaseElement(packingList.getPackedOn());
-        return new PackingListDatabaseElement(0, packingList.getName(), packingList.getDeliveryState(), euroPallet);
+        return new PackingListDatabaseElement(
+                packingList.getPackingListId(),
+                packingList.getName(),
+                packingList.getDeliveryState(),
+                euroPallet,
+                packingList.getPackedCrates().stream().map(euroCrateConverter::toDatabaseElement).collect(Collectors.toList())
+        );
     }
 
     public PackingList from(PackingListDatabaseElement databaseElement) {
@@ -38,6 +44,7 @@ public class PackingListConverter {
                 .name(databaseElement.getName())
                 .deliveryState(databaseElement.getDeliveryState())
                 .packedOn(packedOn)
+                .packedCrates(databaseElement.getPackedCrates().stream().map(euroCrateConverter::from).collect(Collectors.toList()))
                 .build();
     }
 
