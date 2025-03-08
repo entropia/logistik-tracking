@@ -1,4 +1,4 @@
-package de.entropia.logistiktracking.domain.use_case;
+package de.entropia.logistiktracking.domain.packing_list.use_case;
 
 
 import de.entropia.logistiktracking.domain.converter.PackingListConverter;

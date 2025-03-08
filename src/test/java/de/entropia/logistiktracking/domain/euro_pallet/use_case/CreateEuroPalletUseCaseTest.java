@@ -1,11 +1,13 @@
-package de.entropia.logistiktracking.domain.use_case;
+package de.entropia.logistiktracking.domain.euro_pallet.use_case;
 
+import de.entropia.logistiktracking.TestHelper;
 import de.entropia.logistiktracking.jpa.repo.EuroPalletDatabaseService;
 import de.entropia.logistiktracking.openapi.model.EuroPalletDto;
 import de.entropia.logistiktracking.openapi.model.LocationDto;
 import de.entropia.logistiktracking.openapi.model.LocationTypeDto;
 import de.entropia.logistiktracking.openapi.model.NewEuroPalletDto;
 import de.entropia.logistiktracking.utility.Result;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -23,6 +25,13 @@ class CreateEuroPalletUseCaseTest {
     private CreateEuroPalletUseCase createEuroPalletUseCase;
     @Autowired
     private EuroPalletDatabaseService euroPalletDatabaseService;
+    @Autowired
+    private TestHelper testHelper;
+
+    @AfterEach
+    void tearDown() {
+        testHelper.cleanDatabase();
+    }
 
     @Test
     public void canCreateEuroPallet() {

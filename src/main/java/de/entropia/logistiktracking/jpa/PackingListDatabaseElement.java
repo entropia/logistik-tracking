@@ -33,6 +33,6 @@ public class PackingListDatabaseElement {
     private EuroPalletDatabaseElement packedOn;
 
     @OneToMany(fetch = FetchType.EAGER)
-    @JoinColumn(name = "packed_crates", nullable = false)
+    @JoinColumn(name = "packed_crates")
     private List<EuroCrateDatabaseElement> packedCrates;
 }

@@ -1,8 +1,10 @@
 package de.entropia.logistiktracking.web;
 
-import de.entropia.logistiktracking.domain.use_case.CreateEuroPalletUseCase;
+import de.entropia.logistiktracking.TestHelper;
+import de.entropia.logistiktracking.domain.euro_pallet.use_case.CreateEuroPalletUseCase;
 import de.entropia.logistiktracking.openapi.model.*;
 import de.entropia.logistiktracking.utility.Result;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -19,6 +21,13 @@ class PackingListRouteTest {
     private PackingListRoute route;
     @Autowired
     private CreateEuroPalletUseCase createEuroPalletUseCase;
+    @Autowired
+    private TestHelper testHelper;
+
+    @AfterEach
+    void tearDown() {
+        testHelper.cleanDatabase();
+    }
 
     @Test
     @WithMockUser(roles = {"admin"})
@@ -29,7 +38,7 @@ class PackingListRouteTest {
 
         ResponseEntity<PackingListDto> response = route.createPackingList(new NewPackingListDto().name("finanzen").packedOnPallet(euroPalletId));
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertThat(response.getBody()).isNotNull();
 
         PackingListDto packingListDto = response.getBody();

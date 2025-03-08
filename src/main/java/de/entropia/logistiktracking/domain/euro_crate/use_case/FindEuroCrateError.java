@@ -1,4 +1,4 @@
-package de.entropia.logistiktracking.domain.use_case;
+package de.entropia.logistiktracking.domain.euro_crate.use_case;
 
 public enum FindEuroCrateError {
     BadArguments,

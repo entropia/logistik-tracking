@@ -1,9 +1,9 @@
 package de.entropia.logistiktracking.web;
 
-import de.entropia.logistiktracking.domain.use_case.CreateEuroCrateError;
-import de.entropia.logistiktracking.domain.use_case.CreateEuroCrateUseCase;
-import de.entropia.logistiktracking.domain.use_case.FindEuroCrateError;
-import de.entropia.logistiktracking.domain.use_case.FindEuroCrateUseCase;
+import de.entropia.logistiktracking.domain.euro_crate.use_case.CreateEuroCrateError;
+import de.entropia.logistiktracking.domain.euro_crate.use_case.CreateEuroCrateUseCase;
+import de.entropia.logistiktracking.domain.euro_crate.use_case.FindEuroCrateError;
+import de.entropia.logistiktracking.domain.euro_crate.use_case.FindEuroCrateUseCase;
 import de.entropia.logistiktracking.openapi.api.EuroCrateApi;
 import de.entropia.logistiktracking.openapi.model.EuroCrateDto;
 import de.entropia.logistiktracking.openapi.model.OperationCenterDto;
@@ -31,7 +31,7 @@ public class EuroCrateRoute implements EuroCrateApi {
         Result<EuroCrateDto, CreateEuroCrateError> result = createEuroCrateUseCase.createEuroCrate(euroCrateDto);
 
         return switch (result) {
-            case Result.Ok<EuroCrateDto, CreateEuroCrateError> ok -> ResponseEntity.ok(ok.result());
+            case Result.Ok<EuroCrateDto, CreateEuroCrateError> ok -> new ResponseEntity<>(ok.result(), HttpStatus.CREATED);
             case Result.Error<EuroCrateDto, CreateEuroCrateError> error -> switch (error.error()) {
                 case BadArguments -> ResponseEntity.badRequest().build();
                 case EuroCrateWithIdAlreadyExists -> ResponseEntity.status(HttpStatus.CONFLICT).build();
