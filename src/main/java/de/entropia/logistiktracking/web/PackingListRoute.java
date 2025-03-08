@@ -1,9 +1,6 @@
 package de.entropia.logistiktracking.web;
 
-import de.entropia.logistiktracking.domain.packing_list.use_case.CreateNewPackingListError;
-import de.entropia.logistiktracking.domain.packing_list.use_case.CreatePackingListUseCase;
-import de.entropia.logistiktracking.domain.packing_list.use_case.FindPackingListError;
-import de.entropia.logistiktracking.domain.packing_list.use_case.FindPackingListUseCase;
+import de.entropia.logistiktracking.domain.packing_list.use_case.*;
 import de.entropia.logistiktracking.openapi.api.PackingListApi;
 import de.entropia.logistiktracking.openapi.model.BasicPackingListDto;
 import de.entropia.logistiktracking.openapi.model.NewPackingListDto;
@@ -23,10 +20,12 @@ import java.util.Optional;
 public class PackingListRoute implements PackingListApi {
     private final CreatePackingListUseCase createPackingListUseCase;
     private final FindPackingListUseCase findPackingListUseCase;
+    private final AssociateEuroCrateWithPackingListUseCase associateEuroCrateWithPackingListUseCase;
 
-    public PackingListRoute(CreatePackingListUseCase createPackingListUseCase, FindPackingListUseCase findPackingListUseCase) {
+    public PackingListRoute(CreatePackingListUseCase createPackingListUseCase, FindPackingListUseCase findPackingListUseCase, AssociateEuroCrateWithPackingListUseCase associateEuroCrateWithPackingListUseCase) {
         this.createPackingListUseCase = createPackingListUseCase;
         this.findPackingListUseCase = findPackingListUseCase;
+        this.associateEuroCrateWithPackingListUseCase = associateEuroCrateWithPackingListUseCase;
     }
 
     @Override
@@ -57,6 +56,33 @@ public class PackingListRoute implements PackingListApi {
             case Result.Error<PackingListDto, FindPackingListError> error -> switch (error.error()) {
                 case BadArguments -> ResponseEntity.badRequest().build();
                 case PackingListNotFound -> ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            };
+        };
+    }
+
+    @Override
+    @PreAuthorize("hasRole('admin')")
+    public ResponseEntity<PackingListDto> addEuroCrateToPackingList(String packingListId, OperationCenterDto operationCenterDto, String crateName) {
+        Result<PackingListDto, AddEuroCrateToPackingListError> result = associateEuroCrateWithPackingListUseCase.addEuroCrateToPackingList(packingListId, operationCenterDto, crateName);
+        return switch (result) {
+            case Result.Ok<PackingListDto, AddEuroCrateToPackingListError> ok -> ResponseEntity.ok(ok.result());
+            case Result.Error<PackingListDto, AddEuroCrateToPackingListError> error -> switch (error.error()) {
+                case BadArguments -> ResponseEntity.badRequest().build();
+                case CrateNotFound, PackingListNotFound ->  ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+                case CrateIsAlreadyAssociated -> ResponseEntity.status(HttpStatus.CONFLICT).build();
+            };
+        };
+    }
+
+    @Override
+    @PreAuthorize("hasRole('admin')")
+    public ResponseEntity<PackingListDto> removeEuroCrateFromPackingList(String packingListId, OperationCenterDto operationCenterDto, String crateName) {
+        Result<PackingListDto, RemoveEuroCrateFromPackingListError> result = associateEuroCrateWithPackingListUseCase.removeEuroCrateFromPackingList(packingListId, operationCenterDto, crateName);
+        return switch (result) {
+            case Result.Ok<PackingListDto, RemoveEuroCrateFromPackingListError> ok -> ResponseEntity.ok(ok.result());
+            case Result.Error<PackingListDto, RemoveEuroCrateFromPackingListError> error -> switch (error.error()) {
+                case BadArguments -> ResponseEntity.badRequest().build();
+                case CrateNotFound, PackingListNotFound -> ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             };
         };
     }

@@ -39,13 +39,6 @@ public class FindPackingListUseCase {
             return new Result.Error<>(FindPackingListError.BadArguments);
         }
 
-        Optional<Long> idOpt = PackingList.extractIdFromHumanReadableIdentifier(humanReadablePackingListId);
-        if (idOpt.isEmpty()) {
-            return new Result.Error<>(FindPackingListError.BadArguments);
-        }
-
-        long id = idOpt.get();
-
         Optional<OperationCenter> operationCenter;
         try {
             operationCenter = operationCenterDto.map(operationCenterConverter::from);
@@ -53,7 +46,7 @@ public class FindPackingListUseCase {
             return new Result.Error<>(FindPackingListError.BadArguments);
         }
 
-        Optional<PackingList> packingListOpt = packingListRepository.findPackingList(id);
+        Optional<PackingList> packingListOpt = packingListRepository.findPackingList(humanReadablePackingListId);
 
         if (packingListOpt.isEmpty()) {
             return new Result.Error<>(FindPackingListError.PackingListNotFound);
@@ -67,4 +60,5 @@ public class FindPackingListUseCase {
 
         return new Result.Ok<>(packingListConverter.toDto(packingList));
     }
+
 }

@@ -1,8 +1,10 @@
 package de.entropia.logistiktracking.domain.packing_list.use_case;
 
+import de.entropia.logistiktracking.TestHelper;
 import de.entropia.logistiktracking.domain.euro_pallet.use_case.CreateEuroPalletUseCase;
 import de.entropia.logistiktracking.openapi.model.*;
 import de.entropia.logistiktracking.utility.Result;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,6 +20,13 @@ class CreatePackingListUseCaseTest {
     private CreatePackingListUseCase createPackingListUseCase;
     @Autowired
     private CreateEuroPalletUseCase createEuroPalletUseCase;
+    @Autowired
+    private TestHelper testHelper;
+
+    @AfterEach
+    void tearDown() {
+        testHelper.cleanDatabase();
+    }
 
     @Test
     public void failsToCreatePackingListWithBadEuroPalletId() {

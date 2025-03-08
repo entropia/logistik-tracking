@@ -19,7 +19,7 @@ public class PackingList {
     private final DeliveryState deliveryState;
     @Getter
     private final EuroPallet packedOn;
-    private final List<EuroCrate> packedCrates;
+    private List<EuroCrate> packedCrates;
 
     public static PackingListBuilder builder() {
         return new PackingListBuilder();
@@ -64,5 +64,24 @@ public class PackingList {
                         .stream()
                         .filter(euroCrate -> euroCrate.getOperationCenter().equals(operationCenter))
                         .toList());
+    }
+
+    public void packCrate(EuroCrate euroCrate) {
+        euroCrate.setDeliveryState(deliveryState);
+        this.packedCrates.add(euroCrate);
+    }
+
+    /**
+     * @param operationCenter operation center identifying the crate
+     * @param crateName name identifying the crate
+     * @return true if the crate was found and deleted and false otherwise
+     */
+    public boolean removePackedCrate(OperationCenter operationCenter, String crateName) {
+        int lengthBeforeDelete = packedCrates.size();
+        packedCrates = packedCrates
+                .stream()
+                .filter(crate -> crate.matches(operationCenter, crateName))
+                .toList();
+        return lengthBeforeDelete > packedCrates.size();
     }
 }

@@ -1,6 +1,8 @@
 package de.entropia.logistiktracking.web;
 
+import de.entropia.logistiktracking.TestHelper;
 import de.entropia.logistiktracking.openapi.model.*;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -17,6 +19,13 @@ import static org.junit.jupiter.api.Assertions.*;
 class EuroPalletRouteTest {
     @Autowired
     private EuroPalletRoute euroPalletRoute;
+    @Autowired
+    private TestHelper testHelper;
+
+    @AfterEach
+    void tearDown() {
+        testHelper.cleanDatabase();
+    }
 
     @WithMockUser(roles = {"admin"})
     @Test
@@ -30,7 +39,7 @@ class EuroPalletRouteTest {
                 .location(locationDto)
                 .information(information));
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertNotNull(response.getBody());
         EuroPalletDto euroPalletDto = response.getBody();
 
