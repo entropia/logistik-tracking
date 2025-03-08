@@ -1,10 +1,8 @@
 package de.entropia.logistiktracking.web;
 
 import de.entropia.logistiktracking.domain.use_case.CreateEuroPalletUseCase;
-import de.entropia.logistiktracking.jpa.repo.EuroPalletDatabaseService;
 import de.entropia.logistiktracking.openapi.model.*;
 import de.entropia.logistiktracking.utility.Result;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,13 +19,6 @@ class PackingListRouteTest {
     private PackingListRoute route;
     @Autowired
     private CreateEuroPalletUseCase createEuroPalletUseCase;
-    @Autowired
-    private EuroPalletDatabaseService euroPalletDatabaseService;
-
-    @BeforeEach
-    void setUp() {
-        euroPalletDatabaseService.deleteAll();
-    }
 
     @Test
     @WithMockUser(roles = {"admin"})

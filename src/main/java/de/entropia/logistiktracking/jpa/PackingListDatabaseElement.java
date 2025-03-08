@@ -13,15 +13,13 @@ import lombok.Setter;
 @Setter
 @Getter
 @Entity
-@IdClass(PackingListDatabaseElement.PackingListDatabaseElementId.class)
 @Table(name = "packing_list")
 public class PackingListDatabaseElement {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "packing_list_id", nullable = false)
     private long packingListId;
 
-    @Id
     @Column(name = "name", nullable = false)
     private String name;
 
@@ -31,16 +29,4 @@ public class PackingListDatabaseElement {
     @OneToOne(optional = false, fetch = FetchType.EAGER)
     @JoinColumn(name = "packed_on", nullable = false)
     private EuroPalletDatabaseElement packedOn;
-
-    @Setter
-    public static class PackingListDatabaseElementId {
-        private long packingListId;
-        private String name;
-
-        public PackingListDatabaseElementId() {
-            this.packingListId = 0;
-            this.name = "";
-        }
-    }
-
 }

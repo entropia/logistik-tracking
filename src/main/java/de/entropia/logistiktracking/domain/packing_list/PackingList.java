@@ -3,6 +3,7 @@ package de.entropia.logistiktracking.domain.packing_list;
 import de.entropia.logistiktracking.domain.delivery_state.DeliveryState;
 import de.entropia.logistiktracking.domain.euro_crate.EuroCrate;
 import de.entropia.logistiktracking.domain.euro_pallet.EuroPallet;
+import de.entropia.logistiktracking.domain.operation_center.OperationCenter;
 import lombok.Getter;
 
 import java.util.Collections;
@@ -36,5 +37,17 @@ public class PackingList {
 
     public List<EuroCrate> getPackedCrates() {
         return Collections.unmodifiableList(this.packedCrates);
+    }
+
+    public PackingList filterCratesBy(OperationCenter operationCenter) {
+        return new PackingList(
+                packingListId,
+                name,
+                deliveryState,
+                packedOn,
+                packedCrates
+                        .stream()
+                        .filter(euroCrate -> euroCrate.getOperationCenter().equals(operationCenter))
+                        .toList());
     }
 }

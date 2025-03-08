@@ -5,6 +5,7 @@ import de.entropia.logistiktracking.domain.euro_pallet.EuroPallet;
 import de.entropia.logistiktracking.domain.packing_list.PackingList;
 import de.entropia.logistiktracking.jpa.EuroPalletDatabaseElement;
 import de.entropia.logistiktracking.jpa.PackingListDatabaseElement;
+import de.entropia.logistiktracking.openapi.model.BasicPackingListDto;
 import de.entropia.logistiktracking.openapi.model.PackingListDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -50,5 +51,12 @@ public class PackingListConverter {
                         .stream()
                         .map(euroCrateConverter::toDto)
                         .collect(Collectors.toList()));
+    }
+
+    public BasicPackingListDto toBasicDto(PackingList packingList) {
+        return new BasicPackingListDto()
+                .packingListId(packingList.getHumanReadableIdentifier())
+                .packedOn(euroPalletConverter.toDto(packingList.getPackedOn()))
+                .deliveryState(deliveryStateConverter.toDto(packingList.getDeliveryState()));
     }
 }

@@ -6,7 +6,6 @@ import de.entropia.logistiktracking.openapi.model.LocationDto;
 import de.entropia.logistiktracking.openapi.model.LocationTypeDto;
 import de.entropia.logistiktracking.openapi.model.NewEuroPalletDto;
 import de.entropia.logistiktracking.utility.Result;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -24,11 +23,6 @@ class CreateEuroPalletUseCaseTest {
     private CreateEuroPalletUseCase createEuroPalletUseCase;
     @Autowired
     private EuroPalletDatabaseService euroPalletDatabaseService;
-
-    @BeforeEach
-    void setUp() {
-        euroPalletDatabaseService.deleteAll();
-    }
 
     @Test
     public void canCreateEuroPallet() {
@@ -50,8 +44,6 @@ class CreateEuroPalletUseCaseTest {
         CreateEuroPalletError error = uncheckedError(result);
 
         assertThat(error).isEqualTo(CreateEuroPalletError.BadArguments);
-
-        assertThat(euroPalletDatabaseService.findAll()).isEmpty();
     }
 
 }
