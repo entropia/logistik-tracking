@@ -31,7 +31,7 @@ public class EuroCrateRoute implements EuroCrateApi {
         Result<EuroCrateDto, CreateEuroCrateError> result = createEuroCrateUseCase.createEuroCrate(euroCrateDto);
 
         return switch (result) {
-            case Result.Ok<EuroCrateDto, CreateEuroCrateError> ok -> ResponseEntity.ok(ok.result());
+            case Result.Ok<EuroCrateDto, CreateEuroCrateError> ok -> new ResponseEntity<>(ok.result(), HttpStatus.CREATED);
             case Result.Error<EuroCrateDto, CreateEuroCrateError> error -> switch (error.error()) {
                 case BadArguments -> ResponseEntity.badRequest().build();
                 case EuroCrateWithIdAlreadyExists -> ResponseEntity.status(HttpStatus.CONFLICT).build();

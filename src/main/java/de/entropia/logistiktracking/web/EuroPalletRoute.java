@@ -9,6 +9,7 @@ import de.entropia.logistiktracking.openapi.model.EuroPalletDto;
 import de.entropia.logistiktracking.openapi.model.NewEuroPalletDto;
 import de.entropia.logistiktracking.utility.Result;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -32,7 +33,7 @@ public class EuroPalletRoute implements EuroPalletApi {
         Result<EuroPalletDto, CreateEuroPalletError> result = createEuroPalletUseCase.createEuroPallet(newEuroPalletDto);
 
         return switch (result) {
-            case Result.Ok<EuroPalletDto, CreateEuroPalletError> ok -> ResponseEntity.ok((ok.result()));
+            case Result.Ok<EuroPalletDto, CreateEuroPalletError> ok -> new ResponseEntity<>(ok.result(), HttpStatus.CREATED);
             case Result.Error<EuroPalletDto, CreateEuroPalletError> error -> switch (error.error()) {
                 case BadArguments -> ResponseEntity.badRequest().build();
             };

@@ -35,7 +35,7 @@ public class PackingListRoute implements PackingListApi {
         Result<PackingListDto, CreateNewPackingListError> result = createPackingListUseCase.createNewPackingListUseCase(newPackingListDto);
 
         return switch (result) {
-            case Result.Ok<PackingListDto, CreateNewPackingListError> ok -> ResponseEntity.ok(ok.result());
+            case Result.Ok<PackingListDto, CreateNewPackingListError> ok -> new ResponseEntity<>(ok.result(), HttpStatus.CREATED);
             case Result.Error<PackingListDto, CreateNewPackingListError> error -> switch (error.error()) {
                 case TargetPalletNotFound -> ResponseEntity.status(HttpStatus.NOT_FOUND).build();
                 case BadArguments -> ResponseEntity.badRequest().build();

@@ -31,7 +31,7 @@ paths:
             schema:
               $ref: '#/components/schemas/EuroCrateDto'
       responses:
-        "200":
+        "201":
           description: "Successfully created a new euro crate."
           content:
             application/json:
@@ -233,7 +233,7 @@ paths:
             schema:
               $ref: '#/components/schemas/NewEuroPalletDto'
       responses:
-        "200":
+        "201":
           description: "Successfully created a new euro pallet."
           content:
             application/json:
@@ -342,7 +342,7 @@ paths:
             schema:
               $ref: "#/components/schemas/NewPackingListDto"
       responses:
-        "200":
+        "201":
           description: "Successfully created a new packing list."
           content:
             application/json:
