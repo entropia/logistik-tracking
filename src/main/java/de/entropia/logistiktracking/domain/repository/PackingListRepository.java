@@ -6,6 +6,10 @@ import de.entropia.logistiktracking.jpa.PackingListDatabaseElement;
 import de.entropia.logistiktracking.jpa.repo.PackingListDatabaseService;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.StreamSupport;
+
 @Component
 public class PackingListRepository {
     private final PackingListDatabaseService packingListDatabaseService;
@@ -20,5 +24,16 @@ public class PackingListRepository {
         PackingListDatabaseElement databaseElement = packingListConverter.toDatabaseElement(packingList);
         databaseElement = packingListDatabaseService.save(databaseElement);
         return packingListConverter.from(databaseElement);
+    }
+
+    public List<PackingList> findAllPackingLists() {
+        return StreamSupport.stream(packingListDatabaseService.findAll().spliterator(), false)
+                .map(packingListConverter::from)
+                .toList();
+    }
+
+    public Optional<PackingList> findPackingList(long packingListId) {
+        return packingListDatabaseService.findById(packingListId)
+                .map(packingListConverter::from);
     }
 }

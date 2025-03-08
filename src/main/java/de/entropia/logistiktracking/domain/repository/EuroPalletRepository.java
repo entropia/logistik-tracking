@@ -8,7 +8,9 @@ import de.entropia.logistiktracking.jpa.repo.EuroPalletDatabaseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.StreamSupport;
 
 
 @Component
@@ -32,6 +34,12 @@ public class EuroPalletRepository {
         newEuroPallet = euroPalletConverter.from(euroPalletDatabaseElement);
 
         return newEuroPallet;
+    }
+
+    public List<EuroPallet> findAllEuroPallets() {
+        return StreamSupport.stream(euroPalletDatabaseService.findAll().spliterator(), false)
+                .map(euroPalletConverter::from)
+                .toList();
     }
 
     public Optional<EuroPallet> findEuroPallet(long palletId) {

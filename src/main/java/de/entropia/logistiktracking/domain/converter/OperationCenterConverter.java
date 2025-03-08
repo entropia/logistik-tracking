@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class OperationCenterConverter {
-    OperationCenter from(OperationCenterDto dto) {
+    public OperationCenter from(OperationCenterDto dto) {
         if (dto == null) {
             throw new IllegalArgumentException("Operation center cannot be null");
         }

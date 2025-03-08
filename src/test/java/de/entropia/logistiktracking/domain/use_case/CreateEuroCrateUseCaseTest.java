@@ -1,9 +1,7 @@
 package de.entropia.logistiktracking.domain.use_case;
 
-import de.entropia.logistiktracking.jpa.repo.EuroCrateDatabaseService;
 import de.entropia.logistiktracking.openapi.model.*;
 import de.entropia.logistiktracking.utility.Result;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -17,13 +15,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 class CreateEuroCrateUseCaseTest {
     @Autowired
     private CreateEuroCrateUseCase createEuroCrateUseCase;
-    @Autowired
-    private EuroCrateDatabaseService euroCrateDatabaseService;
-
-    @BeforeEach
-    void setUp() {
-        euroCrateDatabaseService.deleteAll();
-    }
 
     @Test
     public void canCreateEuroCrate() {

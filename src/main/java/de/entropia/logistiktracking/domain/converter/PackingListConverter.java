@@ -5,6 +5,7 @@ import de.entropia.logistiktracking.domain.euro_pallet.EuroPallet;
 import de.entropia.logistiktracking.domain.packing_list.PackingList;
 import de.entropia.logistiktracking.jpa.EuroPalletDatabaseElement;
 import de.entropia.logistiktracking.jpa.PackingListDatabaseElement;
+import de.entropia.logistiktracking.openapi.model.BasicPackingListDto;
 import de.entropia.logistiktracking.openapi.model.PackingListDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -26,7 +27,13 @@ public class PackingListConverter {
 
     public PackingListDatabaseElement toDatabaseElement(PackingList packingList) {
         EuroPalletDatabaseElement euroPallet = euroPalletConverter.toDatabaseElement(packingList.getPackedOn());
-        return new PackingListDatabaseElement(0, packingList.getName(), packingList.getDeliveryState(), euroPallet);
+        return new PackingListDatabaseElement(
+                packingList.getPackingListId(),
+                packingList.getName(),
+                packingList.getDeliveryState(),
+                euroPallet,
+                packingList.getPackedCrates().stream().map(euroCrateConverter::toDatabaseElement).collect(Collectors.toList())
+        );
     }
 
     public PackingList from(PackingListDatabaseElement databaseElement) {
@@ -37,6 +44,7 @@ public class PackingListConverter {
                 .name(databaseElement.getName())
                 .deliveryState(databaseElement.getDeliveryState())
                 .packedOn(packedOn)
+                .packedCrates(databaseElement.getPackedCrates().stream().map(euroCrateConverter::from).collect(Collectors.toList()))
                 .build();
     }
 
@@ -50,5 +58,12 @@ public class PackingListConverter {
                         .stream()
                         .map(euroCrateConverter::toDto)
                         .collect(Collectors.toList()));
+    }
+
+    public BasicPackingListDto toBasicDto(PackingList packingList) {
+        return new BasicPackingListDto()
+                .packingListId(packingList.getHumanReadableIdentifier())
+                .packedOn(euroPalletConverter.toDto(packingList.getPackedOn()))
+                .deliveryState(deliveryStateConverter.toDto(packingList.getDeliveryState()));
     }
 }
