@@ -601,7 +601,9 @@ components:
       type: object
       properties:
         packingListId:
+          description: "ID consists of name and a unique numeric value."
           type: string
+          example: "aName-123"
         packedOn:
           $ref: "#/components/schemas/EuroPalletDto"
         deliveryState:
