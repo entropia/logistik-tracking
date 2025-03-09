@@ -167,7 +167,7 @@ paths:
         content:
           application/json:
             schema:
-              type: string
+              $ref: "#/components/schemas/InformationDto"
       responses:
         "200":
           description: "The information was successfully changed."
@@ -544,41 +544,38 @@ components:
 
   schemas:
     EuroCrateDto:
-      type: object
-      properties:
-        operationCenter:
-          $ref: "#/components/schemas/OperationCenterDto"
-        name:
-          description: "A short distinct name describing the contents and/or target location of the euro crate. Has to be unique in combination with the OC."
-          type: string
-          minLength: 1
-        returnBy:
-          description: "At which date should the euro crate be returned to the logistics operation center."
-          type: string
-          format: date
-        information:
-          description: "Free-form text describing the contents of the euro crate."
-          type: string
-        location:
-          $ref: "#/components/schemas/LocationDto"
-        deliveryState:
-          $ref: "#/components/schemas/DeliveryStateDto"
-      required:
-        - operationCenter
-        - name
-        - returnBy
-        - location
+      allOf:
+        - $ref: "#/components/schemas/InformationDto"
+        - $ref: "#/components/schemas/DeliveryStateDto"
+        - type: object
+          properties:
+            operationCenter:
+              $ref: "#/components/schemas/OperationCenterDto"
+            name:
+              description: "A short distinct name describing the contents and/or target location of the euro crate. Has to be unique in combination with the OC."
+              type: string
+              minLength: 1
+            returnBy:
+              description: "At which date should the euro crate be returned to the logistics operation center."
+              type: string
+              format: date
+            location:
+              $ref: "#/components/schemas/LocationDto"
+          required:
+            - operationCenter
+            - name
+            - returnBy
+            - location
 
     NewEuroPalletDto:
-      type: object
-      properties:
-        information:
-          type: string
-          description: "Free-form text describing the euroPallet"
-        location:
-          $ref: "#/components/schemas/LocationDto"
-      required:
-        - location
+      allOf:
+        - $ref: "#/components/schemas/InformationDto"
+        - type: object
+          properties:
+            location:
+              $ref: "#/components/schemas/LocationDto"
+          required:
+            - location
 
     EuroPalletDto:
       allOf:
@@ -608,20 +605,20 @@ components:
         - packedOnPallet
 
     BasicPackingListDto:
-      type: object
-      properties:
-        packingListId:
-          description: "ID consists of name and a unique numeric value."
-          type: string
-          example: "aName-123"
-        packedOn:
-          $ref: "#/components/schemas/EuroPalletDto"
-        deliveryState:
-          $ref: "#/components/schemas/DeliveryStateDto"
-      required:
-        - packingListId
-        - packedOn
-        - deliveryState
+      allOf:
+        - $ref: "#/components/schemas/DeliveryStateDto"
+        - type: object
+          properties:
+            packingListId:
+              description: "ID consists of name and a unique numeric value."
+              type: string
+              example: "aName-123"
+            packedOn:
+              $ref: "#/components/schemas/EuroPalletDto"
+          required:
+            - packingListId
+            - packedOn
+            - deliveryState
 
     PackingListDto:
       type: object
@@ -635,6 +632,21 @@ components:
                 $ref: "#/components/schemas/EuroCrateDto"
 
     DeliveryStateDto:
+      type: object
+      properties:
+        deliveryState:
+          $ref: "#/components/schemas/DeliveryStateEnumDto"
+      required:
+        - deliveryState
+
+    InformationDto:
+      type: object
+      properties:
+        information:
+          description: "Free-form text describing the contents of the entity."
+          type: string
+
+    DeliveryStateEnumDto:
       type: string
       enum:
         - "Packing"

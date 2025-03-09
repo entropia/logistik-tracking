@@ -6,26 +6,43 @@ import de.entropia.logistiktracking.domain.operation_center.OperationCenter;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.util.Objects;
 
 @Getter
-@AllArgsConstructor(access = AccessLevel.PACKAGE)
 @Builder
 public class EuroCrate {
-    @NonNull
     private final OperationCenter operationCenter;
-    @NonNull
     private final String name;
-    @NonNull
     private final LocalDate returnBy;
-    private final String information;
-    @NonNull
-    private final Location location;
-    @NonNull
+    private String information;
+    private Location location;
     private DeliveryState deliveryState;
 
-    public void setDeliveryState(DeliveryState deliveryState) {
-        this.deliveryState = Objects.requireNonNull(deliveryState);
+    EuroCrate(
+            @NonNull OperationCenter operationCenter,
+            @NonNull String name,
+            @NonNull LocalDate returnBy,
+            String information,
+            @NonNull Location location,
+            @NonNull DeliveryState deliveryState
+    ) {
+        this.operationCenter = operationCenter;
+        this.name = name;
+        this.returnBy = returnBy;
+        this.information = information == null ? "" : information;
+        this.location = location;
+        this.deliveryState = deliveryState;
+    }
+
+    public void updateDeliveryState(@NonNull DeliveryState deliveryState) {
+        this.deliveryState = deliveryState;
+    }
+
+    public void updateInformation(String information) {
+        this.information = information == null ? "" : information;
+    }
+
+    public void updateLocation(@NonNull Location location) {
+        this.location = location;
     }
 
     public boolean matches(OperationCenter operationCenter, String crateName) {

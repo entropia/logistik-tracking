@@ -67,7 +67,7 @@ public class PackingList {
     }
 
     public void packCrate(EuroCrate euroCrate) {
-        euroCrate.setDeliveryState(deliveryState);
+        euroCrate.updateDeliveryState(deliveryState);
         this.packedCrates.add(euroCrate);
     }
 

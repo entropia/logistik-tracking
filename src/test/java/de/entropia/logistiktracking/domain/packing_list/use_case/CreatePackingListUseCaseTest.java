@@ -70,7 +70,7 @@ class CreatePackingListUseCaseTest {
         PackingListDto packingList = result.result();
         assertThat(packingList.getPackingListId()).matches("finanzen-\\d+");
         assertThat(packingList.getPackedOn()).usingRecursiveComparison().isEqualTo(euroPallet);
-        assertThat(packingList.getDeliveryState()).isEqualTo(DeliveryStateDto.PACKING);
+        assertThat(packingList.getDeliveryState()).isEqualTo(DeliveryStateEnumDto.PACKING);
     }
 
 }

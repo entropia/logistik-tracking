@@ -2,8 +2,7 @@ package de.entropia.logistiktracking.web;
 
 import de.entropia.logistiktracking.domain.euro_crate.use_case.EuroCrateUseCase;
 import de.entropia.logistiktracking.openapi.api.EuroCrateApi;
-import de.entropia.logistiktracking.openapi.model.EuroCrateDto;
-import de.entropia.logistiktracking.openapi.model.OperationCenterDto;
+import de.entropia.logistiktracking.openapi.model.*;
 import de.entropia.logistiktracking.utility.Result;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -44,6 +43,42 @@ public class EuroCrateRoute implements EuroCrateApi {
         return switch (result) {
             case Result.Ok<EuroCrateDto, EuroCrateUseCase.FindEuroCrateError> ok -> ResponseEntity.ok(ok.result());
             case Result.Error<EuroCrateDto, EuroCrateUseCase.FindEuroCrateError> error -> switch (error.error()) {
+                case BadArguments -> ResponseEntity.badRequest().build();
+                case CrateNotFound -> ResponseEntity.notFound().build();
+            };
+        };
+    }
+
+    @Override
+    public ResponseEntity<EuroCrateDto> modifyDeliveryStateOfCrate(OperationCenterDto operationCenterDto, String euroCrateName, DeliveryStateDto deliveryStateDto) {
+        Result<EuroCrateDto, EuroCrateUseCase.ModifyCrateError> result = euroCrateUseCase.modifyEuroCrate(operationCenterDto, euroCrateName, deliveryStateDto);
+        return switch (result) {
+            case Result.Ok<EuroCrateDto, EuroCrateUseCase.ModifyCrateError> ok -> ResponseEntity.ok(ok.result());
+            case Result.Error<EuroCrateDto, EuroCrateUseCase.ModifyCrateError> error -> switch (error.error()) {
+                case BadArguments -> ResponseEntity.badRequest().build();
+                case CrateNotFound -> ResponseEntity.notFound().build();
+            };
+        };
+    }
+
+    @Override
+    public ResponseEntity<EuroCrateDto> modifyInformationOfCrate(OperationCenterDto operationCenterDto, String euroCrateName, InformationDto informationDto) {
+        Result<EuroCrateDto, EuroCrateUseCase.ModifyCrateError> result = euroCrateUseCase.modifyEuroCrate(operationCenterDto, euroCrateName, informationDto);
+        return switch (result) {
+            case Result.Ok<EuroCrateDto, EuroCrateUseCase.ModifyCrateError> ok -> ResponseEntity.ok(ok.result());
+            case Result.Error<EuroCrateDto, EuroCrateUseCase.ModifyCrateError> error -> switch (error.error()) {
+                case BadArguments -> ResponseEntity.badRequest().build();
+                case CrateNotFound -> ResponseEntity.notFound().build();
+            };
+        };
+    }
+
+    @Override
+    public ResponseEntity<EuroCrateDto> modifyLocationOfCrate(OperationCenterDto operationCenterDto, String euroCrateName, LocationDto locationDto) {
+        Result<EuroCrateDto, EuroCrateUseCase.ModifyCrateError> result = euroCrateUseCase.modifyEuroCrate(operationCenterDto, euroCrateName, locationDto);
+        return switch (result) {
+            case Result.Ok<EuroCrateDto, EuroCrateUseCase.ModifyCrateError> ok -> ResponseEntity.ok(ok.result());
+            case Result.Error<EuroCrateDto, EuroCrateUseCase.ModifyCrateError> error -> switch (error.error()) {
                 case BadArguments -> ResponseEntity.badRequest().build();
                 case CrateNotFound -> ResponseEntity.notFound().build();
             };
