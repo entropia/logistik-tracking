@@ -2,7 +2,6 @@ package de.entropia.logistiktracking.domain.euro_crate.use_case;
 
 import de.entropia.logistiktracking.TestHelper;
 import de.entropia.logistiktracking.openapi.model.*;
-import de.entropia.logistiktracking.utility.Result;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +33,7 @@ class CreateEuroCrateUseCaseTest {
                 .location(new LocationDto().locationType(LocationTypeDto.SOMEWHERE_ELSE).somewhereElse("there"))
                 .returnBy(LocalDate.now());
 
-        EuroCrateDto createdEuroCrate = Result.uncheckedOk(createEuroCrateUseCase.createEuroCrate(newEuroCrate));
+        EuroCrateDto createdEuroCrate = createEuroCrateUseCase.createEuroCrate(newEuroCrate).result();
 
         assertThat(createdEuroCrate).usingRecursiveComparison().isEqualTo(newEuroCrate.information(""));
     }

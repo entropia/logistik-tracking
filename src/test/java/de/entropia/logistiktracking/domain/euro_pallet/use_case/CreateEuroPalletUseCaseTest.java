@@ -14,8 +14,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.Objects;
 
-import static de.entropia.logistiktracking.utility.Result.uncheckedError;
-import static de.entropia.logistiktracking.utility.Result.uncheckedOk;
 import static org.assertj.core.api.Assertions.assertThat;
 
 
@@ -40,7 +38,7 @@ class CreateEuroPalletUseCaseTest {
         );
 
         assertThat(result).isInstanceOf(Result.Ok.class);
-        EuroPalletDto euroPallet = uncheckedOk(result);
+        EuroPalletDto euroPallet = result.result();
 
         assertThat(euroPalletDatabaseService.findAll()).anyMatch(element -> Objects.equals(euroPallet.getEuroPalletId(), Long.toString(element.getPalletId())));
     }
@@ -50,7 +48,7 @@ class CreateEuroPalletUseCaseTest {
         Result<EuroPalletDto, EuroPalletUseCase.CreateEuroPalletError> result = createEuroPalletUseCase.createEuroPallet(null);
 
         assertThat(result).isInstanceOf(Result.Error.class);
-        EuroPalletUseCase.CreateEuroPalletError error = uncheckedError(result);
+        EuroPalletUseCase.CreateEuroPalletError error = result.error();
 
         assertThat(error).isEqualTo(EuroPalletUseCase.CreateEuroPalletError.BadArguments);
     }

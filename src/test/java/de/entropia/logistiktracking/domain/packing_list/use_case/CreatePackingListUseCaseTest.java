@@ -9,8 +9,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import static de.entropia.logistiktracking.utility.Result.uncheckedError;
-import static de.entropia.logistiktracking.utility.Result.uncheckedOk;
 import static org.assertj.core.api.Assertions.assertThat;
 
 
@@ -36,15 +34,15 @@ class CreatePackingListUseCaseTest {
                         .packedOnPallet("2"));
 
         assertThat(result).isInstanceOf(Result.Error.class);
-        ManagePackingListUseCase.CreateNewPackingListError error = uncheckedError(result);
+        ManagePackingListUseCase.CreateNewPackingListError error = result.error();
         assertThat(error).isEqualTo(ManagePackingListUseCase.CreateNewPackingListError.TargetPalletNotFound);
     }
 
     @Test
     public void failsToCreatePackingListWithEmptyName() {
-        String palletId = uncheckedOk(createEuroPalletUseCase.createEuroPallet(
+        String palletId = createEuroPalletUseCase.createEuroPallet(
                 new NewEuroPalletDto().location(new LocationDto().locationType(LocationTypeDto.SOMEWHERE_ELSE).somewhereElse("somewhere"))
-        )).getEuroPalletId();
+        ).result().getEuroPalletId();
 
         Result<PackingListDto, ManagePackingListUseCase.CreateNewPackingListError> result = createPackingListUseCase.createNewPackingListUseCase(
                 new NewPackingListDto()
@@ -52,15 +50,15 @@ class CreatePackingListUseCaseTest {
                         .packedOnPallet(palletId));
 
         assertThat(result).isInstanceOf(Result.Error.class);
-        ManagePackingListUseCase.CreateNewPackingListError error = uncheckedError(result);
+        ManagePackingListUseCase.CreateNewPackingListError error = result.error();
         assertThat(error).isEqualTo(ManagePackingListUseCase.CreateNewPackingListError.BadArguments);
     }
 
     @Test
     public void canCreateNewPackingList() {
-        EuroPalletDto euroPallet = uncheckedOk(createEuroPalletUseCase.createEuroPallet(
+        EuroPalletDto euroPallet = createEuroPalletUseCase.createEuroPallet(
                 new NewEuroPalletDto().location(new LocationDto().locationType(LocationTypeDto.SOMEWHERE_ELSE).somewhereElse("somewhere"))
-        ));
+        ).result();
 
         Result<PackingListDto, ManagePackingListUseCase.CreateNewPackingListError> result = createPackingListUseCase.createNewPackingListUseCase(
                 new NewPackingListDto()
@@ -69,7 +67,7 @@ class CreatePackingListUseCaseTest {
         );
 
         assertThat(result).isInstanceOf(Result.Ok.class);
-        PackingListDto packingList = uncheckedOk(result);
+        PackingListDto packingList = result.result();
         assertThat(packingList.getPackingListId()).matches("finanzen-\\d+");
         assertThat(packingList.getPackedOn()).usingRecursiveComparison().isEqualTo(euroPallet);
         assertThat(packingList.getDeliveryState()).isEqualTo(DeliveryStateDto.PACKING);

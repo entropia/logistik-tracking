@@ -1,7 +1,5 @@
 package de.entropia.logistiktracking.utility;
 
-import java.io.IOException;
-import java.util.function.Function;
 
 @SuppressWarnings("unused")
 public sealed interface Result<O, E> {
@@ -31,7 +29,9 @@ public sealed interface Result<O, E> {
     }
 
     // Achtung: throws EX ist nötig damit die impls werfen können. idea schnallt das scheinbar nicht
+    @SuppressWarnings("RedundantThrows")
     default <EX extends Throwable> Result<O, E> ifOk(Action<Ok<O, E>, EX> action) throws EX { return this; }
+    @SuppressWarnings("RedundantThrows")
     default <EX extends Throwable> Result<O, E> ifErr(Action<Error<O, E>, EX> action) throws EX { return this; }
 
     O result();
