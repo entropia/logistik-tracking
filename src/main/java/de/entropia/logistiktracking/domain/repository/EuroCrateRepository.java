@@ -6,12 +6,10 @@ import de.entropia.logistiktracking.domain.operation_center.OperationCenter;
 import de.entropia.logistiktracking.jpa.EuroCrateDatabaseElement;
 import de.entropia.logistiktracking.jpa.repo.EuroCrateDatabaseService;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.StreamSupport;
 
 @Component
 @AllArgsConstructor
@@ -44,5 +42,10 @@ public class EuroCrateRepository {
         return euroCrateDatabaseService
                 .findById(new EuroCrateDatabaseElement.EuroCrateDatabaseElementId(operationCenter, euroCrateName))
                 .map(euroCrateConverter::from);
+    }
+
+    public void updateEuroCrate(EuroCrate euroCrate) {
+        EuroCrateDatabaseElement euroCrateDatabaseElement = euroCrateConverter.toDatabaseElement(euroCrate);
+        euroCrateDatabaseService.save(euroCrateDatabaseElement);
     }
 }

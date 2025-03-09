@@ -6,12 +6,10 @@ import de.entropia.logistiktracking.domain.euro_pallet.EuroPallet;
 import de.entropia.logistiktracking.jpa.EuroPalletDatabaseElement;
 import de.entropia.logistiktracking.jpa.repo.EuroPalletDatabaseService;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.StreamSupport;
 
 
 @Component

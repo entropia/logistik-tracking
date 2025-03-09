@@ -13,15 +13,11 @@ public class EuroPallet {
     private final Location location;
     private final String information;
 
-//    public static EuroPalletBuilder builder() {
-//        return new EuroPalletBuilder();
-//    }
-
     @Builder
     EuroPallet(long palletId, @NonNull Location location, String information) {
         Preconditions.checkArgument(palletId >= 0, "palletId < 0");
         this.palletId = palletId;
         this.location = location;
-        this.information = information;
+        this.information = information == null ? "" : information;
     }
 }

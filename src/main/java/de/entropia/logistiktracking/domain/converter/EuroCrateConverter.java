@@ -4,7 +4,6 @@ import de.entropia.logistiktracking.domain.euro_crate.EuroCrate;
 import de.entropia.logistiktracking.jpa.EuroCrateDatabaseElement;
 import de.entropia.logistiktracking.openapi.model.EuroCrateDto;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 
@@ -53,7 +52,7 @@ public class EuroCrateConverter {
                 .name(euroCrateDto.getName())
                 .returnBy(euroCrateDto.getReturnBy())
                 .information(euroCrateDto.getInformation().orElse(""))
-                .deliveryState(deliveryStateConverter.from(euroCrateDto.getDeliveryState().orElse(null)))
+                .deliveryState(deliveryStateConverter.from(euroCrateDto.getDeliveryState()))
                 .location(locationConverter.from(euroCrateDto.getLocation()))
                 .build();
     }

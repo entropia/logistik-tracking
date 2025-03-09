@@ -29,7 +29,7 @@ class CreateEuroCrateUseCaseTest {
         EuroCrateDto newEuroCrate = new EuroCrateDto()
                 .operationCenter(OperationCenterDto.FRUEHSTUECK)
                 .name("Butterbrote")
-                .deliveryState(DeliveryStateDto.PACKING)
+                .deliveryState(DeliveryStateEnumDto.PACKING)
                 .location(new LocationDto().locationType(LocationTypeDto.SOMEWHERE_ELSE).somewhereElse("there"))
                 .returnBy(LocalDate.now());
 

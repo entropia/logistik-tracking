@@ -7,6 +7,8 @@ import de.entropia.logistiktracking.openapi.model.LocationTypeDto;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.Objects;
+
 @Component
 @AllArgsConstructor
 public class LocationConverter {
@@ -47,8 +49,8 @@ public class LocationConverter {
         }
 
         return switch (location.getLocationType()) {
-            case LOGISTICS -> new LogisticsLocation(logisticsLocationTypeConverter.from(location.getLogisticsLocation().orElse(null)));
-            case AT_OPERATION_CENTER -> new OperationCenterLocation(operationCenterConverter.from(location.getOperationCenter().orElse(null)));
+            case LOGISTICS -> new LogisticsLocation(logisticsLocationTypeConverter.from(Objects.requireNonNull(location.getLogisticsLocation().orElse(null))));
+            case AT_OPERATION_CENTER -> new OperationCenterLocation(operationCenterConverter.from(Objects.requireNonNull(location.getOperationCenter().orElse(null))));
             case SOMEWHERE_ELSE -> new SomewhereLocation(location.getSomewhereElse().orElse(null));
         };
     }
