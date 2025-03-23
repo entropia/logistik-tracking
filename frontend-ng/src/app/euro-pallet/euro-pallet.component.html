@@ -1,0 +1,13 @@
+<main>
+  <h1>Palletten</h1>
+  <div class="content">
+    <ul>
+      <li
+        *ngFor="let euroPallet of euroPallets ?? []"
+      >
+        <span>{{ euroPallet.euroPalletId }} &#0040; {{ euroPallet.location }}</span>
+        <p>{{ euroPallet.information }}</p>
+      </li>
+    </ul>
+  </div>
+</main>

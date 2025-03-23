@@ -1,0 +1,14 @@
+<main>
+  <h1>Packlisten</h1>
+  <div class="content">
+    <ul>
+      <li
+        *ngFor="let packingList of packingLists ?? []"
+      >
+        <span>{{ packingList.deliveryState }}</span>
+        <a [routerLink]="'/packingList/' + packingList.packingListId">Packliste {{ packingList.packingListId }}</a> liegt auf
+        <a [routerLink]="'/euroPallet/' + packingList.packedOn.euroPalletId">Pallette {{ packingList.packedOn.euroPalletId }}</a>
+      </li>
+    </ul>
+  </div>
+</main>
