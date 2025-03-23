@@ -3,7 +3,7 @@ info:
   title: "API for the goods coordination system of the GPN LOC."
   version: "0.1.0"
 servers:
-  - url: "http://localhost:8080/api"
+  - url: "http://localhost:8080"
     description: "Local development server."
 paths:
   /euroCrate:
@@ -515,7 +515,7 @@ paths:
       requestBody:
         required: true
         content:
-          application/json:
+          application/x-www-form-urlencoded:
             schema:
               $ref: "#/components/schemas/LoginDto"
       responses:
@@ -526,10 +526,6 @@ paths:
               schema:
                 type: string
                 example: JSESSIONID=abcde12345; Path=/; HttpOnly
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SessionDto"
         "400":
           description: "Provided login details do not full the specifications."
         "401":

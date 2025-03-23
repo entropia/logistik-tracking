@@ -24,7 +24,6 @@ public class PackingListRoute implements PackingListApi {
     private final AssociateEuroCrateWithPackingListUseCase associateEuroCrateWithPackingListUseCase;
 
     @Override
-    @PreAuthorize("hasRole('admin')")
     public ResponseEntity<PackingListDto> createPackingList(NewPackingListDto newPackingListDto) {
         Result<PackingListDto, ManagePackingListUseCase.CreateNewPackingListError> result = createPackingListUseCase.createNewPackingListUseCase(newPackingListDto);
 
@@ -56,7 +55,6 @@ public class PackingListRoute implements PackingListApi {
     }
 
     @Override
-    @PreAuthorize("hasRole('admin')")
     public ResponseEntity<PackingListDto> addEuroCrateToPackingList(String packingListId, OperationCenterDto operationCenterDto, String crateName) {
         Result<PackingListDto, AssociateEuroCrateWithPackingListUseCase.AddEuroCrateToPackingListError> result = associateEuroCrateWithPackingListUseCase.addEuroCrateToPackingList(packingListId, operationCenterDto, crateName);
         return switch (result) {

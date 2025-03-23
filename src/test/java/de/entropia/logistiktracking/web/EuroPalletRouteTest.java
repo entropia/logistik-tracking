@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.test.context.support.WithMockUser;
 
 import java.util.Optional;
 
@@ -27,7 +26,6 @@ class EuroPalletRouteTest {
         testHelper.cleanDatabase();
     }
 
-    @WithMockUser(roles = {"admin"})
     @Test
     public void canCreateEuroPallet() {
         String information = "some info";
@@ -48,7 +46,6 @@ class EuroPalletRouteTest {
         assertThat(Long.parseLong(euroPalletDto.getEuroPalletId())).isGreaterThan(0L);
     }
 
-    @WithMockUser(roles = {"admin"})
     @Test
     public void cannotCreateEuroPalletWithMissingLocation() {
         String information = "some info";

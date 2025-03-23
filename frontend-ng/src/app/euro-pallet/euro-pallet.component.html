@@ -1,0 +1,17 @@
+<main>
+  <h1>Palletten</h1>
+  <div class="content">
+    <button
+      mat-raised-button
+      (click)="createPallet()"
+    >Pallette erstellen</button>
+    <ul>
+      <li
+        *ngFor="let euroPallet of euroPallets ?? []"
+      >
+        <a [routerLink]="'/euroPallet/' + euroPallet.euroPalletId">{{ euroPallet.euroPalletId }}</a>:
+        <app-location [location]="euroPallet.location"></app-location>
+      </li>
+    </ul>
+  </div>
+</main>
