@@ -3,7 +3,7 @@ info:
   title: "API for the goods coordination system of the GPN LOC."
   version: "0.1.0"
 servers:
-  - url: "http://localhost:8080/api"
+  - url: "http://localhost:8080"
     description: "Local development server."
 paths:
   /euroCrate:
