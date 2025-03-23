@@ -8,7 +8,6 @@ import de.entropia.logistiktracking.utility.Result;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 
 import java.util.List;
@@ -19,7 +18,6 @@ public class EuroPalletRoute implements EuroPalletApi {
     private final EuroPalletUseCase createEuroPalletUseCase;
 
     @Override
-    @PreAuthorize("hasRole('admin')")
     public ResponseEntity<EuroPalletDto> createEuroPallet(NewEuroPalletDto newEuroPalletDto) {
         Result<EuroPalletDto, EuroPalletUseCase.CreateEuroPalletError> result = createEuroPalletUseCase.createEuroPallet(newEuroPalletDto);
 

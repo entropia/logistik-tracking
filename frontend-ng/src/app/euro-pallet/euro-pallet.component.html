@@ -1,6 +1,10 @@
 <main>
   <h1>Palletten</h1>
   <div class="content">
+    <button
+      mat-raised-button
+      (click)="createPallet()"
+    >Pallette erstellen</button>
     <ul>
       <li
         *ngFor="let euroPallet of euroPallets ?? []"

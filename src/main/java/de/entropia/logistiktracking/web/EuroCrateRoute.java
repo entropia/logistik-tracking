@@ -7,7 +7,6 @@ import de.entropia.logistiktracking.utility.Result;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 
 import java.util.List;
@@ -18,7 +17,6 @@ public class EuroCrateRoute implements EuroCrateApi {
     private final EuroCrateUseCase euroCrateUseCase;
 
     @Override
-    @PreAuthorize("hasRole('admin')")
     public ResponseEntity<EuroCrateDto> createNewEuroCrate(EuroCrateDto euroCrateDto) {
         Result<EuroCrateDto, EuroCrateUseCase.CreateEuroCrateError> result = euroCrateUseCase.createEuroCrate(euroCrateDto);
 
