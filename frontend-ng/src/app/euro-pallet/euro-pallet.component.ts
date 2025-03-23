@@ -5,13 +5,16 @@ import {NgForOf} from '@angular/common';
 import {LocationTypeDto} from '../api/models/location-type-dto';
 import {LogisticsLocationDto} from '../api/models/logistics-location-dto';
 import {MatButton} from '@angular/material/button';
-import {Router} from '@angular/router';
+import {Router, RouterLink} from '@angular/router';
+import {LocationComponent} from '../location/location.component';
 
 @Component({
   selector: 'app-euro-pallet',
   imports: [
     NgForOf,
-    MatButton
+    MatButton,
+    LocationComponent,
+    RouterLink
   ],
   templateUrl: './euro-pallet.component.html',
   styleUrl: './euro-pallet.component.scss'

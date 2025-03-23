@@ -1,0 +1,9 @@
+<span *ngIf="isLOC()">
+  Beim LOC = {{ location?.logisticsLocation  ?? ''}}
+</span>
+<span *ngIf="isOC()">
+  OC = {{ location?.operationCenter ?? '' }}
+</span>
+<span *ngIf="isSomewhereElse()">
+  Unbekannter Ort = {{ location?.somewhereElse  ?? ''}}
+</span>

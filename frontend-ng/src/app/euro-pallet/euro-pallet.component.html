@@ -9,8 +9,8 @@
       <li
         *ngFor="let euroPallet of euroPallets ?? []"
       >
-        <span>{{ euroPallet.euroPalletId }} &#0040; {{ euroPallet.location }}</span>
-        <p>{{ euroPallet.information }}</p>
+        <a [routerLink]="'/euroPallet/' + euroPallet.euroPalletId">{{ euroPallet.euroPalletId }}</a>:
+        <app-location [location]="euroPallet.location"></app-location>
       </li>
     </ul>
   </div>
