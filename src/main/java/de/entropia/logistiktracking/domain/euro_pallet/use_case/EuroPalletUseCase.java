@@ -4,6 +4,7 @@ package de.entropia.logistiktracking.domain.euro_pallet.use_case;
 import de.entropia.logistiktracking.domain.converter.EuroPalletConverter;
 import de.entropia.logistiktracking.domain.converter.LocationConverter;
 import de.entropia.logistiktracking.domain.euro_pallet.EuroPallet;
+import de.entropia.logistiktracking.domain.euro_pallet.pdf.EuroPalletPdfGenerator;
 import de.entropia.logistiktracking.domain.location.Location;
 import de.entropia.logistiktracking.domain.repository.EuroPalletRepository;
 import de.entropia.logistiktracking.openapi.model.EuroPalletDto;
@@ -24,6 +25,7 @@ public class EuroPalletUseCase {
     private final EuroPalletRepository euroPalletRepository;
     private final LocationConverter locationConverter;
     private final EuroPalletConverter euroPalletConverter;
+    private final EuroPalletPdfGenerator euroPalletPdfGenerator;
 
     public Result<EuroPalletDto, CreateEuroPalletError> createEuroPallet(NewEuroPalletDto newEuroPalletDto) {
         if (newEuroPalletDto == null) {
@@ -80,6 +82,31 @@ public class EuroPalletUseCase {
         return new Result.Ok<>(euroPalletConverter.toDto(euroPallet.get()));
     }
 
+    public Result<byte[], PrintEuroPalletError> printEuroPallet(String euroPalletId) {
+        if (euroPalletId == null) {
+            return new Result.Error<>(PrintEuroPalletError.BadArguments);
+        }
+
+        long id;
+        try {
+            id = Long.parseLong(euroPalletId);
+        } catch (NumberFormatException e) {
+            return new Result.Error<>(PrintEuroPalletError.BadArguments);
+        }
+
+        Optional<EuroPallet> euroPallet = euroPalletRepository.findEuroPallet(id);
+
+        if (euroPallet.isEmpty()) {
+            return new Result.Error<>(PrintEuroPalletError.PalletNotFound);
+        }
+
+        Result<byte[], Void> pdfResult = euroPalletPdfGenerator.generate(euroPallet.get());
+        return switch (pdfResult) {
+            case Result.Ok<byte[], Void> ok -> new Result.Ok<>(ok.result());
+            default -> new Result.Error<>(PrintEuroPalletError.FailedToGeneratePdf);
+        };
+    }
+
     public enum FindEuroPalletError {
         BadArguments,
         PalletNotFound
@@ -87,5 +114,11 @@ public class EuroPalletUseCase {
 
     public enum CreateEuroPalletError {
         BadArguments
+    }
+
+    public enum PrintEuroPalletError{
+        BadArguments,
+        PalletNotFound,
+        FailedToGeneratePdf
     }
 }
