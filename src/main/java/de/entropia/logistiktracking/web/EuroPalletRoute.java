@@ -7,6 +7,8 @@ import de.entropia.logistiktracking.openapi.model.LocationDto;
 import de.entropia.logistiktracking.openapi.model.NewEuroPalletDto;
 import de.entropia.logistiktracking.utility.Result;
 import lombok.AllArgsConstructor;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -69,6 +71,19 @@ public class EuroPalletRoute implements EuroPalletApi {
             case Result.Ok<EuroPalletDto, EuroPalletUseCase.FindEuroPalletError> ok -> ResponseEntity.ok((ok.result()));
             case Result.Error<EuroPalletDto, EuroPalletUseCase.FindEuroPalletError> error -> switch (error.error()) {
                 case PalletNotFound -> ResponseEntity.notFound().build();
+            };
+        };
+    }
+
+    @Override
+    public ResponseEntity<Resource> printEuroPallet(String euroPalletId) {
+        Result<byte[], EuroPalletUseCase.PrintEuroPalletError> result = createEuroPalletUseCase.printEuroPallet(euroPalletId);
+        return switch (result) {
+            case Result.Ok<byte[], EuroPalletUseCase.PrintEuroPalletError> ok -> ResponseEntity.ok(new ByteArrayResource(ok.result()));
+            case Result.Error<byte[], EuroPalletUseCase.PrintEuroPalletError> error -> switch (error.error()) {
+                case BadArguments -> ResponseEntity.badRequest().build();
+                case PalletNotFound -> ResponseEntity.notFound().build();
+                case FailedToGeneratePdf -> ResponseEntity.internalServerError().build();
             };
         };
     }

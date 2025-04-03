@@ -4,6 +4,7 @@ package de.entropia.logistiktracking.domain.euro_pallet.use_case;
 import de.entropia.logistiktracking.domain.converter.EuroPalletConverter;
 import de.entropia.logistiktracking.domain.converter.LocationConverter;
 import de.entropia.logistiktracking.domain.euro_pallet.EuroPallet;
+import de.entropia.logistiktracking.domain.euro_pallet.pdf.EuroPalletPdfGenerator;
 import de.entropia.logistiktracking.domain.location.Location;
 import de.entropia.logistiktracking.domain.repository.EuroPalletRepository;
 import de.entropia.logistiktracking.openapi.model.EuroPalletDto;
@@ -25,6 +26,7 @@ public class EuroPalletUseCase {
     private final EuroPalletRepository euroPalletRepository;
     private final LocationConverter locationConverter;
     private final EuroPalletConverter euroPalletConverter;
+    private final EuroPalletPdfGenerator euroPalletPdfGenerator;
 
     public Result<EuroPalletDto, CreateEuroPalletError> createEuroPallet(NewEuroPalletDto newEuroPalletDto) {
         if (newEuroPalletDto == null) {
@@ -71,28 +73,53 @@ public class EuroPalletUseCase {
         return new Result.Ok<>(euroPalletConverter.toDto(euroPallet.get()));
     }
 
-    public Result<EuroPalletDto, ModifyPalletError> updatePalletLocation(long id, LocationDto locationDto) {
-        Optional<EuroPallet> euroPallet = euroPalletRepository.findEuroPallet(id);
-        if (euroPallet.isEmpty()) {
-            return new Result.Error<>(ModifyPalletError.NotFound);
+	public Result<EuroPalletDto, ModifyPalletError> updatePalletLocation(long id, LocationDto locationDto) {
+		Optional<EuroPallet> euroPallet = euroPalletRepository.findEuroPallet(id);
+		if (euroPallet.isEmpty()) {
+			return new Result.Error<>(ModifyPalletError.NotFound);
+		}
+
+		Location location;
+		try {
+			location = locationConverter.from(locationDto);
+		} catch (IllegalArgumentException e) {
+			return new Result.Error<>(ModifyPalletError.BadArguments);
+		}
+
+		EuroPallet euroPallet1 = euroPallet.get();
+		euroPallet1.setLocation(location);
+		euroPalletRepository.updatePallet(euroPallet1);
+
+		return new Result.Ok<>(euroPalletConverter.toDto(euroPallet1));
+	}
+
+	public enum ModifyPalletError {
+		NotFound, BadArguments
+	}
+
+    public Result<byte[], PrintEuroPalletError> printEuroPallet(String euroPalletId) {
+        if (euroPalletId == null) {
+            return new Result.Error<>(PrintEuroPalletError.BadArguments);
         }
 
-        Location location;
+        long id;
         try {
-            location = locationConverter.from(locationDto);
-        } catch (IllegalArgumentException e) {
-            return new Result.Error<>(ModifyPalletError.BadArguments);
+            id = Long.parseLong(euroPalletId);
+        } catch (NumberFormatException e) {
+            return new Result.Error<>(PrintEuroPalletError.BadArguments);
         }
 
-        EuroPallet euroPallet1 = euroPallet.get();
-        euroPallet1.setLocation(location);
-        euroPalletRepository.updatePallet(euroPallet1);
+        Optional<EuroPallet> euroPallet = euroPalletRepository.findEuroPallet(id);
 
-        return new Result.Ok<>(euroPalletConverter.toDto(euroPallet1));
-    }
+        if (euroPallet.isEmpty()) {
+            return new Result.Error<>(PrintEuroPalletError.PalletNotFound);
+        }
 
-    public enum ModifyPalletError {
-        NotFound, BadArguments
+        Result<byte[], Void> pdfResult = euroPalletPdfGenerator.generate(euroPallet.get());
+        return switch (pdfResult) {
+            case Result.Ok<byte[], Void> ok -> new Result.Ok<>(ok.result());
+            default -> new Result.Error<>(PrintEuroPalletError.FailedToGeneratePdf);
+        };
     }
 
     public enum FindEuroPalletError {
@@ -101,5 +128,11 @@ public class EuroPalletUseCase {
 
     public enum CreateEuroPalletError {
         BadArguments
+    }
+
+    public enum PrintEuroPalletError{
+        BadArguments,
+        PalletNotFound,
+        FailedToGeneratePdf
     }
 }
