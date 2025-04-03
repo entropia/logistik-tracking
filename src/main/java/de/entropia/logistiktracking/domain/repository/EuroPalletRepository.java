@@ -41,4 +41,9 @@ public class EuroPalletRepository {
                 .findById(palletId)
                 .map(euroPalletConverter::from);
     }
+
+    public void updatePallet(EuroPallet euroPallet1) {
+        EuroPalletDatabaseElement dbEl = euroPalletConverter.toDatabaseElement(euroPallet1);
+        euroPalletDatabaseService.save(dbEl);
+    }
 }

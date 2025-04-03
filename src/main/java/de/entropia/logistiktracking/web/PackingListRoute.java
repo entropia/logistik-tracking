@@ -68,7 +68,6 @@ public class PackingListRoute implements PackingListApi {
     }
 
     @Override
-    @PreAuthorize("hasRole('admin')")
     public ResponseEntity<PackingListDto> removeEuroCrateFromPackingList(String packingListId, OperationCenterDto operationCenterDto, String crateName) {
         Result<PackingListDto, AssociateEuroCrateWithPackingListUseCase.RemoveEuroCrateFromPackingListError> result = associateEuroCrateWithPackingListUseCase.removeEuroCrateFromPackingList(packingListId, operationCenterDto, crateName);
         return switch (result) {

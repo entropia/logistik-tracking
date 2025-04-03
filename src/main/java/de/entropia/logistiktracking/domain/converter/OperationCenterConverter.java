@@ -3,10 +3,11 @@ package de.entropia.logistiktracking.domain.converter;
 import de.entropia.logistiktracking.domain.operation_center.OperationCenter;
 import de.entropia.logistiktracking.openapi.model.OperationCenterDto;
 import lombok.NonNull;
+import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
 @Component
-public class OperationCenterConverter {
+public class OperationCenterConverter implements Converter<String, OperationCenterDto> {
     public OperationCenter from(@NonNull OperationCenterDto dto) {
         return switch (dto) {
             case FINANZEN -> OperationCenter.Finanzen;
@@ -45,5 +46,10 @@ public class OperationCenterConverter {
 
     public OperationCenterDto toDto(@NonNull OperationCenter operationCenter) {
         return operationCenter.getDtoEquiv();
+    }
+
+    @Override
+    public OperationCenterDto convert(String source) {
+        return OperationCenterDto.fromValue(source);
     }
 }

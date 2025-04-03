@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
-import {ApiService} from '../api/services/api.service';
-import {BasicPackingListDto} from '../api/models/basic-packing-list-dto';
+import {ApiService} from '../../api/services/api.service';
+import {BasicPackingListDto} from '../../api/models/basic-packing-list-dto';
 import {NgForOf} from '@angular/common';
 import {RouterLink} from '@angular/router';
 

@@ -255,7 +255,7 @@ paths:
           in: path
           required: true
           schema:
-            type: string
+            type: number
       responses:
         "200":
           description: "Successfully retrieved euro pallet."
@@ -265,6 +265,8 @@ paths:
                 $ref: "#/components/schemas/EuroPalletDto"
         "404":
           description: "Selected euro pallet does not exist."
+        "400":
+          description: "euroPalletId is not a whole number or doesn't fit in 64 bits"
 
   /euroPallet/{euroPalletId}/lastLocation:
     put:
@@ -277,8 +279,9 @@ paths:
           in: path
           required: true
           schema:
-            type: string
+            type: number
       requestBody:
+        required: true
         content:
           application/json:
             schema:
@@ -294,6 +297,8 @@ paths:
           description: "User did not provide valid session details."
         "404":
           description: "Selected euro pallet does not exist."
+        "400":
+          description: "euroPalletId is not a whole number or doesn't fit in 64 bits, request body is invalid"
 
 
   /euroPallet/{euroPalletId}/print:
@@ -305,7 +310,7 @@ paths:
           in: path
           required: true
           schema:
-            type: string
+            type: number
       responses:
         "200":
           description: "Successfully generated the pallet document."
@@ -316,6 +321,8 @@ paths:
                 format: binary
         "404":
           description: "Selected pallet does not exist."
+        "400":
+          description: "euroPalletId is not a whole number or doesn't fit in 64 bits"
 
   /packingList:
     get:
@@ -408,6 +415,8 @@ paths:
           description: "User did not provide valid session details."
         "404":
           description: "Selected packing list does not exist."
+        "400":
+          description: "packingListId is not a whole number or doesn't fit in 64 bits"
 
   /packingList/{packingListId}/euroCrate/{operationCenter}-{euroCrateName}:
     put:
@@ -548,9 +557,10 @@ components:
             operationCenter:
               $ref: "#/components/schemas/OperationCenterDto"
             name:
-              description: "A short distinct name describing the contents and/or target location of the euro crate. Has to be unique in combination with the OC."
+              description: "A short distinct name describing the contents and/or target location of the euro crate. Has to be unique in combination with the OC. May not contain -."
               type: string
               minLength: 1
+              pattern: ^[^-]+$
             returnBy:
               description: "At which date should the euro crate be returned to the logistics operation center."
               type: string

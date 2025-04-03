@@ -5,13 +5,16 @@ import de.entropia.logistiktracking.domain.location.Location;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.Setter;
 
 
 @Getter
 public class EuroPallet {
     private final long palletId;
-    private final Location location;
-    private final String information;
+    @Setter
+    private Location location;
+    @Setter
+    private String information;
 
     @Builder
     EuroPallet(long palletId, @NonNull Location location, String information) {

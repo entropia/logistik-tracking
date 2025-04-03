@@ -7,6 +7,7 @@ import de.entropia.logistiktracking.domain.euro_pallet.EuroPallet;
 import de.entropia.logistiktracking.domain.location.Location;
 import de.entropia.logistiktracking.domain.repository.EuroPalletRepository;
 import de.entropia.logistiktracking.openapi.model.EuroPalletDto;
+import de.entropia.logistiktracking.openapi.model.LocationDto;
 import de.entropia.logistiktracking.openapi.model.NewEuroPalletDto;
 import de.entropia.logistiktracking.utility.Result;
 import jakarta.transaction.Transactional;
@@ -59,19 +60,9 @@ public class EuroPalletUseCase {
                 .toList();
     }
 
-    public Result<EuroPalletDto, FindEuroPalletError> findEuroPallet(String euroPalletId) {
-        if (euroPalletId == null) {
-            return new Result.Error<>(FindEuroPalletError.BadArguments);
-        }
+    public Result<EuroPalletDto, FindEuroPalletError> findEuroPallet(long euroPalletId) {
 
-        long id;
-        try {
-            id = Long.parseLong(euroPalletId);
-        } catch (NumberFormatException e) {
-            return new Result.Error<>(FindEuroPalletError.BadArguments);
-        }
-
-        Optional<EuroPallet> euroPallet = euroPalletRepository.findEuroPallet(id);
+		Optional<EuroPallet> euroPallet = euroPalletRepository.findEuroPallet(euroPalletId);
 
         if (euroPallet.isEmpty()) {
             return new Result.Error<>(FindEuroPalletError.PalletNotFound);
@@ -80,8 +71,31 @@ public class EuroPalletUseCase {
         return new Result.Ok<>(euroPalletConverter.toDto(euroPallet.get()));
     }
 
+    public Result<EuroPalletDto, ModifyPalletError> updatePalletLocation(long id, LocationDto locationDto) {
+        Optional<EuroPallet> euroPallet = euroPalletRepository.findEuroPallet(id);
+        if (euroPallet.isEmpty()) {
+            return new Result.Error<>(ModifyPalletError.NotFound);
+        }
+
+        Location location;
+        try {
+            location = locationConverter.from(locationDto);
+        } catch (IllegalArgumentException e) {
+            return new Result.Error<>(ModifyPalletError.BadArguments);
+        }
+
+        EuroPallet euroPallet1 = euroPallet.get();
+        euroPallet1.setLocation(location);
+        euroPalletRepository.updatePallet(euroPallet1);
+
+        return new Result.Ok<>(euroPalletConverter.toDto(euroPallet1));
+    }
+
+    public enum ModifyPalletError {
+        NotFound, BadArguments
+    }
+
     public enum FindEuroPalletError {
-        BadArguments,
         PalletNotFound
     }
 
