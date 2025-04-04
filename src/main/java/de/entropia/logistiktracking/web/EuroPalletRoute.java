@@ -76,8 +76,14 @@ public class EuroPalletRoute implements EuroPalletApi {
     }
 
     @Override
-    public ResponseEntity<Resource> printEuroPallet(String euroPalletId) {
-        Result<byte[], EuroPalletUseCase.PrintEuroPalletError> result = createEuroPalletUseCase.printEuroPallet(euroPalletId);
+    public ResponseEntity<Resource> printEuroPallet(BigDecimal euroPalletId) {
+        long l;
+        try {
+            l = euroPalletId.longValueExact();
+        } catch (ArithmeticException _) {
+            return ResponseEntity.badRequest().build();
+        }
+        Result<byte[], EuroPalletUseCase.PrintEuroPalletError> result = createEuroPalletUseCase.printEuroPallet(l);
         return switch (result) {
             case Result.Ok<byte[], EuroPalletUseCase.PrintEuroPalletError> ok -> ResponseEntity.ok(new ByteArrayResource(ok.result()));
             case Result.Error<byte[], EuroPalletUseCase.PrintEuroPalletError> error -> switch (error.error()) {

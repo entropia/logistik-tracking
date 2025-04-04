@@ -16,7 +16,6 @@ import org.thymeleaf.context.Context;
 import org.xhtmlrenderer.pdf.ITextRenderer;
 
 import javax.imageio.ImageIO;
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -36,56 +35,46 @@ public class EuroPalletPdfGenerator {
         QRCodeWriter writer = new QRCodeWriter();
         BitMatrix bitMatrix;
         try {
-             bitMatrix = writer.encode(url, BarcodeFormat.QR_CODE, 128, 128);
+             bitMatrix = writer.encode(url, BarcodeFormat.QR_CODE, 256, 256);
         } catch (WriterException e) {
             logger.error("Failed to generate QR Code", e);
             return new Result.Error<>(null);
         }
-        BufferedImage image = new BufferedImage(bitMatrix.getWidth(), bitMatrix.getHeight(), BufferedImage.TYPE_INT_RGB);
-        image.createGraphics();
-
-        Graphics2D graphics = (Graphics2D) image.getGraphics();
-        graphics.setColor(Color.WHITE);
-        graphics.fillRect(0, 0, bitMatrix.getWidth(), bitMatrix.getHeight());
-        graphics.setColor(Color.BLACK);
-
-        for (int i = 0; i < bitMatrix.getWidth(); i++) {
-            for (int j = 0; j < bitMatrix.getHeight(); j++) {
-                if (bitMatrix.get(i, j)) {
-                    graphics.fillRect(i, j, 1, 1);
-                }
+        int bmWidth = bitMatrix.getWidth();
+        int bmHeight = bitMatrix.getHeight();
+        BufferedImage image = new BufferedImage(bmWidth, bmHeight, BufferedImage.TYPE_BYTE_BINARY);
+        // FIXME 04 Apr. 2025 21:23: 16384 iterations of individual uncached memory stores :agony:
+        for (int y = 0; y < bmHeight; y++) {
+            for (int x = 0; x < bmWidth; x++) {
+                image.setRGB(x, y, bitMatrix.get(x, y) ? 0x000000 : 0xFFFFFF);
             }
         }
 
-        ByteArrayOutputStream imageOs = new ByteArrayOutputStream();
-        try {
+        String base64Image;
+        try(ByteArrayOutputStream imageOs = new ByteArrayOutputStream()) {
             ImageIO.write(image, "png", imageOs);
-            imageOs.close();
+            base64Image = Base64.getEncoder().encodeToString(imageOs.toByteArray());
         } catch (IOException e) {
             logger.error("Failed to convert QR code to base-64 png", e);
             return new Result.Error<>(null);
         }
-        String base64Image = Base64.getEncoder().encodeToString(imageOs.toByteArray());
 
-        Context context = new Context(Locale.GERMANY);
+		Context context = new Context(Locale.GERMANY);
         context.setVariable("palletId", euroPallet.getPalletId());
         String information = euroPallet.getInformation().substring(0, Math.min(euroPallet.getInformation().length(), MAX_INFORMATION_LENGTH));
         context.setVariable("information", information);
         context.setVariable("image", base64Image);
         String html = templateEngine.process("euroPallet", context);
 
-        ByteArrayOutputStream htmlOs = new ByteArrayOutputStream();
-        try {
+        try(ByteArrayOutputStream htmlOs = new ByteArrayOutputStream()) {
             ITextRenderer renderer = new ITextRenderer();
             renderer.setDocumentFromString(html);
             renderer.layout();
             renderer.createPDF(htmlOs);
-            htmlOs.close();
+            return new Result.Ok<>(htmlOs.toByteArray());
         } catch (DocumentException | IOException e) {
             logger.error("Failed to generate EuroPallet PDF", e);
             return new Result.Error<>(null);
         }
-
-        return new Result.Ok<>(htmlOs.toByteArray());
     }
 }

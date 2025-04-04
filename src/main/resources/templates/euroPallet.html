@@ -9,14 +9,42 @@
             }
 
             body {
-                padding: 0.25cm;
+                margin: 0.25cm;
                 font-family: courier sans-serif;
+            }
+
+            html {
+                height: 100%;
+            }
+
+            h1 {
+                font-size: 40px;
+                margin-top: 0;
+                padding-top: 0;
+            }
+
+            code {
+                font-size: 20px;
+            }
+
+            .theQr {
+                position: absolute;
+                right: 0.25cm;
+                top: 0.25cm;
+                border: 1px solid black;
+            }
+
+            .entropiaLogo {
+                position: absolute;
+                right: 0.25cm;
+                bottom: 0.25cm;
             }
         </style>
     </head>
     <body>
-        <img alt="QR-Code für Europalette" th:src="@{'data:image/jpeg;base64,'+${image}}"/>
+        <img class="theQr" alt="QR-Code für Europalette" th:src="@{'data:image/jpeg;base64,'+${image}}" width="256"/>
         <h1 data-th-utext="${palletId}"></h1>
-        <p data-th-utext="${information}"></p>
+        <pre><code data-th-utext="${information}"></code></pre>
+        <img class="entropiaLogo" alt="Logo der Entropia eV" th:src="@{classpath:Entropia.png}" height="128"></img>
     </body>
 </html>

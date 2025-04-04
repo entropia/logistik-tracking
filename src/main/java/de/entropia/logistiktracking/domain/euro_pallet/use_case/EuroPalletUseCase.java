@@ -97,18 +97,7 @@ public class EuroPalletUseCase {
 		NotFound, BadArguments
 	}
 
-    public Result<byte[], PrintEuroPalletError> printEuroPallet(String euroPalletId) {
-        if (euroPalletId == null) {
-            return new Result.Error<>(PrintEuroPalletError.BadArguments);
-        }
-
-        long id;
-        try {
-            id = Long.parseLong(euroPalletId);
-        } catch (NumberFormatException e) {
-            return new Result.Error<>(PrintEuroPalletError.BadArguments);
-        }
-
+    public Result<byte[], PrintEuroPalletError> printEuroPallet(long id) {
         Optional<EuroPallet> euroPallet = euroPalletRepository.findEuroPallet(id);
 
         if (euroPallet.isEmpty()) {
@@ -117,7 +106,7 @@ public class EuroPalletUseCase {
 
         Result<byte[], Void> pdfResult = euroPalletPdfGenerator.generate(euroPallet.get());
         return switch (pdfResult) {
-            case Result.Ok<byte[], Void> ok -> new Result.Ok<>(ok.result());
+            case Result.Ok<byte[], Void>(byte[] content) -> new Result.Ok<>(content);
             default -> new Result.Error<>(PrintEuroPalletError.FailedToGeneratePdf);
         };
     }
