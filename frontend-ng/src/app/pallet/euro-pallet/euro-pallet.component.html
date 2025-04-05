@@ -6,12 +6,15 @@
       (click)="createPallet()"
     >Pallette erstellen</button>
     <ul>
-      <li
-        *ngFor="let euroPallet of euroPallets ?? []"
-      >
-        <a [routerLink]="'/euroPallet/' + euroPallet.euroPalletId">{{ euroPallet.euroPalletId }}</a>:
-        <app-location [location]="euroPallet.location"></app-location>
-      </li>
+      @for(euroPallet of euroPallets ?? []; track euroPallet.euroPalletId) {
+        <li>
+          <a [routerLink]="'/euroPallet/' + euroPallet.euroPalletId">{{ euroPallet.euroPalletId }}</a>:
+          <app-location [location]="euroPallet.location"></app-location>
+          <button mat-button (click)="printPallet(euroPallet)">
+            Drucken
+          </button>
+        </li>
+      }
     </ul>
   </div>
 </main>

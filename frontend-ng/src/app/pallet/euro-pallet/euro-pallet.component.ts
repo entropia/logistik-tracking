@@ -1,9 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {ApiService} from '../../api/services/api.service';
 import {EuroPalletDto} from '../../api/models/euro-pallet-dto';
-import {NgForOf} from '@angular/common';
-import {LocationTypeDto} from '../../api/models/location-type-dto';
-import {LogisticsLocationDto} from '../../api/models/logistics-location-dto';
 import {MatButton} from '@angular/material/button';
 import {Router, RouterLink} from '@angular/router';
 import {LocationComponent} from '../../location/location.component';
@@ -14,7 +11,6 @@ import {NewEuroPalletDto} from '../../api/models/new-euro-pallet-dto';
 @Component({
   selector: 'app-euro-pallet',
   imports: [
-    NgForOf,
     MatButton,
     LocationComponent,
     RouterLink
@@ -55,6 +51,15 @@ export class EuroPalletComponent implements OnInit {
               });
           }
         });
+    })
+  }
+
+  printPallet(euroPallet: EuroPalletDto) {
+    this.apiService.printEuroPallet({
+      euroPalletId: parseInt(euroPallet.euroPalletId)
+    }).subscribe(v => {
+      let ou = URL.createObjectURL(v)
+      window.open(ou, "_blank")
     })
   }
 }

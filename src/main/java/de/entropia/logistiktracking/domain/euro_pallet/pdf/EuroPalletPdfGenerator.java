@@ -31,7 +31,7 @@ public class EuroPalletPdfGenerator {
 
     public Result<byte[], Void> generate(EuroPallet euroPallet) {
         // TODO: Dynamically switch correct URL based on context. Also happens for CORS.
-        String url = String.format("localhost:4200/euroPallet/%d", euroPallet.getPalletId());
+        String url = String.format("http://localhost:4200/euroPallet/%d", euroPallet.getPalletId());
         QRCodeWriter writer = new QRCodeWriter();
         BitMatrix bitMatrix;
         try {
