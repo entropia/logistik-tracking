@@ -7,6 +7,8 @@ import de.entropia.logistiktracking.openapi.model.EuroPalletDto;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
+
 @Component
 @AllArgsConstructor
 public class EuroPalletConverter {
@@ -28,7 +30,7 @@ public class EuroPalletConverter {
 
     public EuroPalletDto toDto(EuroPallet euroPallet) {
         return new EuroPalletDto()
-                .euroPalletId(Long.toString(euroPallet.getPalletId()))
+                .euroPalletId(new BigDecimal(euroPallet.getPalletId()))
                 .location(locationConverter.toDto(euroPallet.getLocation()))
                 .information(euroPallet.getInformation());
     }

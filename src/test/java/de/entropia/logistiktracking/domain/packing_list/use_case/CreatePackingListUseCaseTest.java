@@ -9,6 +9,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.math.BigDecimal;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 
@@ -31,7 +33,7 @@ class CreatePackingListUseCaseTest {
         Result<PackingListDto, ManagePackingListUseCase.CreateNewPackingListError> result = createPackingListUseCase.createNewPackingListUseCase(
                 new NewPackingListDto()
                         .name("finanzen")
-                        .packedOnPallet("2"));
+                        .packedOnPallet(new BigDecimal(2)));
 
         assertThat(result).isInstanceOf(Result.Error.class);
         ManagePackingListUseCase.CreateNewPackingListError error = result.error();
@@ -40,7 +42,7 @@ class CreatePackingListUseCaseTest {
 
     @Test
     public void failsToCreatePackingListWithEmptyName() {
-        String palletId = createEuroPalletUseCase.createEuroPallet(
+        BigDecimal palletId = createEuroPalletUseCase.createEuroPallet(
                 new NewEuroPalletDto().location(new LocationDto().locationType(LocationTypeDto.SOMEWHERE_ELSE).somewhereElse("somewhere"))
         ).result().getEuroPalletId();
 

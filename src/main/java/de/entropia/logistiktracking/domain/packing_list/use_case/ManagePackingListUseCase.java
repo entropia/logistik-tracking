@@ -33,8 +33,8 @@ public class ManagePackingListUseCase {
     public Result<PackingListDto, CreateNewPackingListError> createNewPackingListUseCase(NewPackingListDto newPackingListDto) {
         long placedOnPalletId;
         try {
-            placedOnPalletId = Long.parseLong(newPackingListDto.getPackedOnPallet());
-        } catch (NumberFormatException e) {
+            placedOnPalletId = newPackingListDto.getPackedOnPallet().longValueExact();
+        } catch (ArithmeticException e) {
             return new Result.Error<>(CreateNewPackingListError.BadArguments);
         }
 

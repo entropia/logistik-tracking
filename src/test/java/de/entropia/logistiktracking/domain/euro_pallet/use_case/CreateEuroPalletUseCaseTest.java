@@ -12,8 +12,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.Objects;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 
@@ -40,7 +38,7 @@ class CreateEuroPalletUseCaseTest {
         assertThat(result).isInstanceOf(Result.Ok.class);
         EuroPalletDto euroPallet = result.result();
 
-        assertThat(euroPalletDatabaseService.findAll()).anyMatch(element -> Objects.equals(euroPallet.getEuroPalletId(), Long.toString(element.getPalletId())));
+        assertThat(euroPalletDatabaseService.findAll()).anyMatch(element -> euroPallet.getEuroPalletId().longValue() == element.getPalletId());
     }
 
     @Test

@@ -590,8 +590,7 @@ components:
           properties:
             euroPalletId:
               description: "Unique identifier for the euro pallet."
-              type: string
-              minLength: 1
+              type: number
           required:
             - euroPalletId
 
@@ -604,8 +603,7 @@ components:
           minLength: 1
         packedOnPallet:
           description: Identifier for Euro pallet.
-          type: string
-          minLength: 1
+          type: number
       required:
         - name
         - packedOnPallet

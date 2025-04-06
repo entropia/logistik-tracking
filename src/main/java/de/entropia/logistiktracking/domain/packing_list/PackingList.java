@@ -40,13 +40,14 @@ public class PackingList {
         }
 
         try {
-            return Optional.of(Long.parseLong(tokens[0]));
+            return Optional.of(Long.parseLong(tokens[1]));
         } catch (NumberFormatException e) {
             return Optional.empty();
         }
     }
 
     public String getHumanReadableIdentifier() {
+        // FIXME 06 Apr. 2025 17:31: soll das so? gibts da nicht ein besseren weg?
         return String.format("%s-%d", name, packingListId);
     }
 
@@ -77,11 +78,6 @@ public class PackingList {
      * @return true if the crate was found and deleted and false otherwise
      */
     public boolean removePackedCrate(OperationCenter operationCenter, String crateName) {
-        int lengthBeforeDelete = packedCrates.size();
-        packedCrates = packedCrates
-                .stream()
-                .filter(crate -> crate.matches(operationCenter, crateName))
-                .toList();
-        return lengthBeforeDelete > packedCrates.size();
+        return packedCrates.removeIf(it -> it.matches(operationCenter, crateName));
     }
 }

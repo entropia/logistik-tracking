@@ -43,7 +43,7 @@ class EuroPalletRouteTest {
 
         assertThat(euroPalletDto.getInformation()).isEqualTo(Optional.of(information));
         assertThat(euroPalletDto.getLocation()).usingRecursiveComparison().isEqualTo(locationDto);
-        assertThat(Long.parseLong(euroPalletDto.getEuroPalletId())).isGreaterThan(0L);
+        assertThat(euroPalletDto.getEuroPalletId().longValueExact()).isGreaterThan(0L);
     }
 
     @Test
