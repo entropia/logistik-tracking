@@ -1,6 +1,7 @@
 package de.entropia.logistiktracking.domain.packing_list.use_case;
 
 
+import de.entropia.logistiktracking.domain.converter.DeliveryStateConverter;
 import de.entropia.logistiktracking.domain.converter.OperationCenterConverter;
 import de.entropia.logistiktracking.domain.converter.PackingListConverter;
 import de.entropia.logistiktracking.domain.euro_pallet.EuroPallet;
@@ -8,10 +9,7 @@ import de.entropia.logistiktracking.domain.operation_center.OperationCenter;
 import de.entropia.logistiktracking.domain.packing_list.PackingList;
 import de.entropia.logistiktracking.domain.repository.EuroPalletRepository;
 import de.entropia.logistiktracking.domain.repository.PackingListRepository;
-import de.entropia.logistiktracking.openapi.model.BasicPackingListDto;
-import de.entropia.logistiktracking.openapi.model.NewPackingListDto;
-import de.entropia.logistiktracking.openapi.model.OperationCenterDto;
-import de.entropia.logistiktracking.openapi.model.PackingListDto;
+import de.entropia.logistiktracking.openapi.model.*;
 import de.entropia.logistiktracking.utility.Result;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -29,6 +27,7 @@ public class ManagePackingListUseCase {
     private final PackingListRepository packingListRepository;
     private final PackingListConverter packingListConverter;
     private final OperationCenterConverter ocConv;
+    private final DeliveryStateConverter deliveryStateConverter;
 
     public Result<PackingListDto, CreateNewPackingListError> createNewPackingListUseCase(NewPackingListDto newPackingListDto) {
         long placedOnPalletId;
@@ -90,6 +89,19 @@ public class ManagePackingListUseCase {
         }
 
         return new Result.Ok<>(packingListConverter.toDto(packingList));
+    }
+
+    public Result<PackingListDto, UpdateDeliveryStateError> updatePacklingListDeliveryState(String id, DeliveryStateDto newDeliveryState) {
+        Optional<PackingList> packingList = packingListRepository.findPackingList(id);
+        if (packingList.isEmpty()) return new Result.Error<>(UpdateDeliveryStateError.NotFound);
+        PackingList actualPl = packingList.get();
+        actualPl.setDeliveryState(deliveryStateConverter.from(newDeliveryState.getDeliveryState()));
+        packingListRepository.updatePackingList(actualPl);
+        return new Result.Ok<>(packingListConverter.toDto(actualPl));
+    }
+
+    public enum UpdateDeliveryStateError {
+        NotFound,
     }
 
     public enum FindPackingListError {

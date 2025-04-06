@@ -5,6 +5,7 @@ import de.entropia.logistiktracking.domain.euro_crate.EuroCrate;
 import de.entropia.logistiktracking.domain.euro_pallet.EuroPallet;
 import de.entropia.logistiktracking.domain.operation_center.OperationCenter;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Collections;
 import java.util.List;
@@ -16,10 +17,11 @@ public class PackingList {
     @Getter
     private final String name;
     @Getter
-    private final DeliveryState deliveryState;
+    @Setter
+    private DeliveryState deliveryState;
     @Getter
     private final EuroPallet packedOn;
-    private List<EuroCrate> packedCrates;
+    private final List<EuroCrate> packedCrates;
 
     public static PackingListBuilder builder() {
         return new PackingListBuilder();

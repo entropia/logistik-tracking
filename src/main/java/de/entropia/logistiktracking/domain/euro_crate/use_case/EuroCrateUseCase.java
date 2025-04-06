@@ -27,7 +27,6 @@ public class EuroCrateUseCase {
     private final LocationConverter locationConverter;
     private final DeliveryStateConverter deliveryStateConverter;
 
-    // TODO: We might not want to initialize the deliveryState manually for a new euro crate.
     public Result<EuroCrateDto, CreateEuroCrateError> createEuroCrate(EuroCrateDto euroCrateDto) {
         EuroCrate euroCrate;
         try {
