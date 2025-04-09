@@ -1,20 +1,21 @@
 <main>
-  <h1>Palletten</h1>
-  <div class="content">
-    <button
-      mat-raised-button
-      (click)="createPallet()"
-    >Pallette erstellen</button>
-    <ul>
-      @for(euroPallet of euroPallets ?? []; track euroPallet.euroPalletId) {
-        <li>
-          <a [routerLink]="'/euroPallet/' + euroPallet.euroPalletId">{{ euroPallet.euroPalletId }}</a>:
-          <app-location [location]="euroPallet.location"></app-location>
-          <button mat-button (click)="printPallet(euroPallet)">
-            Drucken
-          </button>
-        </li>
-      }
-    </ul>
-  </div>
+	<h1>Palletten</h1>
+	<div class="content">
+		<button
+			mat-raised-button
+			(click)="createPallet()"
+		>Pallette erstellen
+		</button>
+		<ul>
+			@for (euroPallet of euroPallets ?? []; track euroPallet.euroPalletId) {
+				<li>
+					<a [routerLink]="'/euroPallet/' + euroPallet.euroPalletId">{{ euroPallet.euroPalletId }}</a>:
+					<app-location [location]="euroPallet.location"></app-location>
+					<button mat-button (click)="printPallet(euroPallet)">
+						Drucken
+					</button>
+				</li>
+			}
+		</ul>
+	</div>
 </main>

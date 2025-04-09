@@ -5,27 +5,27 @@ import {NgForOf} from '@angular/common';
 import {RouterLink} from '@angular/router';
 
 @Component({
-  selector: 'app-packing-list',
-  imports: [
-    NgForOf,
-    RouterLink
-  ],
-  templateUrl: './packing-list.component.html',
-  styleUrl: './packing-list.component.scss'
+	selector: 'app-packing-list',
+	imports: [
+		NgForOf,
+		RouterLink
+	],
+	templateUrl: './packing-list.component.html',
+	styleUrl: './packing-list.component.scss'
 })
 export class PackingListComponent implements OnInit {
-  protected packingLists?: BasicPackingListDto[];
+	protected packingLists?: BasicPackingListDto[];
 
-  constructor(
-    private apiService: ApiService
-  ) {
-  }
+	constructor(
+		private apiService: ApiService
+	) {
+	}
 
-  ngOnInit(): void {
-    this.apiService.getAllPackingLists().subscribe({
-      next: packingLists => {
-        this.packingLists = packingLists;
-      }
-    })
-  }
+	ngOnInit(): void {
+		this.apiService.getAllPackingLists().subscribe({
+			next: packingLists => {
+				this.packingLists = packingLists;
+			}
+		})
+	}
 }

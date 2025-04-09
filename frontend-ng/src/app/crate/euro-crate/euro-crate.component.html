@@ -1,3 +1,8 @@
 <main>
-  <h1>Euroboxen</h1>
+	<h1>Euroboxen</h1>
+	<ul>
+		@for(crate of crates; track crate.name) {
+			<li>{{crate.operationCenter}}: <a [routerLink]="'/euroCrate/' + crate.operationCenter + '/' + crate.name">{{crate.name}}</a>: <app-location [location]="crate.location"></app-location></li>
+		}
+	</ul>
 </main>

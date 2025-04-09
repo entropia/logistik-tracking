@@ -9,57 +9,58 @@ import {CreateEuroPalletComponent} from '../create-euro-pallet/create-euro-palle
 import {NewEuroPalletDto} from '../../api/models/new-euro-pallet-dto';
 
 @Component({
-  selector: 'app-euro-pallet',
-  imports: [
-    MatButton,
-    LocationComponent,
-    RouterLink
-  ],
-  templateUrl: './euro-pallet.component.html',
-  styleUrl: './euro-pallet.component.scss'
+	selector: 'app-euro-pallet',
+	imports: [
+		MatButton,
+		LocationComponent,
+		RouterLink
+	],
+	templateUrl: './euro-pallet.component.html',
+	styleUrl: './euro-pallet.component.scss'
 })
 export class EuroPalletComponent implements OnInit {
-  euroPallets?: EuroPalletDto[];
-  constructor(
-    private apiService: ApiService,
-    private router: Router,
-    private diag: MatDialog
-  ) {
-  }
+	euroPallets?: EuroPalletDto[];
 
-  ngOnInit(): void {
-    this.apiService.getAllEuroPallets().subscribe({
-      next: euroPallets => {
-        this.euroPallets = euroPallets;
-      }
-    })
-  }
+	constructor(
+		private apiService: ApiService,
+		private router: Router,
+		private diag: MatDialog
+	) {
+	}
 
-  createPallet() {
-    this.diag.open<CreateEuroPalletComponent, any, NewEuroPalletDto>(CreateEuroPalletComponent)
-      .afterClosed()
-      .subscribe(value => {
-        if (!value) return;
-        // console.log(value)
-        this.apiService.createEuroPallet({
-          body: value
-        }).subscribe({
-          next: pallet => {
-            this.router.navigate(['euroPallet/' + pallet.euroPalletId])
-              .catch(reason => {
-                console.log("Failed to redirect to newly created pallet because: " + reason);
-              });
-          }
-        });
-    })
-  }
+	ngOnInit(): void {
+		this.apiService.getAllEuroPallets().subscribe({
+			next: euroPallets => {
+				this.euroPallets = euroPallets;
+			}
+		})
+	}
 
-  printPallet(euroPallet: EuroPalletDto) {
-    this.apiService.printEuroPallet({
-      euroPalletId: parseInt(euroPallet.euroPalletId)
-    }).subscribe(v => {
-      let ou = URL.createObjectURL(v)
-      window.open(ou, "_blank")
-    })
-  }
+	createPallet() {
+		this.diag.open<CreateEuroPalletComponent, any, NewEuroPalletDto>(CreateEuroPalletComponent)
+			.afterClosed()
+			.subscribe(value => {
+				if (!value) return;
+				// console.log(value)
+				this.apiService.createEuroPallet({
+					body: value
+				}).subscribe({
+					next: pallet => {
+						this.router.navigate(['euroPallet/' + pallet.euroPalletId])
+							.catch(reason => {
+								console.log("Failed to redirect to newly created pallet because: " + reason);
+							});
+					}
+				});
+			})
+	}
+
+	printPallet(euroPallet: EuroPalletDto) {
+		this.apiService.printEuroPallet({
+			euroPalletId: euroPallet.euroPalletId
+		}).subscribe(v => {
+			let ou = URL.createObjectURL(v)
+			window.open(ou, "_blank")
+		})
+	}
 }

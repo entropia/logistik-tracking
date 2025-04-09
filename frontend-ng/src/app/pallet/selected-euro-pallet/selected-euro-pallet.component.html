@@ -1,12 +1,14 @@
 <main>
-  @if(!pallet) {
-    <h1>Palette wird geladen...</h1>
-  } @else {
-    <h1>Pallette {{ pallet.euroPalletId }}</h1>
-    <div class="content">
-      <p><app-location [location]="pallet.location"></app-location></p>
-      <p>Information:</p>
-      <pre><code>{{ getInfos() }}</code></pre>
-    </div>
-  }
+	@if (!pallet) {
+		<h1>Palette wird geladen...</h1>
+	} @else {
+		<h1>Pallette {{ pallet.euroPalletId }}</h1>
+		<div class="content">
+			<p>
+				<app-location [location]="pallet.location"></app-location>
+			</p>
+			<p>Information:</p>
+			<pre><code>{{ getInfos() }}</code></pre>
+		</div>
+	}
 </main>

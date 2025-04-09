@@ -46,7 +46,7 @@ paths:
         "409":
           description: "A euro crate with this combination of name and OC already exists."
 
-  /euroCrate/{operationCenter}-{euroCrateName}:
+  /euroCrate/{operationCenter}/{euroCrateName}:
     get:
       operationId: getEuroCrate
       summary: "Get a specific euro crates with all details."
@@ -71,7 +71,7 @@ paths:
         "404":
           description: "The selected euroCrate does not exist."
 
-  /euroCrate/{operationCenter}-{euroCrateName}/deliveryState:
+  /euroCrate/{operationCenter}/{euroCrateName}/deliveryState:
     put:
       operationId: modifyDeliveryStateOfCrate
       summary: "Change the delivery state of the selected crate"
@@ -108,7 +108,7 @@ paths:
         "404":
           description: "The selected crate does not exist."
 
-  /euroCrate/{operationCenter}-{euroCrateName}/location:
+  /euroCrate/{operationCenter}/{euroCrateName}/location:
     put:
       operationId: modifyLocationOfCrate
       summary: "Change the location of the selected crate"
@@ -145,7 +145,7 @@ paths:
         "404":
           description: "The selected crate does not exist."
 
-  /euroCrate/{operationCenter}-{euroCrateName}/information:
+  /euroCrate/{operationCenter}/{euroCrateName}/information:
     put:
       operationId: modifyInformationOfCrate
       summary: "Change the free-text information of the selected crate"
@@ -182,7 +182,7 @@ paths:
         "404":
           description: "The selected crate does not exist."
 
-  /euroCrate/{operationCenter}-{euroCrateName}/print:
+  /euroCrate/{operationCenter}/{euroCrateName}/print:
     get:
       operationId: printEuroCrate
       summary: "Generate a printable document for the selected euroCrate."

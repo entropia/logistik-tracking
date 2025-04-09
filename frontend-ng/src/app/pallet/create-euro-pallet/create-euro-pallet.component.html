@@ -1,53 +1,53 @@
 <h2 mat-dialog-title>Neue Palette Erstellen</h2>
 <form [formGroup]="form" (ngSubmit)="handleSubmit()">
-  <mat-dialog-content>
-    <div class="content">
-      <mat-form-field>
-        <mat-label>Ort</mat-label>
-        <mat-select formControlName="locationType" required>
-          @for (v of locationValues(); track v) {
-            <mat-option [value]="v">{{ v }}</mat-option>
-          }
-        </mat-select>
-      </mat-form-field>
+	<mat-dialog-content>
+		<div class="content">
+			<mat-form-field>
+				<mat-label>Ort</mat-label>
+				<mat-select formControlName="locationType" required>
+					@for (v of locationValues(); track v) {
+						<mat-option [value]="v">{{ v }}</mat-option>
+					}
+				</mat-select>
+			</mat-form-field>
 
-      @switch (getType()) {
-        @case (LocationTypeDto.Logistics) {
-          <mat-form-field>
-            <mat-label>Logistik-Ort</mat-label>
-            <mat-select formControlName="locLocation" required>
-              @for (v of locLocationValues(); track v) {
-                <mat-option [value]="v">{{ v }}</mat-option>
-              }
-            </mat-select>
-          </mat-form-field>
-        }
-        @case (LocationTypeDto.AtOperationCenter) {
-          <mat-form-field>
-            <mat-label>OC-Ort</mat-label>
-            <mat-select formControlName="ocLocation" required>
-              @for (v of ocLocationValues(); track v) {
-                <mat-option [value]="v">{{ v }}</mat-option>
-              }
-            </mat-select>
-          </mat-form-field>
-        }
-        @case (LocationTypeDto.SomewhereElse) {
-          <mat-form-field>
-            <mat-label>Ort</mat-label>
-            <input matInput formControlName="somewhereElseLocation" placeholder="Location">
-          </mat-form-field>
-        }
-      }
+			@switch (getType()) {
+				@case (LocationTypeDto.Logistics) {
+					<mat-form-field>
+						<mat-label>Logistik-Ort</mat-label>
+						<mat-select formControlName="locLocation" required>
+							@for (v of locLocationValues(); track v) {
+								<mat-option [value]="v">{{ v }}</mat-option>
+							}
+						</mat-select>
+					</mat-form-field>
+				}
+				@case (LocationTypeDto.AtOperationCenter) {
+					<mat-form-field>
+						<mat-label>OC-Ort</mat-label>
+						<mat-select formControlName="ocLocation" required>
+							@for (v of ocLocationValues(); track v) {
+								<mat-option [value]="v">{{ v }}</mat-option>
+							}
+						</mat-select>
+					</mat-form-field>
+				}
+				@case (LocationTypeDto.SomewhereElse) {
+					<mat-form-field>
+						<mat-label>Ort</mat-label>
+						<input matInput formControlName="somewhereElseLocation" placeholder="Location">
+					</mat-form-field>
+				}
+			}
 
-      <mat-form-field>
-        <mat-label>Informationen</mat-label>
-        <textarea matInput placeholder="Informationen" formControlName="infos"></textarea>
-      </mat-form-field>
-    </div>
-  </mat-dialog-content>
-  <mat-dialog-actions>
-    <button mat-button (click)="cancel()" type="button">Abbrechen</button>
-    <button mat-button type="submit">Speichern</button>
-  </mat-dialog-actions>
+			<mat-form-field>
+				<mat-label>Informationen</mat-label>
+				<textarea matInput placeholder="Informationen" formControlName="infos"></textarea>
+			</mat-form-field>
+		</div>
+	</mat-dialog-content>
+	<mat-dialog-actions>
+		<button mat-button (click)="cancel()" type="button">Abbrechen</button>
+		<button mat-button type="submit">Speichern</button>
+	</mat-dialog-actions>
 </form>
