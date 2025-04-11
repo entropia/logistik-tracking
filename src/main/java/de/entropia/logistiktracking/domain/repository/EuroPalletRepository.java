@@ -6,6 +6,7 @@ import de.entropia.logistiktracking.domain.euro_pallet.EuroPallet;
 import de.entropia.logistiktracking.jpa.EuroPalletDatabaseElement;
 import de.entropia.logistiktracking.jpa.repo.EuroPalletDatabaseService;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -31,7 +32,7 @@ public class EuroPalletRepository {
     }
 
     public List<EuroPallet> findAllEuroPallets() {
-        return euroPalletDatabaseService.findAll().stream()
+        return euroPalletDatabaseService.findAll(Sort.by("palletId").ascending()).stream()
                 .map(euroPalletConverter::from)
                 .toList();
     }

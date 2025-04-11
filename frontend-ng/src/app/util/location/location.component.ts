@@ -1,8 +1,7 @@
 import {Component, Input} from '@angular/core';
-import {LocationDto} from '../api/models/location-dto';
+import {LocationDto} from '../../api/models/location-dto';
 import {NgIf} from '@angular/common';
-import {LocationTypeDto} from '../api/models';
-import {MatIcon} from '@angular/material/icon';
+import {LocationTypeDto} from '../../api/models';
 
 @Component({
 	selector: 'app-location',

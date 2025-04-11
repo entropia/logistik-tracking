@@ -8,6 +8,7 @@ import de.entropia.logistiktracking.jpa.EuroCrateDatabaseElement;
 import de.entropia.logistiktracking.jpa.PackingListDatabaseElement;
 import de.entropia.logistiktracking.jpa.repo.PackingListDatabaseService;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -27,7 +28,7 @@ public class PackingListRepository {
     }
 
     public List<PackingList> findAllPackingLists() {
-        return packingListDatabaseService.findAll().stream()
+        return packingListDatabaseService.findAll(Sort.by("id").ascending()).stream()
                 .map(packingListConverter::from)
                 .toList();
     }

@@ -3,7 +3,7 @@ import {ApiService} from '../../api/services/api.service';
 import {EuroPalletDto} from '../../api/models/euro-pallet-dto';
 import {MatButton} from '@angular/material/button';
 import {Router, RouterLink} from '@angular/router';
-import {LocationComponent} from '../../location/location.component';
+import {LocationComponent} from '../../util/location/location.component';
 import {MatDialog} from '@angular/material/dialog';
 import {CreateEuroPalletComponent} from '../create-euro-pallet/create-euro-pallet.component';
 import {NewEuroPalletDto} from '../../api/models/new-euro-pallet-dto';

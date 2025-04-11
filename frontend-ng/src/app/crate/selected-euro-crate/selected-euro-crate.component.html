@@ -1,1 +1,14 @@
-<p>selected-euro-crate works!</p>
+@if (!crate) {
+	<h1>Box wird geladen...</h1>
+} @else {
+	<h1>Pallette {{crate.operationCenter}} / {{crate.name}}</h1>
+	<div class="content">
+		<p>
+			<app-location [location]="crate.location"></app-location>
+		</p>
+		<p>Momentan: {{crate.deliveryState}}</p>
+		<p>Soll wieder bei LOC sein: {{crate.returnBy}}</p>
+		<p>Information:</p>
+		<pre><code>{{ getInfos() }}</code></pre>
+	</div>
+}
