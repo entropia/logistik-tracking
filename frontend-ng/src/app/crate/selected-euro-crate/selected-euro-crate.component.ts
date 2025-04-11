@@ -3,12 +3,28 @@ import { ApiService } from '../../api/services';
 import {OperationCenterDto} from '../../api/models/operation-center-dto';
 import {EuroCrateDto} from '../../api/models/euro-crate-dto';
 import {ActivatedRoute} from '@angular/router';
-import {LocationComponent} from '../../util/location/location.component';
+import {FormsModule, NgModel} from '@angular/forms';
+import {LocationEditorComponent} from '../../util/location-editor/location-editor.component';
+import {ValidateLocationDirective} from '../../util/location-editor/location-validator';
+import {DeliveryStateEnumDto, LogisticsLocationDto} from '../../api/models';
+import {MatError, MatFormField, MatInput, MatLabel} from '@angular/material/input';
+import {MatOption, MatSelect} from '@angular/material/select';
+import {MatButton} from '@angular/material/button';
+import {forkJoin} from 'rxjs';
 
 @Component({
 	selector: 'app-selected-euro-crate',
 	imports: [
-		LocationComponent
+		FormsModule,
+		LocationEditorComponent,
+		ValidateLocationDirective,
+		MatError,
+		MatFormField,
+		MatLabel,
+		MatSelect,
+		MatOption,
+		MatInput,
+		MatButton
 	],
 	templateUrl: './selected-euro-crate.component.html',
 	styleUrl: './selected-euro-crate.component.scss'
@@ -39,6 +55,7 @@ export class SelectedEuroCrateComponent implements OnInit {
 			}).subscribe({
 				next: ec => {
 					this.crate = ec;
+					this.crate.information = this.crate.information ?? "";
 				},
 				error: err => {
 					alert("Failed to load crate. See console for error")
@@ -48,10 +65,42 @@ export class SelectedEuroCrateComponent implements OnInit {
 		})
 	}
 
-	getInfos(): string {
-		let existing = this.crate?.information ?? "";
-		existing = existing.trim()
-		if (existing.length == 0) return "Keine Informationen";
-		return existing;
+	saveIt(locationMod: NgModel, deliStatusMod: NgModel, ftInfoMod: NgModel) {
+		let promises = []
+		if (locationMod.dirty) {
+			promises.push(this.apiService.modifyLocationOfCrate({
+				euroCrateName: this.crate!.name,
+				operationCenter: this.crate!.operationCenter,
+				body: this.crate!.location
+			}))
+		}
+		if (deliStatusMod.dirty) {
+			promises.push(this.apiService.modifyDeliveryStateOfCrate({
+				euroCrateName: this.crate!.name,
+				operationCenter: this.crate!.operationCenter,
+				body: this.crate!
+			}))
+		}
+		if (ftInfoMod.dirty) {
+			promises.push(this.apiService.modifyInformationOfCrate({
+				euroCrateName: this.crate!.name,
+				operationCenter: this.crate!.operationCenter,
+				body: this.crate!
+			}))
+		}
+		console.dir(promises)
+		forkJoin(promises).subscribe({
+			next: v => {
+				console.log(v)
+			},
+			error: e => {
+				alert("failed to save! check console")
+				console.error(e)
+			}
+		})
 	}
+
+	protected readonly LogisticsLocationDto = LogisticsLocationDto;
+	protected readonly Object = Object;
+	protected readonly DeliveryStateEnumDto = DeliveryStateEnumDto;
 }

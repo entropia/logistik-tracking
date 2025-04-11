@@ -1,12 +1,10 @@
-import {Component, forwardRef, Input} from '@angular/core';
+import {Component, forwardRef} from '@angular/core';
 import {LocationDto} from '../../api/models/location-dto';
 import {LocationTypeDto} from '../../api/models/location-type-dto';
-import {JsonPipe} from '@angular/common';
 import {MatFormField, MatInput, MatLabel} from '@angular/material/input';
 import {MatOption, MatSelect} from '@angular/material/select';
 import {ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR, NgForm} from '@angular/forms';
 import {LogisticsLocationDto, OperationCenterDto} from '../../api/models';
-import {LocationComponent} from '../location/location.component';
 
 @Component({
   selector: 'app-location-editor',
@@ -16,8 +14,7 @@ import {LocationComponent} from '../location/location.component';
 		FormsModule,
 		MatOption,
 		MatInput,
-		MatLabel,
-		LocationComponent
+		MatLabel
 	],
   templateUrl: './location-editor.component.html',
   styleUrl: './location-editor.component.scss',

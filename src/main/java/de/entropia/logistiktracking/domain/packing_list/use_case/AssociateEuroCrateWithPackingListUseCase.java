@@ -13,11 +13,13 @@ import de.entropia.logistiktracking.openapi.model.PackingListDto;
 import de.entropia.logistiktracking.utility.Result;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
 @Component
 @AllArgsConstructor
+@Transactional
 public class AssociateEuroCrateWithPackingListUseCase {
     private final PackingListRepository packingListRepository;
     private final EuroCrateRepository euroCrateRepository;

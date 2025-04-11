@@ -2,13 +2,43 @@
 	<h1>Box wird geladen...</h1>
 } @else {
 	<h1>Pallette {{crate.operationCenter}} / {{crate.name}}</h1>
-	<div class="content">
-		<p>
-			<app-location [location]="crate.location"></app-location>
-		</p>
-		<p>Momentan: {{crate.deliveryState}}</p>
-		<p>Soll wieder bei LOC sein: {{crate.returnBy}}</p>
-		<p>Information:</p>
-		<pre><code>{{ getInfos() }}</code></pre>
-	</div>
+	<form (ngSubmit)="saveIt(location, delStatus, ftInfo); theForm.form.markAsPristine()" #theForm="ngForm">
+		<div class="content">
+			<h2>Ort</h2>
+			<p>
+				<app-location-editor [(ngModel)]="crate.location" appValidateLocation name="location" #location="ngModel"></app-location-editor>
+				@if (location.invalid && (location.dirty || location.touched)) {
+					@if(location.hasError("ocRequired")) {
+						<mat-error>OC nicht gefüllt!</mat-error>
+					}
+					@if(location.hasError("locRequired")) {
+						<mat-error>LOC ort nicht gefüllt!</mat-error>
+					}
+					@if(location.hasError("locFreetextRequired")) {
+						<mat-error>Ort nicht gefüllt!</mat-error>
+					}
+				}
+			</p>
+			<h2>Delivery status</h2>
+			<mat-form-field>
+				<mat-label>Delivery Status</mat-label>
+				<mat-select [(ngModel)]="crate.deliveryState" required name="deliverState" #delStatus="ngModel">
+					@for (v of Object.values(DeliveryStateEnumDto); track v) {
+						<mat-option [value]="v">{{ v }}</mat-option>
+					}
+				</mat-select>
+				@if (delStatus.invalid && (delStatus.dirty || delStatus.touched)) {
+					@if(delStatus.hasError("required")) {
+						<mat-error>Erforderlich</mat-error>
+					}
+				}
+			</mat-form-field>
+			<h2>Sonstiges</h2>
+			<p>Soll wieder bei LOC sein: {{crate.returnBy}}</p>
+			<p>Information:</p>
+			<textarea matInput [(ngModel)]="crate.information" name="ftInfo" class="ftInfo" rows="5" #ftInfo="ngModel"></textarea>
+
+			<button mat-flat-button type="submit" [disabled]="!theForm.form.valid || !theForm.dirty">Änderungen Speichern</button>
+		</div>
+	</form>
 }

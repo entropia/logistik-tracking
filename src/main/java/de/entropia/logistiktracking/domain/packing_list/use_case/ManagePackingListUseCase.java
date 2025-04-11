@@ -11,9 +11,9 @@ import de.entropia.logistiktracking.domain.repository.EuroPalletRepository;
 import de.entropia.logistiktracking.domain.repository.PackingListRepository;
 import de.entropia.logistiktracking.openapi.model.*;
 import de.entropia.logistiktracking.utility.Result;
-import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;

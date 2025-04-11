@@ -36,8 +36,7 @@ public class EuroCrateDatabaseElement {
     @Column(name = "deliveryState", nullable = false)
     private DeliveryState deliveryState;
 
-    @OneToOne(cascade = CascadeType.ALL, optional = false, orphanRemoval = true)
-    @JoinColumn(name = "location", nullable = false)
+    @Embedded
     private LocationDatabaseElement location;
 
     @Setter

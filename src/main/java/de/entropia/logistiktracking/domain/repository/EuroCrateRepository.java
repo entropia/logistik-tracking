@@ -40,12 +40,16 @@ public class EuroCrateRepository {
     }
 
     public Optional<EuroCrate> findEuroCrate(OperationCenter operationCenter, String euroCrateName) {
-        return euroCrateDatabaseService
-                .findById(new EuroCrateDatabaseElement.EuroCrateDatabaseElementId(operationCenter, euroCrateName))
+        return findDatabaseElement(operationCenter, euroCrateName)
                 .map(euroCrateConverter::from);
     }
 
-    public void updateEuroCrate(EuroCrate euroCrate) {
+	public Optional<EuroCrateDatabaseElement> findDatabaseElement(OperationCenter operationCenter, String euroCrateName) {
+		return euroCrateDatabaseService
+				.findById(new EuroCrateDatabaseElement.EuroCrateDatabaseElementId(operationCenter, euroCrateName));
+	}
+
+	public void updateEuroCrate(EuroCrate euroCrate) {
         EuroCrateDatabaseElement euroCrateDatabaseElement = euroCrateConverter.toDatabaseElement(euroCrate);
         euroCrateDatabaseService.save(euroCrateDatabaseElement);
     }

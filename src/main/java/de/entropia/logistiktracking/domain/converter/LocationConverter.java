@@ -17,9 +17,9 @@ public class LocationConverter {
 
     public LocationDatabaseElement toDatabaseElement(Location location) {
         return switch (location) {
-            case LogisticsLocation logisticsLocation -> new LocationDatabaseElement(0, logisticsLocation.type(), null, null);
-            case OperationCenterLocation operationCenterLocation -> new LocationDatabaseElement(0, null, operationCenterLocation.operationCenter(), null);
-            case SomewhereLocation somewhereLocation -> new LocationDatabaseElement(0, null, null, somewhereLocation.somewhereElse());
+            case LogisticsLocation logisticsLocation -> new LocationDatabaseElement(logisticsLocation.type(), null, null);
+            case OperationCenterLocation operationCenterLocation -> new LocationDatabaseElement(null, operationCenterLocation.operationCenter(), null);
+            case SomewhereLocation somewhereLocation -> new LocationDatabaseElement(null, null, somewhereLocation.somewhereElse());
         };
     }
 

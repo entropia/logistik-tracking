@@ -558,10 +558,9 @@ components:
             operationCenter:
               $ref: "#/components/schemas/OperationCenterDto"
             name:
-              description: "A short distinct name describing the contents and/or target location of the euro crate. Has to be unique in combination with the OC. May not contain -."
+              description: "A short distinct name describing the contents and/or target location of the euro crate. Has to be unique in combination with the OC."
               type: string
               minLength: 1
-              pattern: ^[^-]+$
             returnBy:
               description: "At which date should the euro crate be returned to the logistics operation center."
               type: string

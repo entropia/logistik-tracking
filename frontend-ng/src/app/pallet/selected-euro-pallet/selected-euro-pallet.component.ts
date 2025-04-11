@@ -58,16 +58,15 @@ export class SelectedEuroPalletComponent implements OnInit {
 	}
 
 	saveIt(_t8: NgForm) {
-		const outer = this;
 		this.apiService.updateLastLocationOfEuroPallet({
 			euroPalletId: this.pallet!.euroPalletId,
 			body: this.editingLocation!
 		}).subscribe({
-			next(a) {
-				outer.pallet = a;
+			next: a => {
+				this.pallet = a;
 				_t8.resetForm()
-				outer.editingLocation = {...a.location};
-				outer.snackbar.open("Saved!", undefined, {
+				this.editingLocation = {...a.location};
+				this.snackbar.open("Saved!", undefined, {
 					duration: 3000
 				})
 			},

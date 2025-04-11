@@ -142,6 +142,12 @@
             <scope>test</scope>
         </dependency>
 
+        <dependency>
+            <groupId>com.github.gavlyukovskiy</groupId>
+            <artifactId>datasource-proxy-spring-boot-starter</artifactId>
+            <version>1.9.2</version>
+        </dependency>
+
     </dependencies>
 
     <build>

@@ -7,13 +7,14 @@ import de.entropia.logistiktracking.domain.euro_pallet.EuroPallet;
 import de.entropia.logistiktracking.domain.euro_pallet.pdf.EuroPalletPdfGenerator;
 import de.entropia.logistiktracking.domain.location.Location;
 import de.entropia.logistiktracking.domain.repository.EuroPalletRepository;
+import de.entropia.logistiktracking.jpa.repo.EuroPalletDatabaseService;
 import de.entropia.logistiktracking.openapi.model.EuroPalletDto;
 import de.entropia.logistiktracking.openapi.model.LocationDto;
 import de.entropia.logistiktracking.openapi.model.NewEuroPalletDto;
 import de.entropia.logistiktracking.utility.Result;
-import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -27,8 +28,9 @@ public class EuroPalletUseCase {
     private final LocationConverter locationConverter;
     private final EuroPalletConverter euroPalletConverter;
     private final EuroPalletPdfGenerator euroPalletPdfGenerator;
+	private final EuroPalletDatabaseService euroPalletDatabaseService;
 
-    public Result<EuroPalletDto, CreateEuroPalletError> createEuroPallet(NewEuroPalletDto newEuroPalletDto) {
+	public Result<EuroPalletDto, CreateEuroPalletError> createEuroPallet(NewEuroPalletDto newEuroPalletDto) {
         if (newEuroPalletDto == null) {
             return new Result.Error<>(CreateEuroPalletError.BadArguments);
         }
@@ -86,9 +88,10 @@ public class EuroPalletUseCase {
 			return new Result.Error<>(ModifyPalletError.BadArguments);
 		}
 
+		euroPalletDatabaseService.updateLocation(id, locationConverter.toDatabaseElement(location));
+
 		EuroPallet euroPallet1 = euroPallet.get();
 		euroPallet1.setLocation(location);
-		euroPalletRepository.updatePallet(euroPallet1);
 
 		return new Result.Ok<>(euroPalletConverter.toDto(euroPallet1));
 	}

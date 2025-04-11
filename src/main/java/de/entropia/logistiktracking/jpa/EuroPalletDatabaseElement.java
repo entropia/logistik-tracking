@@ -21,7 +21,6 @@ public class EuroPalletDatabaseElement {
     @Column(name = "information", nullable = false)
     private String information;
 
-    @JoinColumn(name = "location_id")
-    @OneToOne(optional = false, cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+    @Embedded
     private LocationDatabaseElement location;
 }
