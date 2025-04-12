@@ -17,35 +17,37 @@ import java.util.Optional;
 @Component
 @AllArgsConstructor
 public class PackingListRepository {
-    private final PackingListDatabaseService packingListDatabaseService;
-    private final PackingListConverter packingListConverter;
-    private final EuroCrateConverter euroCrateConverter;
+	private final PackingListDatabaseService packingListDatabaseService;
+	private final PackingListConverter packingListConverter;
+	private final EuroCrateConverter euroCrateConverter;
 
-    public PackingList createNewPackingList(PackingList packingList) {
-        PackingListDatabaseElement databaseElement = packingListConverter.toDatabaseElement(packingList);
-        databaseElement = packingListDatabaseService.save(databaseElement);
-        return packingListConverter.from(databaseElement);
-    }
+	public PackingList createNewPackingList(PackingList packingList) {
+		PackingListDatabaseElement databaseElement = packingListConverter.toDatabaseElement(packingList);
+		databaseElement = packingListDatabaseService.save(databaseElement);
+		return packingListConverter.from(databaseElement);
+	}
 
-    public List<PackingList> findAllPackingLists() {
-        return packingListDatabaseService.findAll(Sort.by("id").ascending()).stream()
-                .map(packingListConverter::from)
-                .toList();
-    }
+	public List<PackingList> findAllPackingLists() {
+		return packingListDatabaseService.findAll(Sort.by("packingListId").ascending()).stream()
+				.map(packingListConverter::from)
+				.toList();
+	}
 
-    public Optional<PackingList> findPackingList(String humanReadableId) {
-        return PackingList.extractIdFromHumanReadableIdentifier(humanReadableId)
-                .flatMap(packingListDatabaseService::findById)
-                .map(packingListConverter::from);
-    }
+	public Optional<PackingList> findPackingList(long humanReadableId) {
+		return findDatabaseElement(humanReadableId).map(packingListConverter::from);
+	}
 
-    public boolean isEuroCrateAssociatedToAnyPackingList(EuroCrate euroCrate) {
-        EuroCrateDatabaseElement euroCrateDatabaseElement = euroCrateConverter.toDatabaseElement(euroCrate);
-        return !packingListDatabaseService.findByPackedCratesContains(List.of(euroCrateDatabaseElement)).isEmpty();
-    }
+	public Optional<PackingListDatabaseElement> findDatabaseElement(long humanReadableId) {
+		return packingListDatabaseService.findById(humanReadableId);
+	}
 
-    public void updatePackingList(PackingList packingList) {
-        PackingListDatabaseElement databaseElement = packingListConverter.toDatabaseElement(packingList);
-        packingListDatabaseService.save(databaseElement);
-    }
+	public boolean isEuroCrateAssociatedToAnyPackingList(EuroCrate euroCrate) {
+		EuroCrateDatabaseElement euroCrateDatabaseElement = euroCrateConverter.toDatabaseElement(euroCrate);
+		return packingListDatabaseService.existsByPackedCratesContains(euroCrateDatabaseElement);
+	}
+
+	public void updatePackingList(PackingList packingList) {
+		PackingListDatabaseElement databaseElement = packingListConverter.toDatabaseElement(packingList);
+		packingListDatabaseService.save(databaseElement);
+	}
 }

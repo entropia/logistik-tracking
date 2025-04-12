@@ -23,94 +23,85 @@ import java.util.Optional;
 @Component
 @AllArgsConstructor
 public class ManagePackingListUseCase {
-    private final EuroPalletRepository euroPalletRepository;
-    private final PackingListRepository packingListRepository;
-    private final PackingListConverter packingListConverter;
-    private final OperationCenterConverter ocConv;
-    private final DeliveryStateConverter deliveryStateConverter;
+	private final EuroPalletRepository euroPalletRepository;
+	private final PackingListRepository packingListRepository;
+	private final PackingListConverter packingListConverter;
+	private final OperationCenterConverter ocConv;
+	private final DeliveryStateConverter deliveryStateConverter;
 
-    public Result<PackingListDto, CreateNewPackingListError> createNewPackingListUseCase(NewPackingListDto newPackingListDto) {
-        long placedOnPalletId;
-        try {
-            placedOnPalletId = newPackingListDto.getPackedOnPallet().longValueExact();
-        } catch (ArithmeticException e) {
-            return new Result.Error<>(CreateNewPackingListError.BadArguments);
-        }
+	public Result<PackingListDto, CreateNewPackingListError> createNewPackingListUseCase(NewPackingListDto newPackingListDto) {
+		long placedOnPalletId = newPackingListDto.getPackedOnPallet();
 
-        Optional<EuroPallet> placedOnPallet = euroPalletRepository.findEuroPallet(placedOnPalletId);
-        if (placedOnPallet.isEmpty()) {
-            return new Result.Error<>(CreateNewPackingListError.TargetPalletNotFound);
-        }
+		Optional<EuroPallet> placedOnPallet = euroPalletRepository.findEuroPallet(placedOnPalletId);
+		if (placedOnPallet.isEmpty()) {
+			return new Result.Error<>(CreateNewPackingListError.TargetPalletNotFound);
+		}
 
-        PackingList packingList;
-        try {
-            packingList = PackingList
-                    .builder()
-                    .name(newPackingListDto.getName())
-                    .packedOn(placedOnPallet.get())
-                    .build();
-        } catch (IllegalArgumentException e) {
-            return new Result.Error<>(CreateNewPackingListError.BadArguments);
-        }
+		PackingList packingList;
+		try {
+			packingList = PackingList
+					.builder()
+					.name(newPackingListDto.getName())
+					.packedOn(placedOnPallet.get())
+					.build();
+		} catch (IllegalArgumentException e) {
+			return new Result.Error<>(CreateNewPackingListError.BadArguments);
+		}
 
-        packingList = packingListRepository.createNewPackingList(packingList);
-        return new Result.Ok<>(packingListConverter.toDto(packingList));
-    }
+		packingList = packingListRepository.createNewPackingList(packingList);
+		return new Result.Ok<>(packingListConverter.toDto(packingList));
+	}
 
-    public List<BasicPackingListDto> findAllPackingLists() {
-        return packingListRepository.findAllPackingLists()
-                .stream()
-                .map(packingListConverter::toBasicDto)
-                .toList();
-    }
+	public List<BasicPackingListDto> findAllPackingLists() {
+		return packingListRepository.findAllPackingLists()
+				.stream()
+				.map(packingListConverter::toBasicDto)
+				.toList();
+	}
 
-    public Result<PackingListDto, FindPackingListError> findPackingList(String humanReadablePackingListId, Optional<OperationCenterDto> operationCenterDto) {
-        if (humanReadablePackingListId == null) {
-            return new Result.Error<>(FindPackingListError.BadArguments);
-        }
+	public Result<PackingListDto, FindPackingListError> findPackingList(long humanReadablePackingListId, Optional<OperationCenterDto> operationCenterDto) {
+		Optional<OperationCenter> operationCenter;
+		try {
+			operationCenter = operationCenterDto.map(ocConv::from);
+		} catch (IllegalArgumentException e) {
+			return new Result.Error<>(FindPackingListError.BadArguments);
+		}
 
-        Optional<OperationCenter> operationCenter;
-        try {
-            operationCenter = operationCenterDto.map(ocConv::from);
-        } catch (IllegalArgumentException e) {
-            return new Result.Error<>(FindPackingListError.BadArguments);
-        }
+		Optional<PackingList> packingListOpt = packingListRepository.findPackingList(humanReadablePackingListId);
 
-        Optional<PackingList> packingListOpt = packingListRepository.findPackingList(humanReadablePackingListId);
+		if (packingListOpt.isEmpty()) {
+			return new Result.Error<>(FindPackingListError.PackingListNotFound);
+		}
 
-        if (packingListOpt.isEmpty()) {
-            return new Result.Error<>(FindPackingListError.PackingListNotFound);
-        }
+		PackingList packingList = packingListOpt.get();
 
-        PackingList packingList = packingListOpt.get();
+		if (operationCenter.isPresent()) {
+			packingList = packingList.filterCratesBy(operationCenter.get());
+		}
 
-        if (operationCenter.isPresent()) {
-            packingList = packingList.filterCratesBy(operationCenter.get());
-        }
+		return new Result.Ok<>(packingListConverter.toDto(packingList));
+	}
 
-        return new Result.Ok<>(packingListConverter.toDto(packingList));
-    }
+	public Result<PackingListDto, UpdateDeliveryStateError> updatePacklingListDeliveryState(Long id, DeliveryStateDto newDeliveryState) {
+		Optional<PackingList> packingList = packingListRepository.findPackingList(id);
+		if (packingList.isEmpty()) return new Result.Error<>(UpdateDeliveryStateError.NotFound);
+		PackingList actualPl = packingList.get();
+		actualPl.setDeliveryState(deliveryStateConverter.from(newDeliveryState.getDeliveryState()));
+		packingListRepository.updatePackingList(actualPl);
+		return new Result.Ok<>(packingListConverter.toDto(actualPl));
+	}
 
-    public Result<PackingListDto, UpdateDeliveryStateError> updatePacklingListDeliveryState(String id, DeliveryStateDto newDeliveryState) {
-        Optional<PackingList> packingList = packingListRepository.findPackingList(id);
-        if (packingList.isEmpty()) return new Result.Error<>(UpdateDeliveryStateError.NotFound);
-        PackingList actualPl = packingList.get();
-        actualPl.setDeliveryState(deliveryStateConverter.from(newDeliveryState.getDeliveryState()));
-        packingListRepository.updatePackingList(actualPl);
-        return new Result.Ok<>(packingListConverter.toDto(actualPl));
-    }
+	public enum UpdateDeliveryStateError {
+		NotFound,
+	}
 
-    public enum UpdateDeliveryStateError {
-        NotFound,
-    }
+	public enum FindPackingListError {
+		BadArguments,
+		PackingListNotFound,
+	}
 
-    public enum FindPackingListError {
-        BadArguments,
-        PackingListNotFound,
-    }
-
-    public enum CreateNewPackingListError {
-        TargetPalletNotFound,
-        BadArguments
-    }
+	public enum CreateNewPackingListError {
+		TargetPalletNotFound,
+		BadArguments
+	}
 }

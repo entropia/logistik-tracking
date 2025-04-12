@@ -15,10 +15,10 @@ import java.util.Optional;
 @Component
 @AllArgsConstructor
 public class EuroCrateRepository {
-    private final EuroCrateDatabaseService euroCrateDatabaseService;
-    private final EuroCrateConverter euroCrateConverter;
+	private final EuroCrateDatabaseService euroCrateDatabaseService;
+	private final EuroCrateConverter euroCrateConverter;
 
-    public Optional<EuroCrate> createNewEuroCrate(EuroCrate euroCrate) {
+	public Optional<EuroCrate> createNewEuroCrate(EuroCrate euroCrate) {
 		if (euroCrateDatabaseService.existsById(new EuroCrateDatabaseElement.EuroCrateDatabaseElementId(
 				euroCrate.getOperationCenter(),
 				euroCrate.getName()
@@ -26,23 +26,23 @@ public class EuroCrateRepository {
 			return Optional.empty();
 		}
 
-        EuroCrateDatabaseElement newCrateElement = euroCrateDatabaseService.save(
-            euroCrateConverter.toDatabaseElement(euroCrate)
-        );
+		EuroCrateDatabaseElement newCrateElement = euroCrateDatabaseService.save(
+				euroCrateConverter.toDatabaseElement(euroCrate)
+		);
 
-        return Optional.of(euroCrateConverter.from(newCrateElement));
-    }
+		return Optional.of(euroCrateConverter.from(newCrateElement));
+	}
 
-    public List<EuroCrate> findAllEuroCrates() {
-        return euroCrateDatabaseService.findAll(Sort.by("operationCenter", "name").ascending()).stream()
-                .map(euroCrateConverter::from)
-                .toList();
-    }
+	public List<EuroCrate> findAllEuroCrates() {
+		return euroCrateDatabaseService.findAll(Sort.by("operationCenter", "name").ascending()).stream()
+				.map(euroCrateConverter::from)
+				.toList();
+	}
 
-    public Optional<EuroCrate> findEuroCrate(OperationCenter operationCenter, String euroCrateName) {
-        return findDatabaseElement(operationCenter, euroCrateName)
-                .map(euroCrateConverter::from);
-    }
+	public Optional<EuroCrate> findEuroCrate(OperationCenter operationCenter, String euroCrateName) {
+		return findDatabaseElement(operationCenter, euroCrateName)
+				.map(euroCrateConverter::from);
+	}
 
 	public Optional<EuroCrateDatabaseElement> findDatabaseElement(OperationCenter operationCenter, String euroCrateName) {
 		return euroCrateDatabaseService
@@ -50,7 +50,7 @@ public class EuroCrateRepository {
 	}
 
 	public void updateEuroCrate(EuroCrate euroCrate) {
-        EuroCrateDatabaseElement euroCrateDatabaseElement = euroCrateConverter.toDatabaseElement(euroCrate);
-        euroCrateDatabaseService.save(euroCrateDatabaseElement);
-    }
+		EuroCrateDatabaseElement euroCrateDatabaseElement = euroCrateConverter.toDatabaseElement(euroCrate);
+		euroCrateDatabaseService.save(euroCrateDatabaseElement);
+	}
 }

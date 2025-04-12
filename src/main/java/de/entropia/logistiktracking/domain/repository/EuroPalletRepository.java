@@ -16,35 +16,35 @@ import java.util.Optional;
 @Component
 @AllArgsConstructor
 public class EuroPalletRepository {
-    private final EuroPalletDatabaseService euroPalletDatabaseService;
-    private final EuroPalletConverter euroPalletConverter;
+	private final EuroPalletDatabaseService euroPalletDatabaseService;
+	private final EuroPalletConverter euroPalletConverter;
 
-    public EuroPallet createNewEuroPallet(EuroPallet newEuroPallet) throws IllegalArgumentException {
-        if (newEuroPallet.getPalletId() != 0) {
-            throw new IllegalArgumentException("palletId of a new pallet must be zero.");
-        }
+	public EuroPallet createNewEuroPallet(EuroPallet newEuroPallet) throws IllegalArgumentException {
+		if (newEuroPallet.getPalletId() != 0) {
+			throw new IllegalArgumentException("palletId of a new pallet must be zero.");
+		}
 
-        EuroPalletDatabaseElement euroPalletDatabaseElement = euroPalletConverter.toDatabaseElement(newEuroPallet);
-        euroPalletDatabaseElement = euroPalletDatabaseService.save(euroPalletDatabaseElement);
-        newEuroPallet = euroPalletConverter.from(euroPalletDatabaseElement);
+		EuroPalletDatabaseElement euroPalletDatabaseElement = euroPalletConverter.toDatabaseElement(newEuroPallet);
+		euroPalletDatabaseElement = euroPalletDatabaseService.save(euroPalletDatabaseElement);
+		newEuroPallet = euroPalletConverter.from(euroPalletDatabaseElement);
 
-        return newEuroPallet;
-    }
+		return newEuroPallet;
+	}
 
-    public List<EuroPallet> findAllEuroPallets() {
-        return euroPalletDatabaseService.findAll(Sort.by("palletId").ascending()).stream()
-                .map(euroPalletConverter::from)
-                .toList();
-    }
+	public List<EuroPallet> findAllEuroPallets() {
+		return euroPalletDatabaseService.findAll(Sort.by("palletId").ascending()).stream()
+				.map(euroPalletConverter::from)
+				.toList();
+	}
 
-    public Optional<EuroPallet> findEuroPallet(long palletId) {
-        return euroPalletDatabaseService
-                .findById(palletId)
-                .map(euroPalletConverter::from);
-    }
+	public Optional<EuroPallet> findEuroPallet(long palletId) {
+		return euroPalletDatabaseService
+				.findById(palletId)
+				.map(euroPalletConverter::from);
+	}
 
-    public void updatePallet(EuroPallet euroPallet1) {
-        EuroPalletDatabaseElement dbEl = euroPalletConverter.toDatabaseElement(euroPallet1);
-        euroPalletDatabaseService.save(dbEl);
-    }
+	public void updatePallet(EuroPallet euroPallet1) {
+		EuroPalletDatabaseElement dbEl = euroPalletConverter.toDatabaseElement(euroPallet1);
+		euroPalletDatabaseService.save(dbEl);
+	}
 }

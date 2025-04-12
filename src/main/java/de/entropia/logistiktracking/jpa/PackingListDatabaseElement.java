@@ -17,22 +17,22 @@ import java.util.List;
 @Entity
 @Table(name = "packing_list")
 public class PackingListDatabaseElement {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "packing_list_id", nullable = false)
-    private long packingListId;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "packing_list_id", nullable = false)
+	private long packingListId;
 
-    @Column(name = "name", nullable = false)
-    private String name;
+	@Column(name = "name", nullable = false)
+	private String name;
 
-    @Column(name = "delivery_state")
-    private DeliveryState deliveryState;
+	@Column(name = "delivery_state")
+	private DeliveryState deliveryState;
 
-    @OneToOne(optional = false, fetch = FetchType.EAGER)
-    @JoinColumn(name = "packed_on", nullable = false)
-    private EuroPalletDatabaseElement packedOn;
+	@OneToOne(optional = false, fetch = FetchType.EAGER)
+	@JoinColumn(name = "packed_on", nullable = false)
+	private EuroPalletDatabaseElement packedOn;
 
-    @OneToMany(fetch = FetchType.EAGER)
-    @JoinColumn(name = "packed_crates")
-    private List<EuroCrateDatabaseElement> packedCrates;
+	@OneToMany(fetch = FetchType.EAGER)
+	@JoinColumn(name = "packed_crates")
+	private List<EuroCrateDatabaseElement> packedCrates;
 }

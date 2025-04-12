@@ -10,17 +10,17 @@ import lombok.Setter;
 
 @Getter
 public class EuroPallet {
-    private final long palletId;
-    @Setter
-    private Location location;
-    @Setter
-    private String information;
+	private final long palletId;
+	@Setter
+	private Location location;
+	@Setter
+	private String information;
 
-    @Builder
-    EuroPallet(long palletId, @NonNull Location location, String information) {
-        Preconditions.checkArgument(palletId >= 0, "palletId < 0");
-        this.palletId = palletId;
-        this.location = location;
-        this.information = information == null ? "" : information;
-    }
+	@Builder
+	EuroPallet(long palletId, @NonNull Location location, String information) {
+		Preconditions.checkArgument(palletId >= 0, "palletId < 0");
+		this.palletId = palletId;
+		this.location = location;
+		this.information = information == null ? "" : information;
+	}
 }

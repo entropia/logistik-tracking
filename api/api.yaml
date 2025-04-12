@@ -255,7 +255,8 @@ paths:
           in: path
           required: true
           schema:
-            type: number
+            type: integer
+            format: int64
       responses:
         "200":
           description: "Successfully retrieved euro pallet."
@@ -279,7 +280,8 @@ paths:
           in: path
           required: true
           schema:
-            type: number
+            type: integer
+            format: int64
       requestBody:
         required: true
         content:
@@ -310,7 +312,8 @@ paths:
           in: path
           required: true
           schema:
-            type: number
+            type: integer
+            format: int64
       responses:
         "200":
           description: "Successfully generated the pallet document."
@@ -371,7 +374,8 @@ paths:
           description: "Identifier of packing list."
           name: packingListId
           schema:
-            type: string
+            type: integer
+            format: int64
           required: true
         - in: query
           description: "Filter packing list by crates that belong to a specific operation center."
@@ -397,7 +401,8 @@ paths:
           description: "Identifier of packing list."
           name: packingListId
           schema:
-            type: string
+            type: integer
+            format: int64
           required: true
       requestBody:
         required: true
@@ -419,7 +424,7 @@ paths:
         "400":
           description: "packingListId is not a whole number or doesn't fit in 64 bits"
 
-  /packingList/{packingListId}/euroCrate/{operationCenter}-{euroCrateName}:
+  /packingList/{packingListId}/euroCrate/{operationCenter}/{euroCrateName}:
     put:
       operationId: addEuroCrateToPackingList
       summary: "Add the selected euro crate to a packing list if the packing list is in the state 'Packing'"
@@ -430,7 +435,8 @@ paths:
           in: path
           required: true
           schema:
-            type: string
+            type: integer
+            format: int64
         - name: "operationCenter"
           in: path
           required: true
@@ -470,7 +476,8 @@ paths:
           in: path
           required: true
           schema:
-            type: string
+            type: integer
+            format: int64
         - name: "operationCenter"
           in: path
           required: true
@@ -505,8 +512,10 @@ paths:
         - name: "packingListId"
           in: path
           required: true
+          description: ID of the packing list
           schema:
-            type: string
+            type: integer
+            format: int64
       responses:
         "200":
           description: "Successfully generated the packing list document."
@@ -590,7 +599,8 @@ components:
           properties:
             euroPalletId:
               description: "Unique identifier for the euro pallet."
-              type: number
+              type: integer
+              format: int64
           required:
             - euroPalletId
 
@@ -603,7 +613,8 @@ components:
           minLength: 1
         packedOnPallet:
           description: Identifier for Euro pallet.
-          type: number
+          type: integer
+          format: int64
       required:
         - name
         - packedOnPallet
@@ -613,10 +624,15 @@ components:
         - $ref: "#/components/schemas/DeliveryStateDto"
         - type: object
           properties:
-            packingListId:
-              description: "ID consists of name and a unique numeric value."
+            packingListName:
+              description: "Human readable name"
               type: string
-              example: "aName-123"
+              minLength: 1
+              example: "Lieferung Finanzen"
+            packingListId:
+              description: "Internal ID for this packing list"
+              type: integer
+              format: int64
             packedOn:
               $ref: "#/components/schemas/EuroPalletDto"
           required:

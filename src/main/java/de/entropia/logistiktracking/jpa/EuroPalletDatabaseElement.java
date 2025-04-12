@@ -13,14 +13,14 @@ import lombok.Setter;
 @AllArgsConstructor
 @Table(name = "euro_pallet")
 public class EuroPalletDatabaseElement {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "pallet_id", nullable = false)
-    private long palletId;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "pallet_id", nullable = false)
+	private long palletId;
 
-    @Column(name = "information", nullable = false)
-    private String information;
+	@Column(name = "information", nullable = false)
+	private String information;
 
-    @Embedded
-    private LocationDatabaseElement location;
+	@Embedded
+	private LocationDatabaseElement location;
 }

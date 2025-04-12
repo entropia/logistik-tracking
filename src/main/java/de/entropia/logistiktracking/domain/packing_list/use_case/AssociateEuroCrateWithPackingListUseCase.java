@@ -8,6 +8,8 @@ import de.entropia.logistiktracking.domain.operation_center.OperationCenter;
 import de.entropia.logistiktracking.domain.packing_list.PackingList;
 import de.entropia.logistiktracking.domain.repository.EuroCrateRepository;
 import de.entropia.logistiktracking.domain.repository.PackingListRepository;
+import de.entropia.logistiktracking.jpa.PackingListDatabaseElement;
+import de.entropia.logistiktracking.jpa.repo.PackingListDatabaseService;
 import de.entropia.logistiktracking.openapi.model.OperationCenterDto;
 import de.entropia.logistiktracking.openapi.model.PackingListDto;
 import de.entropia.logistiktracking.utility.Result;
@@ -21,78 +23,85 @@ import java.util.Optional;
 @AllArgsConstructor
 @Transactional
 public class AssociateEuroCrateWithPackingListUseCase {
-    private final PackingListRepository packingListRepository;
-    private final EuroCrateRepository euroCrateRepository;
-    private final OperationCenterConverter operationCenterConverter;
-    private final PackingListConverter packingListConverter;
+	private final PackingListRepository packingListRepository;
+	private final EuroCrateRepository euroCrateRepository;
+	private final OperationCenterConverter operationCenterConverter;
+	private final PackingListConverter packingListConverter;
+	private final PackingListDatabaseService packingListDatabaseService;
 
-    public Result<PackingListDto, AddEuroCrateToPackingListError> addEuroCrateToPackingList(String humanReadablePackingListId, OperationCenterDto operationCenterDto, String crateName) {
-        if (humanReadablePackingListId == null || operationCenterDto == null || crateName == null) {
-            return new Result.Error<>(AddEuroCrateToPackingListError.BadArguments);
-        }
-        OperationCenter operationCenter;
-        try {
-            operationCenter = operationCenterConverter.from(operationCenterDto);
-        } catch (IllegalArgumentException e) {
-            return new Result.Error<>(AddEuroCrateToPackingListError.BadArguments);
-        }
+	public Result<PackingListDto, AddEuroCrateToPackingListError> addEuroCrateToPackingList(long humanReadablePackingListId, OperationCenterDto operationCenterDto, String crateName) {
+		if (operationCenterDto == null || crateName == null) {
+			return new Result.Error<>(AddEuroCrateToPackingListError.BadArguments);
+		}
+		OperationCenter operationCenter;
+		try {
+			operationCenter = operationCenterConverter.from(operationCenterDto);
+		} catch (IllegalArgumentException e) {
+			return new Result.Error<>(AddEuroCrateToPackingListError.BadArguments);
+		}
 
-        Optional<PackingList> packingListOpt = packingListRepository.findPackingList(humanReadablePackingListId);
-        if (packingListOpt.isEmpty()) {
-            return new Result.Error<>(AddEuroCrateToPackingListError.PackingListNotFound);
-        }
+		Optional<PackingListDatabaseElement> packingListOpt = packingListRepository.findDatabaseElement(humanReadablePackingListId);
+		if (packingListOpt.isEmpty()) {
+			return new Result.Error<>(AddEuroCrateToPackingListError.PackingListNotFound);
+		}
 
-        Optional<EuroCrate> euroCrateOpt = euroCrateRepository.findEuroCrate(operationCenter, crateName);
-        if (euroCrateOpt.isEmpty()) {
-            return new Result.Error<>(AddEuroCrateToPackingListError.CrateNotFound);
-        }
+		Optional<EuroCrate> euroCrateOpt = euroCrateRepository.findEuroCrate(operationCenter, crateName);
+		if (euroCrateOpt.isEmpty()) {
+			return new Result.Error<>(AddEuroCrateToPackingListError.CrateNotFound);
+		}
 
-        if (packingListRepository.isEuroCrateAssociatedToAnyPackingList(euroCrateOpt.get())) {
-            return new Result.Error<>(AddEuroCrateToPackingListError.CrateIsAlreadyAssociated);
-        }
+		EuroCrate euroCrate = euroCrateOpt.get();
 
-        EuroCrate euroCrate = euroCrateOpt.get();
-        PackingList packingList = packingListOpt.get();
-        packingList.packCrate(euroCrate);
-        packingListRepository.updatePackingList(packingList);
-        return new Result.Ok<>(packingListConverter.toDto(packingList));
-    }
+		PackingListDatabaseElement packingList = packingListOpt.get();
 
-    public Result<PackingListDto, RemoveEuroCrateFromPackingListError> removeEuroCrateFromPackingList(String humanReadablePackingListId, OperationCenterDto operationCenterDto, String crateName) {
-        if (humanReadablePackingListId == null || operationCenterDto == null || crateName == null) {
-            return new Result.Error<>(RemoveEuroCrateFromPackingListError.BadArguments);
-        }
+		int numChanges = packingListDatabaseService.addCrateToPackingList(packingList.getPackingListId(), euroCrate.getOperationCenter(), euroCrate.getName());
+		if (numChanges == 0) {
+			return new Result.Error<>(AddEuroCrateToPackingListError.CrateIsAlreadyAssociated);
+		}
 
-        OperationCenter operationCenter;
-        try {
-            operationCenter = operationCenterConverter.from(operationCenterDto);
-        } catch (IllegalArgumentException e) {
-            return new Result.Error<>(RemoveEuroCrateFromPackingListError.BadArguments);
-        }
+		PackingList packingList1 = packingListConverter.from(packingList);
+		packingList1.packCrate(euroCrate);
 
-        Optional<PackingList> packingListOpt = packingListRepository.findPackingList(humanReadablePackingListId);
-        if (packingListOpt.isEmpty()) {
-            return new Result.Error<>(RemoveEuroCrateFromPackingListError.PackingListNotFound);
-        }
+		return new Result.Ok<>(packingListConverter.toDto(packingList1));
+	}
 
-        PackingList packingList = packingListOpt.get();
-        if (!packingList.removePackedCrate(operationCenter, crateName)) {
-            return new Result.Error<>(RemoveEuroCrateFromPackingListError.CrateNotFound);
-        }
-        packingListRepository.updatePackingList(packingList);
-        return new Result.Ok<>(packingListConverter.toDto(packingList));
-    }
+	public Result<PackingListDto, RemoveEuroCrateFromPackingListError> removeEuroCrateFromPackingList(long humanReadablePackingListId, OperationCenterDto operationCenterDto, String crateName) {
+		if (operationCenterDto == null || crateName == null) {
+			return new Result.Error<>(RemoveEuroCrateFromPackingListError.BadArguments);
+		}
 
-    public enum AddEuroCrateToPackingListError {
-        BadArguments,
-        CrateNotFound,
-        PackingListNotFound,
-        CrateIsAlreadyAssociated
-    }
+		OperationCenter operationCenter;
+		try {
+			operationCenter = operationCenterConverter.from(operationCenterDto);
+		} catch (IllegalArgumentException e) {
+			return new Result.Error<>(RemoveEuroCrateFromPackingListError.BadArguments);
+		}
 
-    public enum RemoveEuroCrateFromPackingListError {
-        BadArguments,
-        PackingListNotFound,
-        CrateNotFound
-    }
+		Optional<PackingListDatabaseElement> packingListOpt = packingListRepository.findDatabaseElement(humanReadablePackingListId);
+		if (packingListOpt.isEmpty()) {
+			return new Result.Error<>(RemoveEuroCrateFromPackingListError.PackingListNotFound);
+		}
+
+		PackingListDatabaseElement packingList = packingListOpt.get();
+		int numChanges = packingListDatabaseService.removeCrateFromPackingList(packingList.getPackingListId(), operationCenter, crateName);
+		if (numChanges == 0) {
+			return new Result.Error<>(RemoveEuroCrateFromPackingListError.CrateNotFound);
+		}
+		PackingList packingList1 = packingListConverter.from(packingList);
+		packingList1.removePackedCrate(operationCenter, crateName);
+		return new Result.Ok<>(packingListConverter.toDto(packingList1));
+	}
+
+	public enum AddEuroCrateToPackingListError {
+		BadArguments,
+		CrateNotFound,
+		PackingListNotFound,
+		CrateIsAlreadyAssociated
+	}
+
+	public enum RemoveEuroCrateFromPackingListError {
+		BadArguments,
+		PackingListNotFound,
+		CrateNotFound
+	}
 }

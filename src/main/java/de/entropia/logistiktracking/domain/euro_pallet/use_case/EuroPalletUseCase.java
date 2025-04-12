@@ -24,56 +24,56 @@ import java.util.Optional;
 @Component
 @AllArgsConstructor
 public class EuroPalletUseCase {
-    private final EuroPalletRepository euroPalletRepository;
-    private final LocationConverter locationConverter;
-    private final EuroPalletConverter euroPalletConverter;
-    private final EuroPalletPdfGenerator euroPalletPdfGenerator;
+	private final EuroPalletRepository euroPalletRepository;
+	private final LocationConverter locationConverter;
+	private final EuroPalletConverter euroPalletConverter;
+	private final EuroPalletPdfGenerator euroPalletPdfGenerator;
 	private final EuroPalletDatabaseService euroPalletDatabaseService;
 
 	public Result<EuroPalletDto, CreateEuroPalletError> createEuroPallet(NewEuroPalletDto newEuroPalletDto) {
-        if (newEuroPalletDto == null) {
-            return new Result.Error<>(CreateEuroPalletError.BadArguments);
-        }
+		if (newEuroPalletDto == null) {
+			return new Result.Error<>(CreateEuroPalletError.BadArguments);
+		}
 
-        Location initialLocation;
-        try {
-            initialLocation = locationConverter.from(newEuroPalletDto.getLocation());
-        } catch (IllegalArgumentException e) {
-            return new Result.Error<>(CreateEuroPalletError.BadArguments);
-        }
+		Location initialLocation;
+		try {
+			initialLocation = locationConverter.from(newEuroPalletDto.getLocation());
+		} catch (IllegalArgumentException e) {
+			return new Result.Error<>(CreateEuroPalletError.BadArguments);
+		}
 
-        EuroPallet newEuroPallet;
-        try {
-            newEuroPallet = EuroPallet.builder()
-                    .location(initialLocation)
-                    .information(newEuroPalletDto.getInformation().orElse(""))
-                    .build();
-        } catch (IllegalArgumentException e) {
-            return new Result.Error<>(CreateEuroPalletError.BadArguments);
-        }
+		EuroPallet newEuroPallet;
+		try {
+			newEuroPallet = EuroPallet.builder()
+					.location(initialLocation)
+					.information(newEuroPalletDto.getInformation().orElse(""))
+					.build();
+		} catch (IllegalArgumentException e) {
+			return new Result.Error<>(CreateEuroPalletError.BadArguments);
+		}
 
-        newEuroPallet = euroPalletRepository.createNewEuroPallet(newEuroPallet);
+		newEuroPallet = euroPalletRepository.createNewEuroPallet(newEuroPallet);
 
-        return new Result.Ok<>(euroPalletConverter.toDto(newEuroPallet));
-    }
+		return new Result.Ok<>(euroPalletConverter.toDto(newEuroPallet));
+	}
 
-    public List<EuroPalletDto> findAllEuroPallets() {
-        return euroPalletRepository.findAllEuroPallets()
-                .stream()
-                .map(euroPalletConverter::toDto)
-                .toList();
-    }
+	public List<EuroPalletDto> findAllEuroPallets() {
+		return euroPalletRepository.findAllEuroPallets()
+				.stream()
+				.map(euroPalletConverter::toDto)
+				.toList();
+	}
 
-    public Result<EuroPalletDto, FindEuroPalletError> findEuroPallet(long euroPalletId) {
+	public Result<EuroPalletDto, FindEuroPalletError> findEuroPallet(long euroPalletId) {
 
 		Optional<EuroPallet> euroPallet = euroPalletRepository.findEuroPallet(euroPalletId);
 
-        if (euroPallet.isEmpty()) {
-            return new Result.Error<>(FindEuroPalletError.PalletNotFound);
-        }
+		if (euroPallet.isEmpty()) {
+			return new Result.Error<>(FindEuroPalletError.PalletNotFound);
+		}
 
-        return new Result.Ok<>(euroPalletConverter.toDto(euroPallet.get()));
-    }
+		return new Result.Ok<>(euroPalletConverter.toDto(euroPallet.get()));
+	}
 
 	public Result<EuroPalletDto, ModifyPalletError> updatePalletLocation(long id, LocationDto locationDto) {
 		Optional<EuroPallet> euroPallet = euroPalletRepository.findEuroPallet(id);
@@ -100,31 +100,31 @@ public class EuroPalletUseCase {
 		NotFound, BadArguments
 	}
 
-    public Result<byte[], PrintEuroPalletError> printEuroPallet(long id) {
-        Optional<EuroPallet> euroPallet = euroPalletRepository.findEuroPallet(id);
+	public Result<byte[], PrintEuroPalletError> printEuroPallet(long id) {
+		Optional<EuroPallet> euroPallet = euroPalletRepository.findEuroPallet(id);
 
-        if (euroPallet.isEmpty()) {
-            return new Result.Error<>(PrintEuroPalletError.PalletNotFound);
-        }
+		if (euroPallet.isEmpty()) {
+			return new Result.Error<>(PrintEuroPalletError.PalletNotFound);
+		}
 
-        Result<byte[], Void> pdfResult = euroPalletPdfGenerator.generate(euroPallet.get());
-        return switch (pdfResult) {
-            case Result.Ok<byte[], Void>(byte[] content) -> new Result.Ok<>(content);
-            default -> new Result.Error<>(PrintEuroPalletError.FailedToGeneratePdf);
-        };
-    }
+		Result<byte[], Void> pdfResult = euroPalletPdfGenerator.generate(euroPallet.get());
+		return switch (pdfResult) {
+			case Result.Ok<byte[], Void>(byte[] content) -> new Result.Ok<>(content);
+			default -> new Result.Error<>(PrintEuroPalletError.FailedToGeneratePdf);
+		};
+	}
 
-    public enum FindEuroPalletError {
-        PalletNotFound
-    }
+	public enum FindEuroPalletError {
+		PalletNotFound
+	}
 
-    public enum CreateEuroPalletError {
-        BadArguments
-    }
+	public enum CreateEuroPalletError {
+		BadArguments
+	}
 
-    public enum PrintEuroPalletError{
-        BadArguments,
-        PalletNotFound,
-        FailedToGeneratePdf
-    }
+	public enum PrintEuroPalletError {
+		BadArguments,
+		PalletNotFound,
+		FailedToGeneratePdf
+	}
 }
