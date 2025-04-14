@@ -56,12 +56,12 @@ public class PackingListRoute implements PackingListApi {
 	}
 
 	@Override
-	public ResponseEntity<PackingListDto> addEuroCrateToPackingList(Long packingListId, OperationCenterDto operationCenterDto, String crateName) {
-		Result<PackingListDto, AssociateEuroCrateWithPackingListUseCase.AddEuroCrateToPackingListError> result = associateEuroCrateWithPackingListUseCase.addEuroCrateToPackingList(packingListId, operationCenterDto, crateName);
+	public ResponseEntity<Void> addEuroCrateToPackingList(Long packingListId, OperationCenterDto operationCenterDto, String crateName) {
+		Result<Void, AssociateEuroCrateWithPackingListUseCase.AddEuroCrateToPackingListError> result = associateEuroCrateWithPackingListUseCase.addEuroCrateToPackingList(packingListId, operationCenterDto, crateName);
 		return switch (result) {
-			case Result.Ok<PackingListDto, AssociateEuroCrateWithPackingListUseCase.AddEuroCrateToPackingListError> ok ->
-					ResponseEntity.ok(ok.result());
-			case Result.Error<PackingListDto, AssociateEuroCrateWithPackingListUseCase.AddEuroCrateToPackingListError> error ->
+			case Result.Ok<Void, AssociateEuroCrateWithPackingListUseCase.AddEuroCrateToPackingListError> _ ->
+					ResponseEntity.ok().build();
+			case Result.Error<Void, AssociateEuroCrateWithPackingListUseCase.AddEuroCrateToPackingListError> error ->
 					switch (error.error()) {
 						case BadArguments -> ResponseEntity.badRequest().build();
 						case CrateNotFound, PackingListNotFound -> ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -71,10 +71,10 @@ public class PackingListRoute implements PackingListApi {
 	}
 
 	@Override
-	public ResponseEntity<PackingListDto> removeEuroCrateFromPackingList(Long packingListId, OperationCenterDto operationCenterDto, String crateName) {
-		Result<PackingListDto, AssociateEuroCrateWithPackingListUseCase.RemoveEuroCrateFromPackingListError> result = associateEuroCrateWithPackingListUseCase.removeEuroCrateFromPackingList(packingListId, operationCenterDto, crateName);
+	public ResponseEntity<Void> removeEuroCrateFromPackingList(Long packingListId, OperationCenterDto operationCenterDto, String crateName) {
+		Result<Void, AssociateEuroCrateWithPackingListUseCase.RemoveEuroCrateFromPackingListError> result = associateEuroCrateWithPackingListUseCase.removeEuroCrateFromPackingList(packingListId, operationCenterDto, crateName);
 		return switch (result) {
-			case Result.Ok<PackingListDto, ?> ok -> ResponseEntity.ok(ok.result());
+			case Result.Ok<Void, ?> _ -> ResponseEntity.ok().build();
 			case Result.Error<?, AssociateEuroCrateWithPackingListUseCase.RemoveEuroCrateFromPackingListError> error ->
 					switch (error.error()) {
 						case BadArguments -> ResponseEntity.badRequest().build();
@@ -84,12 +84,12 @@ public class PackingListRoute implements PackingListApi {
 	}
 
 	@Override
-	public ResponseEntity<PackingListDto> changeDeliveryStateOfPackingList(Long packingListId, DeliveryStateDto deliveryStateDto) {
+	public ResponseEntity<Void> changeDeliveryStateOfPackingList(Long packingListId, DeliveryStateDto deliveryStateDto) {
 		return switch (managePackingListUseCase.updatePacklingListDeliveryState(packingListId, deliveryStateDto)) {
 			case Result.Error<?, ManagePackingListUseCase.UpdateDeliveryStateError>(var error) -> switch (error) {
 				case NotFound -> ResponseEntity.notFound().build();
 			};
-			case Result.Ok<PackingListDto, ?>(var pldto) -> ResponseEntity.ok(pldto);
+			case Result.Ok<Void, ?>(var _) -> ResponseEntity.ok().build();
 		};
 	}
 }

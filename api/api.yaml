@@ -72,7 +72,7 @@ paths:
           description: "The selected euroCrate does not exist."
 
   /euroCrate/{operationCenter}/{euroCrateName}/deliveryState:
-    put:
+    post:
       operationId: modifyDeliveryStateOfCrate
       summary: "Change the delivery state of the selected crate"
       security:
@@ -97,10 +97,6 @@ paths:
       responses:
         "200":
           description: "The delivery state was successfully changed."
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/EuroCrateDto"
         "400":
           description: "Provided changes were invalid."
         "401":
@@ -109,7 +105,7 @@ paths:
           description: "The selected crate does not exist."
 
   /euroCrate/{operationCenter}/{euroCrateName}/location:
-    put:
+    post:
       operationId: modifyLocationOfCrate
       summary: "Change the location of the selected crate"
       security:
@@ -134,10 +130,6 @@ paths:
       responses:
         "200":
           description: "The location was successfully changed."
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/EuroCrateDto"
         "400":
           description: "Provided changes were invalid."
         "401":
@@ -146,7 +138,7 @@ paths:
           description: "The selected crate does not exist."
 
   /euroCrate/{operationCenter}/{euroCrateName}/information:
-    put:
+    post:
       operationId: modifyInformationOfCrate
       summary: "Change the free-text information of the selected crate"
       security:
@@ -171,10 +163,6 @@ paths:
       responses:
         "200":
           description: "The information was successfully changed."
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/EuroCrateDto"
         "400":
           description: "Provided changes were invalid."
         "401":
@@ -207,6 +195,31 @@ paths:
                 format: binary
         "404":
           description: "Selected euroPallet does not exist."
+
+  /euroCrate/{operationCenter}/{euroCrateName}/packingLists:
+    get:
+      operationId: getPackingListsOfCrate
+      summary: Get the associated packing list of the specified crate, if present
+      parameters:
+        - name: operationCenter
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/OperationCenterDto"
+        - name: euroCrateName
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Found the packing list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicPackingListDto"
+        404:
+          description: Euro crate does not exist, or no associated packing list
 
   /euroPallet:
     get:
@@ -270,7 +283,7 @@ paths:
           description: "euroPalletId is not a whole number or doesn't fit in 64 bits"
 
   /euroPallet/{euroPalletId}/lastLocation:
-    put:
+    post:
       operationId: updateLastLocationOfEuroPallet
       summary: "Update the last known location of a Euro pallet."
       security:
@@ -291,10 +304,6 @@ paths:
       responses:
         "200":
           description: "Successfully updated the last location."
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/EuroPalletDto"
         "401":
           description: "User did not provide valid session details."
         "404":
@@ -391,7 +400,7 @@ paths:
                 $ref: "#/components/schemas/PackingListDto"
 
   /packingList/{packingListId}/deliveryState/:
-    put:
+    post:
       operationId: changeDeliveryStateOfPackingList
       summary: "Changes the delivery state of a packing list."
       security:
@@ -413,10 +422,6 @@ paths:
       responses:
         "200":
           description: "Successfully modified the packing list."
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/PackingListDto"
         "401":
           description: "User did not provide valid session details."
         "404":
@@ -425,7 +430,7 @@ paths:
           description: "packingListId is not a whole number or doesn't fit in 64 bits"
 
   /packingList/{packingListId}/euroCrate/{operationCenter}/{euroCrateName}:
-    put:
+    post:
       operationId: addEuroCrateToPackingList
       summary: "Add the selected euro crate to a packing list if the packing list is in the state 'Packing'"
       security:
@@ -450,10 +455,6 @@ paths:
       responses:
         "200":
           description: "User successfully added a crate to the packing list."
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/PackingListDto"
         "401":
           description: "User did not provide valid session details."
         "403":
@@ -491,10 +492,6 @@ paths:
       responses:
         "200":
           description: "User successfully removed the crate from the packing list."
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/PackingListDto"
         "401":
           description: "User did not provide valid session details."
         "403":

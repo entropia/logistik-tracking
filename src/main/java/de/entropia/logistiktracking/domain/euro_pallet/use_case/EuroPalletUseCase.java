@@ -75,12 +75,7 @@ public class EuroPalletUseCase {
 		return new Result.Ok<>(euroPalletConverter.toDto(euroPallet.get()));
 	}
 
-	public Result<EuroPalletDto, ModifyPalletError> updatePalletLocation(long id, LocationDto locationDto) {
-		Optional<EuroPallet> euroPallet = euroPalletRepository.findEuroPallet(id);
-		if (euroPallet.isEmpty()) {
-			return new Result.Error<>(ModifyPalletError.NotFound);
-		}
-
+	public Result<Void, ModifyPalletError> updatePalletLocation(long id, LocationDto locationDto) {
 		Location location;
 		try {
 			location = locationConverter.from(locationDto);
@@ -88,12 +83,12 @@ public class EuroPalletUseCase {
 			return new Result.Error<>(ModifyPalletError.BadArguments);
 		}
 
-		euroPalletDatabaseService.updateLocation(id, locationConverter.toDatabaseElement(location));
+		int n = euroPalletDatabaseService.updateLocation(id, locationConverter.toDatabaseElement(location));
+		if (n == 0) {
+			return new Result.Error<>(ModifyPalletError.NotFound);
+		}
 
-		EuroPallet euroPallet1 = euroPallet.get();
-		euroPallet1.setLocation(location);
-
-		return new Result.Ok<>(euroPalletConverter.toDto(euroPallet1));
+		return new Result.Ok<>(null);
 	}
 
 	public enum ModifyPalletError {

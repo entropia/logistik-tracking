@@ -34,12 +34,11 @@ public class EuroPalletRoute implements EuroPalletApi {
 	}
 
 	@Override
-	public ResponseEntity<EuroPalletDto> updateLastLocationOfEuroPallet(Long euroPalletId, LocationDto locationDto) {
-		Result<EuroPalletDto, EuroPalletUseCase.ModifyPalletError> result = createEuroPalletUseCase.updatePalletLocation(euroPalletId, locationDto);
+	public ResponseEntity<Void> updateLastLocationOfEuroPallet(Long euroPalletId, LocationDto locationDto) {
+		Result<Void, EuroPalletUseCase.ModifyPalletError> result = createEuroPalletUseCase.updatePalletLocation(euroPalletId, locationDto);
 		return switch (result) {
-			case Result.Ok<EuroPalletDto, EuroPalletUseCase.ModifyPalletError>(var ep) ->
-					new ResponseEntity<>(ep, HttpStatus.OK);
-			case Result.Error<EuroPalletDto, EuroPalletUseCase.ModifyPalletError>(var error) -> switch (error) {
+			case Result.Ok<Void, EuroPalletUseCase.ModifyPalletError>(var _) -> new ResponseEntity<>(HttpStatus.OK);
+			case Result.Error<Void, EuroPalletUseCase.ModifyPalletError>(var error) -> switch (error) {
 				case NotFound -> ResponseEntity.notFound().build();
 				case BadArguments -> ResponseEntity.badRequest().build();
 			};

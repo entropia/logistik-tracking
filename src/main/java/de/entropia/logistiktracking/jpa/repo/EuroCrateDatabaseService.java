@@ -13,13 +13,13 @@ public interface EuroCrateDatabaseService extends JpaRepository<EuroCrateDatabas
 
 	@Modifying
 	@Query("update EuroCrateDatabaseElement e set e.information = :text where e.operationCenter = :oc and e.name = :name")
-	void updateInfoText(@Param("oc") OperationCenter operationCenterDto, @Param("name") String euroCrateName, @Param("text") String infoTextOrNull);
+	int updateInfoText(@Param("oc") OperationCenter operationCenterDto, @Param("name") String euroCrateName, @Param("text") String infoTextOrNull);
 
 	@Modifying
 	@Query("update EuroCrateDatabaseElement e set e.deliveryState = :d where e.operationCenter = :oc and e.name = :name")
-	void updateDeliState(@Param("oc") OperationCenter operationCenterDto, @Param("name") String euroCrateName, @Param("d") DeliveryState d);
+	int updateDeliState(@Param("oc") OperationCenter operationCenterDto, @Param("name") String euroCrateName, @Param("d") DeliveryState d);
 
 	@Modifying
 	@Query("update EuroCrateDatabaseElement e set e.location = :location where e.operationCenter = :oc and e.name = :name")
-	void updateLocation(@Param("oc") OperationCenter operationCenterDto, @Param("name") String euroCrateName, @Param("location") LocationDatabaseElement d);
+	int updateLocation(@Param("oc") OperationCenter operationCenterDto, @Param("name") String euroCrateName, @Param("location") LocationDatabaseElement d);
 }

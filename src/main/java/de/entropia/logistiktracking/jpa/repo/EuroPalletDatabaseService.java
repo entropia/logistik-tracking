@@ -9,5 +9,5 @@ import org.springframework.data.jpa.repository.Query;
 public interface EuroPalletDatabaseService extends JpaRepository<EuroPalletDatabaseElement, Long> {
 	@Modifying
 	@Query("update EuroPalletDatabaseElement e set e.location = ?2 where e.palletId = ?1")
-	void updateLocation(long id, LocationDatabaseElement lde);
+	int updateLocation(long id, LocationDatabaseElement lde);
 }

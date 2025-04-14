@@ -1,1 +1,43 @@
-<p>selected-packing-list works!</p>
+@if(!selected) {
+	<h1>Loading Packliste</h1>
+} @else {
+	<h1>Packliste {{selected.packingListId}} / {{selected.packingListName}}</h1>
+	<p>Auf palette: <a [routerLink]="'/euroPallet/' + selected.packedOn.euroPalletId">Pallette {{ selected.packedOn.euroPalletId }}</a></p>
+	<form (ngSubmit)="saveIt(); theForm.control.markAsPristine()" #theForm="ngForm">
+		<div class="content">
+
+			<mat-form-field>
+				<mat-select [(ngModel)]="selected.deliveryState" name="deliveryState" required>
+					@for(vs of Object.keys(DeliveryStateEnumDto); track vs) {
+						<mat-option [value]="vs">{{vs}}</mat-option>
+					}
+				</mat-select>
+			</mat-form-field>
+
+			<table mat-table [dataSource]="source" matSort>
+
+				<ng-container matColumnDef="operationCenter">
+					<th mat-header-cell *matHeaderCellDef mat-sort-header="operationCenter" sortActionDescription="Sort by OC">OC</th>
+					<td mat-cell *matCellDef="let element">{{element.operationCenter}}</td>
+				</ng-container>
+				<ng-container matColumnDef="name">
+					<th mat-header-cell *matHeaderCellDef mat-sort-header="name" sortActionDescription="Sort by name">Name</th>
+					<td mat-cell *matCellDef="let element">{{element.name}}</td>
+				</ng-container>
+				<ng-container matColumnDef="location">
+					<th mat-header-cell *matHeaderCellDef>Ort</th>
+					<td mat-cell *matCellDef="let element">
+						<app-location [location]="element.location"></app-location>
+					</td>
+				</ng-container>
+
+				<tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+				<tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+			</table>
+
+			<app-crate-add-widget (crateSubmitted)="crateSubmitted($event)"></app-crate-add-widget>
+
+			<button mat-flat-button type="submit" [disabled]="!theForm.form.valid || !theForm.dirty">Änderungen Speichern</button>
+		</div>
+	</form>
+}

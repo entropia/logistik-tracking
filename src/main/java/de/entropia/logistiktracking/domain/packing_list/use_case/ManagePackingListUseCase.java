@@ -9,6 +9,7 @@ import de.entropia.logistiktracking.domain.operation_center.OperationCenter;
 import de.entropia.logistiktracking.domain.packing_list.PackingList;
 import de.entropia.logistiktracking.domain.repository.EuroPalletRepository;
 import de.entropia.logistiktracking.domain.repository.PackingListRepository;
+import de.entropia.logistiktracking.jpa.repo.PackingListDatabaseService;
 import de.entropia.logistiktracking.openapi.model.*;
 import de.entropia.logistiktracking.utility.Result;
 import lombok.AllArgsConstructor;
@@ -28,6 +29,7 @@ public class ManagePackingListUseCase {
 	private final PackingListConverter packingListConverter;
 	private final OperationCenterConverter ocConv;
 	private final DeliveryStateConverter deliveryStateConverter;
+	private final PackingListDatabaseService packingListDatabaseService;
 
 	public Result<PackingListDto, CreateNewPackingListError> createNewPackingListUseCase(NewPackingListDto newPackingListDto) {
 		long placedOnPalletId = newPackingListDto.getPackedOnPallet();
@@ -82,13 +84,11 @@ public class ManagePackingListUseCase {
 		return new Result.Ok<>(packingListConverter.toDto(packingList));
 	}
 
-	public Result<PackingListDto, UpdateDeliveryStateError> updatePacklingListDeliveryState(Long id, DeliveryStateDto newDeliveryState) {
-		Optional<PackingList> packingList = packingListRepository.findPackingList(id);
-		if (packingList.isEmpty()) return new Result.Error<>(UpdateDeliveryStateError.NotFound);
-		PackingList actualPl = packingList.get();
-		actualPl.setDeliveryState(deliveryStateConverter.from(newDeliveryState.getDeliveryState()));
-		packingListRepository.updatePackingList(actualPl);
-		return new Result.Ok<>(packingListConverter.toDto(actualPl));
+	public Result<Void, UpdateDeliveryStateError> updatePacklingListDeliveryState(Long id, DeliveryStateDto newDeliveryState) {
+		int n = packingListDatabaseService.setDeliveryStateOf(id, deliveryStateConverter.from(newDeliveryState.getDeliveryState()));
+		if (n == 0) return new Result.Error<>(UpdateDeliveryStateError.NotFound);
+
+		return new Result.Ok<>(null);
 	}
 
 	public enum UpdateDeliveryStateError {

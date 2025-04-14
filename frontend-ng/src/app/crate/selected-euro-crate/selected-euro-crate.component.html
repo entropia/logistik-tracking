@@ -1,7 +1,7 @@
 @if (!crate) {
 	<h1>Box wird geladen...</h1>
 } @else {
-	<h1>Pallette {{crate.operationCenter}} / {{crate.name}}</h1>
+	<h1>Box {{crate.operationCenter}} / {{crate.name}}</h1>
 	<form (ngSubmit)="saveIt(location, delStatus, ftInfo); theForm.form.markAsPristine()" #theForm="ngForm">
 		<div class="content">
 			<h2>Ort</h2>

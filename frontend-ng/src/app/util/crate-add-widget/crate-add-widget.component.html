@@ -1,0 +1,38 @@
+<form (ngSubmit)="saveIt(); theForm.resetForm()" #theForm="ngForm" class="theForm">
+	<div class="row">
+		<mat-form-field>
+			<mat-label>OC</mat-label>
+			<mat-select [(ngModel)]="inputModel.oc" required name="oc">
+				@for (v of Object.values(OperationCenterDto); track v) {
+					<mat-option [value]="v">{{ v }}</mat-option>
+				}
+			</mat-select>
+		</mat-form-field>
+
+		<mat-form-field>
+			<mat-label>Name</mat-label>
+			<input matInput [(ngModel)]="inputModel.name" required name="name" placeholder="Boxname">
+		</mat-form-field>
+	</div>
+
+	<div class="row">
+		<button mat-flat-button type="button" (click)="scan()">
+			<mat-icon fontIcon="qr_code_scanner"></mat-icon>
+		</button>
+	</div>
+
+</form>
+
+<div #theOverlay class="theOverlay" [class.activeDialog]="scanIsActive">
+	<zxing-scanner #scanner [enable]="scanIsActive" [formats]="allowedFormats"
+				   (camerasNotFound)="camerasNotFound()"
+				   (scanSuccess)="scanSuccess($event)"
+				   (scanFailure)="scanFailed($event)"
+				   (scanError)="scanError($event)"
+				   (permissionResponse)="handlePerm($event)"
+				   previewFitMode="cover"></zxing-scanner>
+	<div class="actions row">
+		<button mat-flat-button type="button" (click)="close()">Abbrechen</button>
+	</div>
+</div>
+

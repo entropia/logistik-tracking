@@ -1,16 +1,17 @@
 package de.entropia.logistiktracking.domain.euro_crate.use_case;
 
-import de.entropia.logistiktracking.domain.converter.DeliveryStateConverter;
-import de.entropia.logistiktracking.domain.converter.EuroCrateConverter;
-import de.entropia.logistiktracking.domain.converter.LocationConverter;
-import de.entropia.logistiktracking.domain.converter.OperationCenterConverter;
+import de.entropia.logistiktracking.domain.converter.*;
 import de.entropia.logistiktracking.domain.delivery_state.DeliveryState;
 import de.entropia.logistiktracking.domain.euro_crate.EuroCrate;
 import de.entropia.logistiktracking.domain.location.Location;
 import de.entropia.logistiktracking.domain.operation_center.OperationCenter;
 import de.entropia.logistiktracking.domain.repository.EuroCrateRepository;
+import de.entropia.logistiktracking.jpa.EuroCrateDatabaseElement;
 import de.entropia.logistiktracking.jpa.LocationDatabaseElement;
+import de.entropia.logistiktracking.jpa.PackingListDatabaseElement;
 import de.entropia.logistiktracking.jpa.repo.EuroCrateDatabaseService;
+import de.entropia.logistiktracking.jpa.repo.EuroPalletDatabaseService;
+import de.entropia.logistiktracking.jpa.repo.PackingListDatabaseService;
 import de.entropia.logistiktracking.openapi.model.*;
 import de.entropia.logistiktracking.utility.Result;
 import jakarta.transaction.Transactional;
@@ -40,6 +41,8 @@ public class EuroCrateUseCase {
 	private final LocationConverter locationConverter;
 	private final DeliveryStateConverter deliveryStateConverter;
 	private final EuroCrateDatabaseService euroCrateDatabaseService;
+	private final PackingListDatabaseService packingListDatabaseService;
+	private final PackingListConverter packingListConverter;
 
 	public Result<EuroCrateDto, CreateEuroCrateError> createEuroCrate(EuroCrateDto euroCrateDto) {
 		EuroCrate euroCrate;
@@ -86,7 +89,7 @@ public class EuroCrateUseCase {
 		return new Result.Ok<>(euroCrateConverter.toDto(euroCrate.get()));
 	}
 
-	public Result<EuroCrateDto, ModifyCrateError> modifyEuroCrate(OperationCenterDto operationCenterDto, String euroCrateName, DeliveryStateDto deliveryStateDto) {
+	public Result<Void, ModifyCrateError> setEuroCrateLocation(OperationCenterDto operationCenterDto, String euroCrateName, DeliveryStateDto deliveryStateDto) {
 		if (operationCenterDto == null || euroCrateName == null || euroCrateName.isBlank() || deliveryStateDto == null) {
 			return new Result.Error<>(ModifyCrateError.BadArguments);
 		}
@@ -105,21 +108,13 @@ public class EuroCrateUseCase {
 			return new Result.Error<>(ModifyCrateError.BadArguments);
 		}
 
-		Optional<EuroCrate> euroCrateOpt = euroCrateRepository.findEuroCrate(operationCenter, euroCrateName);
+		int i = euroCrateDatabaseService.updateDeliState(operationCenter, euroCrateName, deliveryState);
+		if (i == 0) return new Result.Error<>(ModifyCrateError.CrateNotFound);
 
-		if (euroCrateOpt.isEmpty()) {
-			return new Result.Error<>(ModifyCrateError.CrateNotFound);
-		}
-
-		euroCrateDatabaseService.updateDeliState(operationCenter, euroCrateName, deliveryState);
-
-		EuroCrate euroCrate = euroCrateOpt.get();
-		euroCrate.updateDeliveryState(deliveryState);
-
-		return new Result.Ok<>(euroCrateConverter.toDto(euroCrate));
+		return new Result.Ok<>(null);
 	}
 
-	public Result<EuroCrateDto, ModifyCrateError> modifyEuroCrate(OperationCenterDto operationCenterDto, String euroCrateName, LocationDto locationDto) {
+	public Result<Void, ModifyCrateError> setEuroCrateLocation(OperationCenterDto operationCenterDto, String euroCrateName, LocationDto locationDto) {
 		if (operationCenterDto == null || euroCrateName == null || euroCrateName.isBlank() || locationDto == null) {
 			return new Result.Error<>(ModifyCrateError.BadArguments);
 		}
@@ -138,22 +133,15 @@ public class EuroCrateUseCase {
 			return new Result.Error<>(ModifyCrateError.BadArguments);
 		}
 
-		Optional<EuroCrate> euroCrateOpt = euroCrateRepository.findEuroCrate(operationCenter, euroCrateName);
-
-		if (euroCrateOpt.isEmpty()) {
-			return new Result.Error<>(ModifyCrateError.CrateNotFound);
-		}
-
 		LocationDatabaseElement locationDbEl = locationConverter.toDatabaseElement(location);
-		euroCrateDatabaseService.updateLocation(operationCenter, euroCrateName, locationDbEl);
+		int i = euroCrateDatabaseService.updateLocation(operationCenter, euroCrateName, locationDbEl);
 
-		EuroCrate euroCrate = euroCrateOpt.get();
-		euroCrate.updateLocation(location);
+		if (i == 0) return new Result.Error<>(ModifyCrateError.CrateNotFound);
 
-		return new Result.Ok<>(euroCrateConverter.toDto(euroCrate));
+		return new Result.Ok<>(null);
 	}
 
-	public Result<EuroCrateDto, ModifyCrateError> modifyEuroCrate(OperationCenterDto operationCenterDto, String euroCrateName, InformationDto informationDto) {
+	public Result<Void, ModifyCrateError> setEuroCrateInformation(OperationCenterDto operationCenterDto, String euroCrateName, InformationDto informationDto) {
 		if (operationCenterDto == null || euroCrateName == null || euroCrateName.isBlank() || informationDto == null) {
 			return new Result.Error<>(ModifyCrateError.BadArguments);
 		}
@@ -165,21 +153,32 @@ public class EuroCrateUseCase {
 			return new Result.Error<>(ModifyCrateError.BadArguments);
 		}
 
-		Optional<EuroCrate> euroCrateOpt = euroCrateRepository.findEuroCrate(operationCenter, euroCrateName);
-
-		if (euroCrateOpt.isEmpty()) {
-			return new Result.Error<>(ModifyCrateError.CrateNotFound);
-		}
-
 		String newValue = informationDto.getInformation().orElse(null);
-		euroCrateDatabaseService.updateInfoText(operationCenter, euroCrateName, newValue);
+		int i = euroCrateDatabaseService.updateInfoText(operationCenter, euroCrateName, newValue);
 
-		EuroCrate euroCrate = euroCrateOpt.get();
-		euroCrate.updateInformation(newValue);
+		if (i == 0) return new Result.Error<>(ModifyCrateError.CrateNotFound);
 
-		return new Result.Ok<>(euroCrateConverter.toDto(euroCrate));
+		return new Result.Ok<>(null);
 	}
 
+	public Result<BasicPackingListDto, FindRelatedPackingListError> getPackingListsOfCrate(OperationCenterDto operationCenter, String euroCrateName) {
+		OperationCenter oc = operationCenterConverter.from(operationCenter);
+		Optional<EuroCrateDatabaseElement> euroCrate = euroCrateRepository.findDatabaseElement(oc, euroCrateName);
+		if (euroCrate.isEmpty()) return new Result.Error<>(FindRelatedPackingListError.CrateNotFound);
+		EuroCrateDatabaseElement ec = euroCrate.get();
+
+		Optional<PackingListDatabaseElement> result = packingListDatabaseService.getByPackedCratesContains(ec);
+		if (result.isEmpty()) {
+			return new Result.Error<>(FindRelatedPackingListError.NoPackingList);
+		}
+
+		return new Result.Ok<>(packingListConverter.toBasicDto(packingListConverter.from(result.get())));
+	}
+
+	public enum FindRelatedPackingListError {
+		CrateNotFound,
+		NoPackingList
+	}
 
 	public enum FindEuroCrateError {
 		BadArguments,

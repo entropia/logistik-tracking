@@ -2,34 +2,25 @@ package de.entropia.logistiktracking.domain.packing_list.use_case;
 
 
 import de.entropia.logistiktracking.domain.converter.OperationCenterConverter;
-import de.entropia.logistiktracking.domain.converter.PackingListConverter;
-import de.entropia.logistiktracking.domain.euro_crate.EuroCrate;
 import de.entropia.logistiktracking.domain.operation_center.OperationCenter;
-import de.entropia.logistiktracking.domain.packing_list.PackingList;
-import de.entropia.logistiktracking.domain.repository.EuroCrateRepository;
-import de.entropia.logistiktracking.domain.repository.PackingListRepository;
-import de.entropia.logistiktracking.jpa.PackingListDatabaseElement;
+import de.entropia.logistiktracking.jpa.EuroCrateDatabaseElement;
+import de.entropia.logistiktracking.jpa.repo.EuroCrateDatabaseService;
 import de.entropia.logistiktracking.jpa.repo.PackingListDatabaseService;
 import de.entropia.logistiktracking.openapi.model.OperationCenterDto;
-import de.entropia.logistiktracking.openapi.model.PackingListDto;
 import de.entropia.logistiktracking.utility.Result;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-
 @Component
 @AllArgsConstructor
 @Transactional
 public class AssociateEuroCrateWithPackingListUseCase {
-	private final PackingListRepository packingListRepository;
-	private final EuroCrateRepository euroCrateRepository;
 	private final OperationCenterConverter operationCenterConverter;
-	private final PackingListConverter packingListConverter;
 	private final PackingListDatabaseService packingListDatabaseService;
+	private final EuroCrateDatabaseService euroCrateDatabaseService;
 
-	public Result<PackingListDto, AddEuroCrateToPackingListError> addEuroCrateToPackingList(long humanReadablePackingListId, OperationCenterDto operationCenterDto, String crateName) {
+	public Result<Void, AddEuroCrateToPackingListError> addEuroCrateToPackingList(long humanReadablePackingListId, OperationCenterDto operationCenterDto, String crateName) {
 		if (operationCenterDto == null || crateName == null) {
 			return new Result.Error<>(AddEuroCrateToPackingListError.BadArguments);
 		}
@@ -40,32 +31,26 @@ public class AssociateEuroCrateWithPackingListUseCase {
 			return new Result.Error<>(AddEuroCrateToPackingListError.BadArguments);
 		}
 
-		Optional<PackingListDatabaseElement> packingListOpt = packingListRepository.findDatabaseElement(humanReadablePackingListId);
-		if (packingListOpt.isEmpty()) {
+		boolean packingListExists = packingListDatabaseService.existsById(humanReadablePackingListId);
+		if (!packingListExists) {
 			return new Result.Error<>(AddEuroCrateToPackingListError.PackingListNotFound);
 		}
 
-		Optional<EuroCrate> euroCrateOpt = euroCrateRepository.findEuroCrate(operationCenter, crateName);
-		if (euroCrateOpt.isEmpty()) {
+		boolean ecExists = euroCrateDatabaseService
+				.existsById(new EuroCrateDatabaseElement.EuroCrateDatabaseElementId(operationCenter, crateName));
+		if (!ecExists) {
 			return new Result.Error<>(AddEuroCrateToPackingListError.CrateNotFound);
 		}
 
-		EuroCrate euroCrate = euroCrateOpt.get();
-
-		PackingListDatabaseElement packingList = packingListOpt.get();
-
-		int numChanges = packingListDatabaseService.addCrateToPackingList(packingList.getPackingListId(), euroCrate.getOperationCenter(), euroCrate.getName());
+		int numChanges = packingListDatabaseService.addCrateToPackingList(humanReadablePackingListId, operationCenter, crateName);
 		if (numChanges == 0) {
 			return new Result.Error<>(AddEuroCrateToPackingListError.CrateIsAlreadyAssociated);
 		}
 
-		PackingList packingList1 = packingListConverter.from(packingList);
-		packingList1.packCrate(euroCrate);
-
-		return new Result.Ok<>(packingListConverter.toDto(packingList1));
+		return new Result.Ok<>(null);
 	}
 
-	public Result<PackingListDto, RemoveEuroCrateFromPackingListError> removeEuroCrateFromPackingList(long humanReadablePackingListId, OperationCenterDto operationCenterDto, String crateName) {
+	public Result<Void, RemoveEuroCrateFromPackingListError> removeEuroCrateFromPackingList(long humanReadablePackingListId, OperationCenterDto operationCenterDto, String crateName) {
 		if (operationCenterDto == null || crateName == null) {
 			return new Result.Error<>(RemoveEuroCrateFromPackingListError.BadArguments);
 		}
@@ -77,19 +62,23 @@ public class AssociateEuroCrateWithPackingListUseCase {
 			return new Result.Error<>(RemoveEuroCrateFromPackingListError.BadArguments);
 		}
 
-		Optional<PackingListDatabaseElement> packingListOpt = packingListRepository.findDatabaseElement(humanReadablePackingListId);
-		if (packingListOpt.isEmpty()) {
+		boolean packingListExists = packingListDatabaseService.existsById(humanReadablePackingListId);
+		if (!packingListExists) {
 			return new Result.Error<>(RemoveEuroCrateFromPackingListError.PackingListNotFound);
 		}
 
-		PackingListDatabaseElement packingList = packingListOpt.get();
-		int numChanges = packingListDatabaseService.removeCrateFromPackingList(packingList.getPackingListId(), operationCenter, crateName);
+		boolean ecExists = euroCrateDatabaseService
+				.existsById(new EuroCrateDatabaseElement.EuroCrateDatabaseElementId(operationCenter, crateName));
+		if (!ecExists) {
+			return new Result.Error<>(RemoveEuroCrateFromPackingListError.CrateNotFound);
+		}
+
+		int numChanges = packingListDatabaseService.removeCrateFromPackingList(humanReadablePackingListId, operationCenter, crateName);
 		if (numChanges == 0) {
 			return new Result.Error<>(RemoveEuroCrateFromPackingListError.CrateNotFound);
 		}
-		PackingList packingList1 = packingListConverter.from(packingList);
-		packingList1.removePackedCrate(operationCenter, crateName);
-		return new Result.Ok<>(packingListConverter.toDto(packingList1));
+
+		return new Result.Ok<>(null);
 	}
 
 	public enum AddEuroCrateToPackingListError {
