@@ -20,7 +20,7 @@ public class AssociateEuroCrateWithPackingListUseCase {
 	private final PackingListDatabaseService packingListDatabaseService;
 	private final EuroCrateDatabaseService euroCrateDatabaseService;
 
-	public Result<Void, AddEuroCrateToPackingListError> addEuroCrateToPackingList(long humanReadablePackingListId, OperationCenterDto operationCenterDto, String crateName) {
+	public Result<Void, AddEuroCrateToPackingListError> addEuroCrateToPackingList(long humanReadablePackingListId, OperationCenterDto operationCenterDto, String crateName, boolean reassign) {
 		if (operationCenterDto == null || crateName == null) {
 			return new Result.Error<>(AddEuroCrateToPackingListError.BadArguments);
 		}
@@ -42,9 +42,13 @@ public class AssociateEuroCrateWithPackingListUseCase {
 			return new Result.Error<>(AddEuroCrateToPackingListError.CrateNotFound);
 		}
 
-		int numChanges = packingListDatabaseService.addCrateToPackingList(humanReadablePackingListId, operationCenter, crateName);
-		if (numChanges == 0) {
-			return new Result.Error<>(AddEuroCrateToPackingListError.CrateIsAlreadyAssociated);
+		if (reassign) {
+			packingListDatabaseService.addCrateToPackingListReassignIfAlreadyAssigned(humanReadablePackingListId, operationCenter, crateName);
+		} else {
+			int numChanges = packingListDatabaseService.addCrateToPackingList(humanReadablePackingListId, operationCenter, crateName);
+			if (numChanges == 0) {
+				return new Result.Error<>(AddEuroCrateToPackingListError.CrateIsAlreadyAssociated);
+			}
 		}
 
 		return new Result.Ok<>(null);

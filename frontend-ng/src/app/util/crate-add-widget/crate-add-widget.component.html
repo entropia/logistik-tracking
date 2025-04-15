@@ -1,4 +1,4 @@
-<form (ngSubmit)="saveIt(); theForm.resetForm()" #theForm="ngForm" class="theForm">
+<form (ngSubmit)="saveIt(theForm);" #theForm="ngForm" class="theForm">
 	<div class="row">
 		<mat-form-field>
 			<mat-label>OC</mat-label>
@@ -13,17 +13,23 @@
 			<mat-label>Name</mat-label>
 			<input matInput [(ngModel)]="inputModel.name" required name="name" placeholder="Boxname">
 		</mat-form-field>
-	</div>
 
-	<div class="row">
-		<button mat-flat-button type="button" (click)="scan()" [disabled]="!canScan">
+		<button mat-fab type="button" (click)="scan()" [disabled]="!canScan">
 			<mat-icon fontIcon="qr_code_scanner"></mat-icon>
+		</button>
+
+		<button mat-fab type="submit" [disabled]="theForm.invalid">
+			<mat-icon fontIcon="add"></mat-icon>
 		</button>
 	</div>
 
+	@if(err) {
+		<mat-error>Keine Box gefunden</mat-error>
+	}
+
 </form>
 
-<div #theOverlay class="theOverlay" [class.activeDialog]="scanIsActive">
+<div class="theOverlay" [class.activeDialog]="scanIsActive">
 	<zxing-scanner #scanner [enable]="scanIsActive" [formats]="allowedFormats"
 				   (camerasNotFound)="camerasNotFound()"
 				   (scanSuccess)="scanSuccess($event)"

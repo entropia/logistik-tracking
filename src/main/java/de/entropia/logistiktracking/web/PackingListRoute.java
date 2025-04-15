@@ -56,8 +56,8 @@ public class PackingListRoute implements PackingListApi {
 	}
 
 	@Override
-	public ResponseEntity<Void> addEuroCrateToPackingList(Long packingListId, OperationCenterDto operationCenterDto, String crateName) {
-		Result<Void, AssociateEuroCrateWithPackingListUseCase.AddEuroCrateToPackingListError> result = associateEuroCrateWithPackingListUseCase.addEuroCrateToPackingList(packingListId, operationCenterDto, crateName);
+	public ResponseEntity<Void> addEuroCrateToPackingList(Long packingListId, OperationCenterDto operationCenterDto, String crateName, Optional<Boolean> reassign) {
+		Result<Void, AssociateEuroCrateWithPackingListUseCase.AddEuroCrateToPackingListError> result = associateEuroCrateWithPackingListUseCase.addEuroCrateToPackingList(packingListId, operationCenterDto, crateName, reassign.orElse(false));
 		return switch (result) {
 			case Result.Ok<Void, AssociateEuroCrateWithPackingListUseCase.AddEuroCrateToPackingListError> _ ->
 					ResponseEntity.ok().build();

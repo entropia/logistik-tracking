@@ -452,6 +452,12 @@ paths:
           required: true
           schema:
             type: string
+        - name: force
+          description: If the crate is already assigned to a packing list, reassign it to this one. Default false
+          in: query
+          required: false
+          schema:
+            type: boolean
       responses:
         "200":
           description: "User successfully added a crate to the packing list."

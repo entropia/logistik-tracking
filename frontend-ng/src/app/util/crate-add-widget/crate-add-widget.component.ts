@@ -1,12 +1,12 @@
 import {Component, EventEmitter, Output, ViewChild} from '@angular/core';
 import {ApiService} from '../../api/services/api.service';
 import {EuroCrateDto} from '../../api/models/euro-crate-dto';
-import {FormsModule} from '@angular/forms';
+import {FormsModule, NgForm} from '@angular/forms';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatSelectModule} from '@angular/material/select';
 import {OperationCenterDto} from '../../api/models/operation-center-dto';
 import {MatInput} from '@angular/material/input';
-import {MatButton} from '@angular/material/button';
+import {MatButton, MatFabButton} from '@angular/material/button';
 import {MatIcon} from '@angular/material/icon';
 import {ZXingScannerComponent, ZXingScannerModule} from '@zxing/ngx-scanner';
 import {BarcodeFormat, Exception, IllegalArgumentException, NotFoundException} from '@zxing/library';
@@ -26,7 +26,8 @@ interface InputModel {
 		MatInput,
 		MatButton,
 		MatIcon,
-		ZXingScannerModule
+		ZXingScannerModule,
+		MatFabButton
 
 	],
   templateUrl: './crate-add-widget.component.html',
@@ -35,9 +36,6 @@ interface InputModel {
 export class CrateAddWidgetComponent {
 
 	@Output() crateSubmitted = new EventEmitter<EuroCrateDto>();
-
-	@ViewChild("theOverlay", {static: true})
-	theOverlayDiv?: HTMLDivElement;
 
 	@ViewChild("scanner", {static: true})
 	theScanner?: ZXingScannerComponent;
@@ -49,14 +47,28 @@ export class CrateAddWidgetComponent {
 
 	scanIsActive = false;
 
+	err = false;
+
 	constructor(
 		private api: ApiService,
 		private snack: MatSnackBar
 	) {
 	}
 
-	saveIt() {
-// TODO
+	saveIt(form: NgForm) {
+		this.api.getEuroCrate({
+			euroCrateName: this.inputModel.name,
+			operationCenter: this.inputModel.oc!
+		}).subscribe({
+			next: t => {
+				this.err = false;
+				form.resetForm()
+				this.crateSubmitted.next(t)
+			},
+			error: _ => {
+				this.err = true;
+			}
+		})
 	}
 
 	async scan() {
@@ -73,9 +85,10 @@ export class CrateAddWidgetComponent {
 			}
 
 			this.theScanner!.device = device
+
+			this.scanIsActive = true;
+			this.theScanner!.enable = true;
 		}
-		this.scanIsActive = true;
-		this.theScanner!.enable = true;
 	}
 
 	protected readonly Object = Object;

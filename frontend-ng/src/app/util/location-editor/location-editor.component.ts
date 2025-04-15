@@ -58,8 +58,4 @@ export class LocationEditorComponent implements ControlValueAccessor {
 	protected readonly Object = Object;
 	protected readonly LogisticsLocationDto = LogisticsLocationDto;
 	protected readonly OperationCenterDto = OperationCenterDto;
-
-	whenthe(theForm: NgForm) {
-		console.log(theForm)
-	}
 }

@@ -7,7 +7,7 @@
 		<div class="content">
 
 			<mat-form-field>
-				<mat-select [(ngModel)]="selected.deliveryState" name="deliveryState" required>
+				<mat-select [(ngModel)]="selected.deliveryState" name="deliveryState" required #deliveryStateControl="ngModel">
 					@for(vs of Object.keys(DeliveryStateEnumDto); track vs) {
 						<mat-option [value]="vs">{{vs}}</mat-option>
 					}
@@ -15,6 +15,26 @@
 			</mat-form-field>
 
 			<table mat-table [dataSource]="source" matSort>
+
+				<ng-container matColumnDef="status">
+					<th mat-header-cell *matHeaderCellDef mat-sort-header="status" sortActionDescription="Sort by Status">Status</th>
+					<td mat-cell *matCellDef="let element" class="icon-vert-center">
+						@switch(element.status) {
+							@case (ItemStatus.KEEP) {
+								<mat-icon fontIcon="arrow_right" matTooltip="Wird nicht geändert"></mat-icon>
+							}
+							@case(ItemStatus.ADDED) {
+								<mat-icon fontIcon="add" matTooltip="Wird hinzugefügt" [style.color]="'lightgreen'"></mat-icon>
+							}
+							@case(ItemStatus.REMOVED) {
+								<mat-icon fontIcon="delete" matTooltip="Wird entfernt" [style.color]="'crimson'"></mat-icon>
+							}
+							@case(ItemStatus.TRANSFERRED) {
+								<mat-icon fontIcon="arrow_right_alt" matTooltip="Wird von einer anderen Packliste bewegt" [style.color]="'cadetblue'"></mat-icon>
+							}
+						}
+					</td>
+				</ng-container>
 
 				<ng-container matColumnDef="operationCenter">
 					<th mat-header-cell *matHeaderCellDef mat-sort-header="operationCenter" sortActionDescription="Sort by OC">OC</th>
@@ -24,10 +44,12 @@
 					<th mat-header-cell *matHeaderCellDef mat-sort-header="name" sortActionDescription="Sort by name">Name</th>
 					<td mat-cell *matCellDef="let element">{{element.name}}</td>
 				</ng-container>
-				<ng-container matColumnDef="location">
-					<th mat-header-cell *matHeaderCellDef>Ort</th>
+				<ng-container matColumnDef="actions">
+					<th mat-header-cell *matHeaderCellDef>Aktionen</th>
 					<td mat-cell *matCellDef="let element">
-						<app-location [location]="element.location"></app-location>
+						<button mat-mini-fab type="button" (click)="remove(element)">
+							<mat-icon fontIcon="delete"></mat-icon>
+						</button>
 					</td>
 				</ng-container>
 
