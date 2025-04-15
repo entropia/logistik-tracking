@@ -6,7 +6,7 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatSelectModule} from '@angular/material/select';
 import {OperationCenterDto} from '../../api/models/operation-center-dto';
 import {MatInput} from '@angular/material/input';
-import { MatButton } from '@angular/material/button';
+import {MatButton} from '@angular/material/button';
 import {MatIcon} from '@angular/material/icon';
 import {ZXingScannerComponent, ZXingScannerModule} from '@zxing/ngx-scanner';
 import {BarcodeFormat, Exception, IllegalArgumentException, NotFoundException} from '@zxing/library';
@@ -59,7 +59,21 @@ export class CrateAddWidgetComponent {
 // TODO
 	}
 
-	scan() {
+	async scan() {
+		let doWeHavePerm = await this.theScanner!.askForPermission()
+		if (doWeHavePerm) {
+			let devices = await this.theScanner!.updateVideoInputDevices()
+
+			// select the rear camera by default, otherwise take the last camera.
+			const device = devices.find(({label}) => /back|trás|rear|traseira|environment|ambiente/gi.test(label)) || devices.pop();
+
+			if (!device) {
+				this.camerasNotFound()
+				return;
+			}
+
+			this.theScanner!.device = device
+		}
 		this.scanIsActive = true;
 		this.theScanner!.enable = true;
 	}
@@ -94,13 +108,11 @@ export class CrateAddWidgetComponent {
 		}
 	}
 	allowedFormats: BarcodeFormat[] = [BarcodeFormat.QR_CODE];
+	canScan: boolean = true;
 
 	camerasNotFound() {
 		this.close()
-		alert(`
-			Keine Kameras gefunden!
-			Überprüfe die Berechtigungen für die Website, oder versuche einen anderen Browser.
-		`.trim())
+		alert("Keine Kameras gefunden!\nÜberprüfe die Berechtigungen für die Website, oder versuche einen anderen Browser.")
 	}
 
 	scanFailed(eve: Exception | undefined) {
@@ -132,13 +144,11 @@ export class CrateAddWidgetComponent {
 		this.theScanner!.enable = false;
 	}
 
-	handlePerm($event: boolean) {
+	handlePerm($event: boolean | null) {
+		this.canScan = !!$event;
 		if (!$event) {
 			this.close()
-			alert(`
-				Berechtigung wurde verweigert.
-				Ohne die Kameraberechtigung kann kein Scan durchgeführt werden.
-			`.trim())
+			alert("Berechtigung wurde verweigert.\nOhne die Kameraberechtigung kann kein Scan durchgeführt werden.")
 		}
 	}
 }

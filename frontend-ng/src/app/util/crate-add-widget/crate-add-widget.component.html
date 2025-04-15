@@ -16,7 +16,7 @@
 	</div>
 
 	<div class="row">
-		<button mat-flat-button type="button" (click)="scan()">
+		<button mat-flat-button type="button" (click)="scan()" [disabled]="!canScan">
 			<mat-icon fontIcon="qr_code_scanner"></mat-icon>
 		</button>
 	</div>
@@ -30,7 +30,8 @@
 				   (scanFailure)="scanFailed($event)"
 				   (scanError)="scanError($event)"
 				   (permissionResponse)="handlePerm($event)"
-				   previewFitMode="cover"></zxing-scanner>
+				   previewFitMode="cover"
+					[autostart]="false"></zxing-scanner>
 	<div class="actions row">
 		<button mat-flat-button type="button" (click)="close()">Abbrechen</button>
 	</div>
