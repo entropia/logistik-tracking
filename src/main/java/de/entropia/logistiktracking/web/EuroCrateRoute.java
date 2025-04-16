@@ -1,10 +1,13 @@
 package de.entropia.logistiktracking.web;
 
 import de.entropia.logistiktracking.domain.euro_crate.use_case.EuroCrateUseCase;
+import de.entropia.logistiktracking.domain.euro_pallet.use_case.EuroPalletUseCase;
 import de.entropia.logistiktracking.openapi.api.EuroCrateApi;
 import de.entropia.logistiktracking.openapi.model.*;
 import de.entropia.logistiktracking.utility.Result;
 import lombok.AllArgsConstructor;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -80,6 +83,19 @@ public class EuroCrateRoute implements EuroCrateApi {
 			case Result.Error<Void, EuroCrateUseCase.ModifyCrateError>(var err) -> switch (err) {
 				case BadArguments -> ResponseEntity.badRequest().build();
 				case CrateNotFound -> ResponseEntity.notFound().build();
+			};
+		};
+	}
+
+	@Override
+	public ResponseEntity<Resource> printEuroCrate(OperationCenterDto operationCenter, String euroCrateName) {
+		Result<byte[], EuroCrateUseCase.PrintEuroCrateError> result = euroCrateUseCase.printEuroPallet(operationCenter, euroCrateName);
+		return switch (result) {
+			case Result.Ok<byte[], EuroCrateUseCase.PrintEuroCrateError> ok ->
+					ResponseEntity.ok(new ByteArrayResource(ok.result()));
+			case Result.Error<byte[], EuroCrateUseCase.PrintEuroCrateError> error -> switch (error.error()) {
+				case CrateNotFound -> ResponseEntity.notFound().build();
+				case FailedToGeneratePdf -> ResponseEntity.internalServerError().build();
 			};
 		};
 	}

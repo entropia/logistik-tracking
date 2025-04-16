@@ -3,6 +3,8 @@ package de.entropia.logistiktracking.domain.euro_crate.use_case;
 import de.entropia.logistiktracking.domain.converter.*;
 import de.entropia.logistiktracking.domain.delivery_state.DeliveryState;
 import de.entropia.logistiktracking.domain.euro_crate.EuroCrate;
+import de.entropia.logistiktracking.domain.euro_crate.pdf.EuroCratePdfGenerator;
+import de.entropia.logistiktracking.domain.euro_pallet.EuroPallet;
 import de.entropia.logistiktracking.domain.location.Location;
 import de.entropia.logistiktracking.domain.operation_center.OperationCenter;
 import de.entropia.logistiktracking.domain.repository.EuroCrateRepository;
@@ -43,6 +45,7 @@ public class EuroCrateUseCase {
 	private final EuroCrateDatabaseService euroCrateDatabaseService;
 	private final PackingListDatabaseService packingListDatabaseService;
 	private final PackingListConverter packingListConverter;
+	private final EuroCratePdfGenerator euroCratePdfGenerator;
 
 	public Result<EuroCrateDto, CreateEuroCrateError> createEuroCrate(EuroCrateDto euroCrateDto) {
 		EuroCrate euroCrate;
@@ -173,6 +176,28 @@ public class EuroCrateUseCase {
 		}
 
 		return new Result.Ok<>(packingListConverter.toBasicDto(packingListConverter.from(result.get())));
+	}
+
+	public Result<byte[], PrintEuroCrateError> printEuroPallet(OperationCenterDto oc, String name) {
+
+		OperationCenter operationCenter = operationCenterConverter.from(oc);
+
+		Optional<EuroCrate> euroPallet = euroCrateRepository.findEuroCrate(operationCenter, name);
+
+		if (euroPallet.isEmpty()) {
+			return new Result.Error<>(PrintEuroCrateError.CrateNotFound);
+		}
+
+		Result<byte[], Void> pdfResult = euroCratePdfGenerator.generatePdf(euroPallet.get());
+		return switch (pdfResult) {
+			case Result.Ok<byte[], Void>(byte[] content) -> new Result.Ok<>(content);
+			default -> new Result.Error<>(PrintEuroCrateError.FailedToGeneratePdf);
+		};
+	}
+
+	public enum PrintEuroCrateError {
+		CrateNotFound,
+		FailedToGeneratePdf
 	}
 
 	public enum FindRelatedPackingListError {

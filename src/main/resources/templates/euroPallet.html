@@ -1,50 +1,89 @@
 <!DOCTYPE html>
 <html lang="de" xmlns:th="http://www.thymeleaf.org">
-    <head>
-        <title>Europalette</title>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-        <style>
-            @page {
-                size: A5 landscape;
-            }
+<head>
+    <title>Europalette</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <style>
+        @font-face {
+            font-family: 'Source Code Pro';
+            font-style: normal;
+            font-weight: 200 900;
+            src: url("@{classpath:SourceCodePro.ttf}") format('truetype');
+            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+        }
+        @page {
+            size: A5 landscape;
+            margin: 0;
+        }
 
-            body {
-                margin: 0.25cm;
-                font-family: courier sans-serif;
-            }
+        body {
+            font-family: 'Source Code Pro',Monospaced,serif;
+            height: calc(100vh - 2cm);
+            width: calc(100vw - 2cm);
+            margin: 1cm;
+        }
 
-            html {
-                height: 100%;
-            }
+        html {
+            height: 100%;
+        }
 
-            h1 {
-                font-size: 40px;
-                margin-top: 0;
-                padding-top: 0;
-            }
+        h1 {
+            margin-top: 0;
+            padding-top: 0;
+        }
 
-            code {
-                font-size: 20px;
-            }
+        .theQr {
+            width: 6cm;
+            height: 6cm;
+        }
 
-            .theQr {
-                position: absolute;
-                right: 0.25cm;
-                top: 0.25cm;
-                border: 1px solid black;
-            }
+        .sup {
+            vertical-align: super;
+        }
 
-            .entropiaLogo {
-                position: absolute;
-                right: 0.25cm;
-                bottom: 0.25cm;
-            }
-        </style>
-    </head>
-    <body>
-        <img class="theQr" alt="QR-Code für Europalette" th:src="@{'data:image/jpeg;base64,'+${image}}" width="256"/>
-        <h1 data-th-utext="${palletId}"></h1>
-        <pre><code data-th-utext="${information}"></code></pre>
-        <img class="entropiaLogo" alt="Logo der Entropia eV" th:src="@{classpath:Entropia.png}" height="128"></img>
-    </body>
+        .sub {
+            vertical-align: sub;
+        }
+
+        h1 > span {
+            font-size: smaller;
+        }
+
+        .theQr {
+            float: right;
+        }
+
+        .bottom {
+            position: absolute;
+            bottom: 1cm;
+            left: 1cm;
+            right: 1cm;
+        }
+
+        .postfix {
+            clear: both;
+        }
+    </style>
+</head>
+<body>
+
+<div class="main">
+
+    <img class="theQr" alt="QR-Code für Eurobox" th:src="@{'data:image/jpeg;base64,'+${image}}"/>
+
+    <h1>Palette /<span class="sub" data-th-utext="${pallet.getPalletId()}"></span></h1>
+    <div data-th-utext="${pallet.getInformation()}" style="white-space: pre-wrap; word-break: break-all; font-size: large">AAAA</div>
+
+    <div class="postfix"></div>
+</div>
+
+<div class="bottom">
+    <img style="float: left" alt="Logo des Entropia e.V. Logistik Team" th:src="@{classpath:LOC.png}" height="128"></img>
+    <img style="float: right" alt="Logo des Entropia e.V." th:src="@{classpath:Entropia.png}" height="128"></img>
+
+    <div class="postfix"></div>
+</div>
+
+
+</body>
 </html>
