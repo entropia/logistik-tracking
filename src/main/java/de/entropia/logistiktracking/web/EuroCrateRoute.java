@@ -1,7 +1,6 @@
 package de.entropia.logistiktracking.web;
 
 import de.entropia.logistiktracking.domain.euro_crate.use_case.EuroCrateUseCase;
-import de.entropia.logistiktracking.domain.euro_pallet.use_case.EuroPalletUseCase;
 import de.entropia.logistiktracking.openapi.api.EuroCrateApi;
 import de.entropia.logistiktracking.openapi.model.*;
 import de.entropia.logistiktracking.utility.Result;
@@ -89,7 +88,7 @@ public class EuroCrateRoute implements EuroCrateApi {
 
 	@Override
 	public ResponseEntity<Resource> printEuroCrate(OperationCenterDto operationCenter, String euroCrateName) {
-		Result<byte[], EuroCrateUseCase.PrintEuroCrateError> result = euroCrateUseCase.printEuroPallet(operationCenter, euroCrateName);
+		Result<byte[], EuroCrateUseCase.PrintEuroCrateError> result = euroCrateUseCase.printEuroCrate(operationCenter, euroCrateName);
 		return switch (result) {
 			case Result.Ok<byte[], EuroCrateUseCase.PrintEuroCrateError> ok ->
 					ResponseEntity.ok(new ByteArrayResource(ok.result()));

@@ -3,6 +3,7 @@
     <option name="ACTIVE_PROFILES" value="entw" />
     <module name="logistikTracking" />
     <option name="SPRING_BOOT_MAIN_CLASS" value="de.entropia.logistiktracking.LogistikTrackingApplication" />
+    <option name="VM_PARAMETERS" value="-Dxr.util-logging.loggingEnabled=true" />
     <method v="2">
       <option name="Make" enabled="true" />
     </method>

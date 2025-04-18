@@ -3,7 +3,7 @@ import { ApiService } from '../../api/services';
 import {OperationCenterDto} from '../../api/models/operation-center-dto';
 import {EuroCrateDto} from '../../api/models/euro-crate-dto';
 import {ActivatedRoute} from '@angular/router';
-import {FormsModule, NgModel} from '@angular/forms';
+import {FormsModule, NgForm, NgModel} from '@angular/forms';
 import {LocationEditorComponent} from '../../util/location-editor/location-editor.component';
 import {ValidateLocationDirective} from '../../util/location-editor/location-validator';
 import {DeliveryStateEnumDto, LogisticsLocationDto} from '../../api/models';
@@ -65,7 +65,7 @@ export class SelectedEuroCrateComponent implements OnInit {
 		})
 	}
 
-	saveIt(locationMod: NgModel, deliStatusMod: NgModel, ftInfoMod: NgModel) {
+	saveIt(form: NgForm, locationMod: NgModel, deliStatusMod: NgModel, ftInfoMod: NgModel) {
 		let promises = []
 		if (locationMod.dirty) {
 			promises.push(this.apiService.modifyLocationOfCrate({
@@ -91,7 +91,7 @@ export class SelectedEuroCrateComponent implements OnInit {
 		console.dir(promises)
 		forkJoin(promises).subscribe({
 			next: v => {
-				console.log(v)
+				form.control.markAsPristine()
 			},
 			error: e => {
 				alert("failed to save! check console")

@@ -4,7 +4,6 @@ import de.entropia.logistiktracking.domain.converter.*;
 import de.entropia.logistiktracking.domain.delivery_state.DeliveryState;
 import de.entropia.logistiktracking.domain.euro_crate.EuroCrate;
 import de.entropia.logistiktracking.domain.euro_crate.pdf.EuroCratePdfGenerator;
-import de.entropia.logistiktracking.domain.euro_pallet.EuroPallet;
 import de.entropia.logistiktracking.domain.location.Location;
 import de.entropia.logistiktracking.domain.operation_center.OperationCenter;
 import de.entropia.logistiktracking.domain.repository.EuroCrateRepository;
@@ -12,7 +11,6 @@ import de.entropia.logistiktracking.jpa.EuroCrateDatabaseElement;
 import de.entropia.logistiktracking.jpa.LocationDatabaseElement;
 import de.entropia.logistiktracking.jpa.PackingListDatabaseElement;
 import de.entropia.logistiktracking.jpa.repo.EuroCrateDatabaseService;
-import de.entropia.logistiktracking.jpa.repo.EuroPalletDatabaseService;
 import de.entropia.logistiktracking.jpa.repo.PackingListDatabaseService;
 import de.entropia.logistiktracking.openapi.model.*;
 import de.entropia.logistiktracking.utility.Result;
@@ -178,7 +176,7 @@ public class EuroCrateUseCase {
 		return new Result.Ok<>(packingListConverter.toBasicDto(packingListConverter.from(result.get())));
 	}
 
-	public Result<byte[], PrintEuroCrateError> printEuroPallet(OperationCenterDto oc, String name) {
+	public Result<byte[], PrintEuroCrateError> printEuroCrate(OperationCenterDto oc, String name) {
 
 		OperationCenter operationCenter = operationCenterConverter.from(oc);
 

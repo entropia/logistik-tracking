@@ -5,8 +5,10 @@ import de.entropia.logistiktracking.domain.converter.DeliveryStateConverter;
 import de.entropia.logistiktracking.domain.converter.OperationCenterConverter;
 import de.entropia.logistiktracking.domain.converter.PackingListConverter;
 import de.entropia.logistiktracking.domain.euro_pallet.EuroPallet;
+import de.entropia.logistiktracking.domain.euro_pallet.pdf.EuroPalletPdfGenerator;
 import de.entropia.logistiktracking.domain.operation_center.OperationCenter;
 import de.entropia.logistiktracking.domain.packing_list.PackingList;
+import de.entropia.logistiktracking.domain.packing_list.pdf.PackingListPdfGenerator;
 import de.entropia.logistiktracking.domain.repository.EuroPalletRepository;
 import de.entropia.logistiktracking.domain.repository.PackingListRepository;
 import de.entropia.logistiktracking.jpa.repo.PackingListDatabaseService;
@@ -30,6 +32,7 @@ public class ManagePackingListUseCase {
 	private final OperationCenterConverter ocConv;
 	private final DeliveryStateConverter deliveryStateConverter;
 	private final PackingListDatabaseService packingListDatabaseService;
+	private final PackingListPdfGenerator packingListPdfGenerator;
 
 	public Result<PackingListDto, CreateNewPackingListError> createNewPackingListUseCase(NewPackingListDto newPackingListDto) {
 		long placedOnPalletId = newPackingListDto.getPackedOnPallet();
@@ -89,6 +92,25 @@ public class ManagePackingListUseCase {
 		if (n == 0) return new Result.Error<>(UpdateDeliveryStateError.NotFound);
 
 		return new Result.Ok<>(null);
+	}
+
+	public Result<byte[], PrintPackingListError> printPackingList(long packingListId) {
+		Optional<PackingList> euroPallet = packingListRepository.findPackingList(packingListId);
+
+		if (euroPallet.isEmpty()) {
+			return new Result.Error<>(PrintPackingListError.ListNotFound);
+		}
+
+		Result<byte[], Void> pdfResult = packingListPdfGenerator.generatePdf(euroPallet.get());
+		return switch (pdfResult) {
+			case Result.Ok<byte[], Void>(byte[] content) -> new Result.Ok<>(content);
+			default -> new Result.Error<>(PrintPackingListError.FailedToGenerate);
+		};
+	}
+
+	public enum PrintPackingListError {
+		ListNotFound,
+		FailedToGenerate
 	}
 
 	public enum UpdateDeliveryStateError {

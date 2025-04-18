@@ -44,7 +44,7 @@ public class EuroCratePdfGenerator {
 		assert ordinal <= 0xFF : "ordinal is too big to fit into one byte";
 		bb.put((byte) ordinal);
 		bb.put(encodedName);
-		return Base64.getEncoder().encodeToString(content);
+		return "C"+Base64.getEncoder().encodeToString(content);
 	}
 
 	public Result<byte[], Void> generatePdf(EuroCrate crate) {

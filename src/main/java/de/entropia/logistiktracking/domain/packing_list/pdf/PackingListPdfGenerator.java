@@ -1,21 +1,21 @@
-package de.entropia.logistiktracking.domain.euro_pallet.pdf;
+package de.entropia.logistiktracking.domain.packing_list.pdf;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
-import com.google.zxing.datamatrix.DataMatrixWriter;
-import com.google.zxing.datamatrix.encoder.SymbolShapeHint;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.lowagie.text.DocumentException;
-import de.entropia.logistiktracking.domain.euro_pallet.EuroPallet;
+import de.entropia.logistiktracking.domain.euro_crate.EuroCrate;
+import de.entropia.logistiktracking.domain.operation_center.OperationCenter;
+import de.entropia.logistiktracking.domain.packing_list.PackingList;
 import de.entropia.logistiktracking.utility.Result;
 import lombok.AllArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
+
 import org.xhtmlrenderer.pdf.ITextRenderer;
 
 import javax.imageio.ImageIO;
@@ -24,27 +24,26 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.util.Base64;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
-@Component
+@Service
+@Slf4j
 @AllArgsConstructor
-public class EuroPalletPdfGenerator {
-	private static final int MAX_INFORMATION_LENGTH = 240;
-	private static final Logger logger = LoggerFactory.getLogger(EuroPalletPdfGenerator.class);
+public class PackingListPdfGenerator {
 	private final TemplateEngine templateEngine;
 
-	private String encodeData(EuroPallet ep) {
+	private String encodeData(PackingList pl) {
 		byte[] content = new byte[8];
 		ByteBuffer bb = ByteBuffer.wrap(content);
 		bb.order(ByteOrder.BIG_ENDIAN);
-		bb.putLong(ep.getPalletId());
-		return "P"+Base64.getEncoder().encodeToString(content);
+		bb.putLong(pl.getPackingListId());
+		return "L"+ Base64.getEncoder().encodeToString(content);
 	}
 
-	public Result<byte[], Void> generate(EuroPallet euroPallet) {
-		String url = encodeData(euroPallet);
+	public Result<byte[], Void> generatePdf(PackingList crate) {
+		String url = encodeData(crate);
 		QRCodeWriter writer = new QRCodeWriter();
 		BitMatrix bitMatrix;
 		try {
@@ -52,7 +51,7 @@ public class EuroPalletPdfGenerator {
 					EncodeHintType.MARGIN, 0
 			));
 		} catch (WriterException e) {
-			logger.error("Failed to generate QR Code", e);
+			log.error("Failed to generate QR Code", e);
 			return new Result.Error<>(null);
 		}
 		int bmWidth = bitMatrix.getWidth();
@@ -70,14 +69,23 @@ public class EuroPalletPdfGenerator {
 			ImageIO.write(image, "png", imageOs);
 			base64Image = Base64.getEncoder().encodeToString(imageOs.toByteArray());
 		} catch (IOException e) {
-			logger.error("Failed to convert QR code to base-64 png", e);
+			log.error("Failed to convert QR code to base-64 png", e);
 			return new Result.Error<>(null);
 		}
 
 		Context context = new Context(Locale.GERMANY);
-		context.setVariable("pallet", euroPallet);
+		context.setVariable("list", crate);
+		Map<OperationCenter, List<EuroCrate>> collect = crate.getPackedCrates().stream().collect(Collectors.groupingBy(EuroCrate::getOperationCenter));
+		Map<OperationCenter, List<EuroCrate[]>> mapped = new HashMap<>();
+		collect.forEach((a, b) -> {
+			Map<Integer, List<EuroCrate>> partitioned = IntStream.range(0, b.size())
+					.boxed()
+					.collect(Collectors.groupingBy(i -> i / 3, Collectors.mapping(b::get, Collectors.toList())));
+			mapped.put(a, partitioned.values().stream().map(it -> it.toArray(EuroCrate[]::new)).toList());
+		});
+		context.setVariable("groupedCrates", mapped);
 		context.setVariable("image", base64Image);
-		String html = templateEngine.process("euroPallet", context);
+		String html = templateEngine.process("packingList", context);
 
 		try (ByteArrayOutputStream htmlOs = new ByteArrayOutputStream()) {
 			ITextRenderer renderer = new ITextRenderer();
@@ -86,7 +94,7 @@ public class EuroPalletPdfGenerator {
 			renderer.createPDF(htmlOs);
 			return new Result.Ok<>(htmlOs.toByteArray());
 		} catch (DocumentException | IOException e) {
-			logger.error("Failed to generate EuroPallet PDF", e);
+			log.error("Failed to generate EuroPallet PDF", e);
 			return new Result.Error<>(null);
 		}
 	}

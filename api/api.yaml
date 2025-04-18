@@ -174,6 +174,8 @@ paths:
     get:
       operationId: printEuroCrate
       summary: "Generate a printable document for the selected euroCrate."
+      security:
+        - springCookieAuth: [ ]
       parameters:
         - name: "operationCenter"
           in: path
@@ -316,6 +318,8 @@ paths:
     get:
       operationId: printEuroPallet
       summary: "Generate a short DIN A5 printable document for the physical pallet."
+      security:
+        - springCookieAuth: [ ]
       parameters:
         - name: "euroPalletId"
           in: path
@@ -530,6 +534,29 @@ paths:
         "404":
           description: "Selected packing list does not exist."
 
+  /printMultiple:
+    post:
+      operationId: printMultipleThings
+      summary: Print multiple elements into one A4 PDF
+      security:
+        - springCookieAuth: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PrintMultipleDto"
+      responses:
+        200:
+          description: Successfully printed
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        404:
+          description: A resource didnt exist
+
   /login:
     post:
       operationId: login
@@ -561,6 +588,39 @@ components:
       name: JSESSIONID
 
   schemas:
+    PrintMultipleDto:
+      type: array
+      items:
+        oneOf:
+          - type: object
+            properties:
+              type:
+                description: Type of the print (Crate)
+                enum:
+                  - "Crate"
+              oc:
+                $ref: "#/components/schemas/OperationCenterDto"
+              name:
+                type: string
+                description: Name of the crate
+            required:
+              - type
+              - oc
+              - name
+          - type: object
+            properties:
+              type:
+                description: Type of the print (Pallet)
+                enum:
+                  - "Pallet"
+              id:
+                type: integer
+                format: int64
+                description: ID of the crate
+            required:
+              - type
+              - id
+
     EuroCrateDto:
       allOf:
         - $ref: "#/components/schemas/InformationDto"

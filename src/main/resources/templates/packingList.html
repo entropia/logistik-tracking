@@ -5,12 +5,12 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
         <style>
             @page {
-                size: A5 landscape;
+                size: A4 portrait;
                 margin: 0;
             }
 
             body {
-                font-family: 'Source Code Pro',Monospaced,serif;
+                font-family: Monospaced,serif;
                 margin: 1cm;
             }
 
@@ -54,26 +54,33 @@
             .postfix {
                 clear: both;
             }
+
+            td:before {
+                content: "* ";
+            }
         </style>
     </head>
     <body>
 
     <div class="main">
 
-        <img class="theQr" alt="QR-Code für Eurobox" th:src="@{'data:image/jpeg;base64,'+${image}}"/>
+        <img class="theQr" alt="QR-Code für Packliste" th:src="@{'data:image/jpeg;base64,'+${image}}"/>
 
-        <h1><span data-th-utext="${crate.getOperationCenter().getName()}" class="sup"></span>/<span class="sub" data-th-utext="${crate.getName()}"></span></h1>
-        <div data-th-utext="${crate.getInformation()}" style="white-space: pre-wrap; word-break: break-all">AAAA</div>
-        <p style="font-size: large; margin-bottom: 0">ZUM LOC ZURÜCKGEBEN AM: <b><span data-th-utext="${crate.getReturnBy()}"></span></b></p>
+        <img style="float: right; clear: right; margin-top: 40px;" alt="Logo des Entropia e.V." th:src="@{classpath:Entropia.png}" height="128"></img>
+        <img style="float: right; margin-top: 40px;" alt="Logo des Entropia e.V. Logistik Team" th:src="@{classpath:LOC.png}" height="128"></img>
 
-        <div class="postfix"></div>
-    </div>
+        <h1>Packliste /<span class="sub" data-th-utext="${list.getPackingListId()}"></span></h1>
+        <p data-th-utext="${list.getName()}"></p>
 
-    <div class="bottom">
-        <img style="float: left" alt="Logo des Entropia e.V. Logistik Team" th:src="@{classpath:LOC.png}" height="128"></img>
-        <img style="float: right" alt="Logo des Entropia e.V." th:src="@{classpath:Entropia.png}" height="128"></img>
+        <div th:each="group : ${groupedCrates}">
+            <h2 th:text="${group.key}"></h2>
+            <table style="width: 60%">
+                <tr th:each="k : ${group.value}">
+                    <td th:each="c : ${k}" th:text="${c.getName()}"></td>
+                </tr>
+            </table>
+        </div>
 
-        <div class="postfix"></div>
     </div>
 
 

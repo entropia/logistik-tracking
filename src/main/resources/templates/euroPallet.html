@@ -4,13 +4,6 @@
     <title>Europalette</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <style>
-        @font-face {
-            font-family: 'Source Code Pro';
-            font-style: normal;
-            font-weight: 200 900;
-            src: url("@{classpath:SourceCodePro.ttf}") format('truetype');
-            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-        }
         @page {
             size: A5 landscape;
             margin: 0;
@@ -18,8 +11,6 @@
 
         body {
             font-family: 'Source Code Pro',Monospaced,serif;
-            height: calc(100vh - 2cm);
-            width: calc(100vw - 2cm);
             margin: 1cm;
         }
 
@@ -71,7 +62,7 @@
 
     <img class="theQr" alt="QR-Code für Eurobox" th:src="@{'data:image/jpeg;base64,'+${image}}"/>
 
-    <h1>Palette /<span class="sub" data-th-utext="${pallet.getPalletId()}"></span></h1>
+    <h1>€palette /<span class="sub" data-th-utext="${pallet.getPalletId()}"></span></h1>
     <div data-th-utext="${pallet.getInformation()}" style="white-space: pre-wrap; word-break: break-all; font-size: large">AAAA</div>
 
     <div class="postfix"></div>
