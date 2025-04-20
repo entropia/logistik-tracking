@@ -2,7 +2,7 @@ import {Component, Input, OnInit} from '@angular/core';
 import {EuroPalletDto} from '../../api/models/euro-pallet-dto';
 import {ApiService} from '../../api/services/api.service';
 import {LocationEditorComponent} from '../../util/location-editor/location-editor.component';
-import {FormsModule, NgForm} from '@angular/forms';
+import {FormsModule} from '@angular/forms';
 import {ValidateLocationDirective} from '../../util/location-editor/location-validator';
 import {LocationDto} from '../../api/models/location-dto';
 import {MatError} from '@angular/material/input';

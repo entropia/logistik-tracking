@@ -7,7 +7,6 @@ import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.lowagie.text.DocumentException;
 import de.entropia.logistiktracking.domain.euro_crate.EuroCrate;
-import de.entropia.logistiktracking.domain.euro_pallet.EuroPallet;
 import de.entropia.logistiktracking.utility.Result;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

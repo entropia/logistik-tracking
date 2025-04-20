@@ -5,7 +5,6 @@ import de.entropia.logistiktracking.domain.converter.DeliveryStateConverter;
 import de.entropia.logistiktracking.domain.converter.OperationCenterConverter;
 import de.entropia.logistiktracking.domain.converter.PackingListConverter;
 import de.entropia.logistiktracking.domain.euro_pallet.EuroPallet;
-import de.entropia.logistiktracking.domain.euro_pallet.pdf.EuroPalletPdfGenerator;
 import de.entropia.logistiktracking.domain.operation_center.OperationCenter;
 import de.entropia.logistiktracking.domain.packing_list.PackingList;
 import de.entropia.logistiktracking.domain.packing_list.pdf.PackingListPdfGenerator;

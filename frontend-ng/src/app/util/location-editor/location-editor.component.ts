@@ -3,7 +3,7 @@ import {LocationDto} from '../../api/models/location-dto';
 import {LocationTypeDto} from '../../api/models/location-type-dto';
 import {MatFormField, MatInput, MatLabel} from '@angular/material/input';
 import {MatOption, MatSelect} from '@angular/material/select';
-import {ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR, NgForm} from '@angular/forms';
+import {ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {LogisticsLocationDto, OperationCenterDto} from '../../api/models';
 
 @Component({

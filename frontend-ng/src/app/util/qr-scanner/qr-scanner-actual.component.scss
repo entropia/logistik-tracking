@@ -1,0 +1,30 @@
+.actions {
+	position: absolute;
+	right: 20px;
+	bottom: 20px
+}
+
+.row {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	gap: 10px;
+}
+
+:host {
+	width: 100%;
+	height: 100%;
+}
+
+zxing-scanner::ng-deep {
+
+	/* Root component needs to have height: 100% */
+	height: 100%;
+	/* Optional : you probably want full-width as well for landscape orientation or tablets */
+	width: 100%;
+
+	video {
+		/* !important because component already sets height property */
+		height: 100% !important;
+	}
+}
