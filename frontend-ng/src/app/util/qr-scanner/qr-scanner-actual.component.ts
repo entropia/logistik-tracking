@@ -1,14 +1,13 @@
-import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {ZXingScannerComponent, ZXingScannerModule} from '@zxing/ngx-scanner';
-import {BarcodeFormat, Exception, NotFoundException} from '@zxing/library';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import {Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {MatSnackBar} from '@angular/material/snack-bar';
 import {MatButtonModule} from '@angular/material/button';
 import {QrScanRef} from '../../qr-scanner.service';
+import QrScanner from 'qr-scanner';
+import ScanResult = QrScanner.ScanResult;
 
 @Component({
   selector: 'app-qr-scanner-actual',
 	imports: [
-		ZXingScannerModule,
 		MatButtonModule
 	],
   templateUrl: './qr-scanner-actual.component.html',
@@ -16,93 +15,51 @@ import {QrScanRef} from '../../qr-scanner.service';
 })
 export class QrScannerActualComponent implements OnInit, OnDestroy {
 
-	@ViewChild("scanner", {static: true})
-	theScanner?: ZXingScannerComponent;
+	@ViewChild("theVideo", {static: true})
+	theVideo?: ElementRef<HTMLVideoElement>;
 
-	scanIsActive = false;
-
-	err = false;
-
-	allowedFormats: BarcodeFormat[] = [BarcodeFormat.QR_CODE];
-	canScan: boolean = true;
+	theScanner!: QrScanner;
 
 	constructor(private snack: MatSnackBar, private ref: QrScanRef) {
 	}
 
 	async ngOnInit() {
-		await this.start()
+		// js callbacks that happen to for some reason bind this to QrScanner so the refs in those methods get nuked
+		// typical js jank solution: bind this beforehand :skull:
+		this.theScanner = new QrScanner(
+			this.theVideo!.nativeElement, this.scanSuccess.bind(this), {
+				highlightCodeOutline: true,
+				onDecodeError: this.scanError.bind(this),
+				highlightScanRegion: true,
+				maxScansPerSecond: 5,
+				returnDetailedScanResult: true
+			}
+		)
+
+		await this.theScanner.start()
 	}
 
 	ngOnDestroy() {
-		this.stopScanning()
+		// at this point we're gone, nuke the scanner and close the parent overlay if needed
+		this.closeRefIfNotAlready()
+		this.theScanner.destroy()
 	}
 
-	stopScanning() {
-		this.scanIsActive = false;
-		this.theScanner!.enable = false;
+	closeRefIfNotAlready() {
+		// called by button, close will call ngOnDestroy if we werent already removed
 		this.ref.close()
 	}
 
-	handlePerm($event: boolean | null) {
-		this.canScan = !!$event;
-		if (!$event) {
-			this.stopScanning()
-			alert("Berechtigung wurde verweigert.\nOhne die Kameraberechtigung kann kein Scan durchgeführt werden.")
-		}
-	}
-
-	camerasNotFound() {
-		this.stopScanning()
-		alert("Keine Kameras gefunden!\nÜberprüfe die Berechtigungen für die Website, oder versuche einen anderen Browser.")
-	}
-
-	scanFailed(eve: Exception | undefined) {
-		if (eve) {
-			if (eve instanceof NotFoundException) return; // wird gespammt wenn nix gefunden wurde
-			let message = eve.message
-			let kind = eve.getKind()
-			this.snack.open(`Konnte nicht scannen: ${kind}: ${message}`, "OK", {
-				duration: 7000
-			})
-		} else {
-			this.snack.open(`Konnte nicht scannen: Unbekannter fehler.`, "OK", {
-				duration: 5000
-			})
-		}
-	}
-
-	scanError(eve: Error) {
-		let message = eve.message
+	scanError(eve: (Error | string)) {
+		if (eve == QrScanner.NO_QR_CODE_FOUND) return // boring
+		let message = eve.toString()
+		console.error(eve)
 		this.snack.open(`Fehler beim Scannen (siehe Konsole): ${message}`, "OK", {
 			duration: 7000
 		})
-
-		console.error(eve)
 	}
 
-	scanSuccess($event: string) {
-		this.ref.onScanned.next($event)
+	scanSuccess($event: ScanResult) {
+		this.ref.onScanned.next($event.data)
 	}
-
-	public async start() {
-
-		let doWeHavePerm = await this.theScanner!.askForPermission()
-		if (doWeHavePerm) {
-			let devices = await this.theScanner!.updateVideoInputDevices()
-
-			// select the rear camera by default, otherwise take the last camera.
-			const device = devices.find(({label}) => /back|trás|rear|traseira|environment|ambiente/gi.test(label)) || devices.pop();
-
-			if (!device) {
-				this.camerasNotFound()
-				return;
-			}
-
-			this.theScanner!.device = device
-
-			this.scanIsActive = true;
-			this.theScanner!.enable = true;
-		}
-	}
-
 }

@@ -1,11 +1,4 @@
-<zxing-scanner #scanner [enable]="scanIsActive" [formats]="allowedFormats"
-			   (camerasNotFound)="camerasNotFound()"
-			   (scanSuccess)="scanSuccess($event)"
-			   (scanFailure)="scanFailed($event)"
-			   (scanError)="scanError($event)"
-			   (permissionResponse)="handlePerm($event)"
-			   previewFitMode="cover"
-			   [autostart]="false"></zxing-scanner>
+<video #theVideo></video>
 <div class="actions row">
-	<button mat-flat-button type="button" (click)="stopScanning()">Abbrechen</button>
+	<button mat-flat-button type="button" (click)="closeRefIfNotAlready()">Abbrechen</button>
 </div>

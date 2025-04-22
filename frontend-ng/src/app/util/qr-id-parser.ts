@@ -1,5 +1,4 @@
 import {OperationCenterDto} from '../api/models/operation-center-dto';
-import {Exception} from '@zxing/library';
 
 function assertLength(c: string, i: number) {
 	if (c.length != i) throw new Error("epxected id length = "+i+", got "+c.length)
@@ -39,8 +38,8 @@ export function parseCrateId(data: string): CrateId {
 	let name = data.substring(1)
 
 	let availValues = Object.values(OperationCenterDto)
-	if (a < 0 || a >= availValues.length) throw new Exception("OC index invalid")
-	if (name.length < 1) throw new Exception("name length invalid")
+	if (a < 0 || a >= availValues.length) throw new Error("OC index invalid")
+	if (name.length < 1) throw new Error("name length invalid")
 	return {
 		kind: IdKind.Crate,
 		name,

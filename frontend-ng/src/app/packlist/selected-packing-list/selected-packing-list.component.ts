@@ -15,6 +15,8 @@ import {MatIcon} from '@angular/material/icon';
 import {MatTooltip} from '@angular/material/tooltip';
 import {forkJoin} from 'rxjs';
 import {HttpErrorResponse} from '@angular/common/http';
+import {QrScannerService} from '../../qr-scanner.service';
+import {parseCrateId} from '../../util/qr-id-parser';
 
 enum ItemStatus {
 	KEEP,
@@ -89,7 +91,8 @@ export class SelectedPackingListComponent {
 	protected selected?: PackingListDto;
 	constructor(
 		private apiService: ApiService,
-		private snackbar: MatSnackBar
+		private snackbar: MatSnackBar,
+		private qr: QrScannerService
 	) {
 	}
 
@@ -155,12 +158,26 @@ export class SelectedPackingListComponent {
 	displayedColumns: string[] = ['status', 'operationCenter', 'name', 'actions'];
 	source = new MatTableDataSource<TheItem>(undefined);
 
-	crateSubmitted($event: EuroCrateDto) {
+	feedback(v: string) {
+		this.snackbar.open(v, undefined, {
+			duration: 5000
+		})
+		// wanted to do a phone vibration here but then i figured out ios safari doesnt support it
+		// thanks apple
+		// i guess we can do a sound cue for everyone and a vibration for android people?
+	}
+
+	crateSubmitted($event: EuroCrateDto, sendFeedback: boolean) {
 		let i;
 		if ((i = this.items.findIndex(e => e.operationCenter == $event.operationCenter && e.name == $event.name)) != -1) {
 			let existing = this.items[i]
 			if (existing.status == ItemStatus.REMOVED) {
 				existing.status = existing.originalStatus;
+				if (sendFeedback) {
+					this.feedback(`/ Box ${$event.operationCenter}/${$event.name} zurückgesetzt (war entfernt)`)
+				}
+			} else {
+				this.feedback(`= Box ${$event.operationCenter}/${$event.name} ungeändert`)
 			}
 		} else {
 			this.apiService.getPackingListsOfCrate({
@@ -174,6 +191,7 @@ export class SelectedPackingListComponent {
 						...$event
 					})
 					this.source.data = this.items;
+					this.feedback(`-> Box ${$event.operationCenter}/${$event.name} hinzugefügt (wird bewegt)`)
 				},
 				error: err => {
 					if (err instanceof HttpErrorResponse && err.status == 404) {
@@ -184,6 +202,7 @@ export class SelectedPackingListComponent {
 							...$event
 						})
 						this.source.data = this.items;
+						this.feedback(`+ Box ${$event.operationCenter}/${$event.name} hinzugefügt (neu)`)
 					} else {
 						console.error(err)
 						alert(`Unbekannter fehler beim suchen nach Packlisten zu der gegebenen Box! ${err}`)
@@ -207,4 +226,28 @@ export class SelectedPackingListComponent {
 	}
 
 	protected readonly ItemStatus = ItemStatus;
+
+	scanMultiple() {
+		let ref = this.qr.startScanning();
+		ref.onScanned.subscribe({
+			next: v => {
+				try {
+					let id = parseCrateId(v)
+					this.apiService.getEuroCrate({
+						euroCrateName: id.name,
+						operationCenter: id.oc
+					}).subscribe({
+						next: c => this.crateSubmitted(c, true),
+						error: e => {
+							alert(`failed to get crate details! ${e}`)
+							console.error(e)
+						}
+					})
+				} catch (e) {
+					this.feedback(`Wahrscheinlich keine Box: ${e}`)
+					console.error(e)
+				}
+			}
+		})
+	}
 }

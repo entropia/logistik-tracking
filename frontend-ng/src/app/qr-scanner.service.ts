@@ -1,12 +1,12 @@
 import {Injectable, Injector} from '@angular/core';
 import {
-	GlobalPositionStrategy,
-	Overlay,
+	Overlay, OverlayPositionBuilder,
 	OverlayRef, ScrollStrategyOptions
 } from '@angular/cdk/overlay';
 import {ComponentPortal} from '@angular/cdk/portal';
 import {QrScannerActualComponent} from './util/qr-scanner/qr-scanner-actual.component';
 import {Subject} from 'rxjs';
+import QrScanner from 'qr-scanner';
 
 export class QrScanRef {
 	public onScanned = new Subject<string>()
@@ -28,18 +28,25 @@ export class QrScannerService {
 	constructor(
 		private overlay: Overlay,
 		private inj: Injector,
-		private sso: ScrollStrategyOptions
+		private sso: ScrollStrategyOptions,
+		private ps: OverlayPositionBuilder
 	) {
 	}
 
-	public startScanning() {
+	public async hasCamera() {
+		return await QrScanner.hasCamera()
+	}
+
+	public startScanning(fullscreen: boolean = true, ...customClasses: string[]) {
+		if (fullscreen) {
+			customClasses.push("spl-panel-fullscreen_yes_i_know_this_is_global_cope_about_it")
+		}
 		let ovRef = this.overlay.create({
 			disposeOnNavigation: true,
 			hasBackdrop: false,
-			height: "100vh",
-			width: "100vw",
 			scrollStrategy: this.sso.close(),
-			positionStrategy: new GlobalPositionStrategy().top("0").left("0").bottom("0").right("0"),
+			panelClass: customClasses,
+			positionStrategy: this.ps.global(),
 		})
 
 		let ref = new QrScanRef(ovRef)
@@ -50,6 +57,7 @@ export class QrScannerService {
 				{provide: QrScanRef, useValue: ref}
 			]
 		})
+
 
 		let componentPortal = new ComponentPortal(QrScannerActualComponent, undefined, inj)
 

@@ -8,7 +8,6 @@ import {OperationCenterDto} from '../../api/models/operation-center-dto';
 import {MatInput} from '@angular/material/input';
 import {MatFabButton} from '@angular/material/button';
 import {MatIcon} from '@angular/material/icon';
-import {ZXingScannerModule} from '@zxing/ngx-scanner';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {parseCrateId} from '../qr-id-parser';
 import {QrScannerService, QrScanRef} from '../../qr-scanner.service';
@@ -26,7 +25,6 @@ interface InputModel {
 		MatSelectModule,
 		MatInput,
 		MatIcon,
-		ZXingScannerModule,
 		MatFabButton
 
 	],

@@ -57,7 +57,11 @@
 				<tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
 			</table>
 
-			<app-crate-add-widget (crateSubmitted)="crateSubmitted($event)"></app-crate-add-widget>
+			<app-crate-add-widget (crateSubmitted)="crateSubmitted($event, true)"></app-crate-add-widget>
+			<button mat-flat-button (click)="scanMultiple()">
+				<mat-icon fontIcon="qr_code_scanner"></mat-icon>
+				Mehrere Scannen
+			</button>
 
 			<button mat-flat-button type="submit" [disabled]="!theForm.form.valid || !theForm.dirty">Änderungen Speichern</button>
 		</div>
