@@ -1,5 +1,6 @@
 package de.entropia.logistiktracking.web;
 
+import de.entropia.logistiktracking.auth.HasAuthority;
 import de.entropia.logistiktracking.domain.packing_list.use_case.ManagePackingListUseCase;
 import de.entropia.logistiktracking.openapi.api.PackingListApi;
 import de.entropia.logistiktracking.openapi.model.*;
@@ -21,6 +22,7 @@ public class PackingListRoute implements PackingListApi {
 	private final ManagePackingListUseCase managePackingListUseCase;
 
 	@Override
+	@HasAuthority(AuthorityEnumDto.MANAGE_RESOURCES)
 	public ResponseEntity<PackingListDto> createPackingList(NewPackingListDto newPackingListDto) {
 		Result<PackingListDto, ManagePackingListUseCase.CreateNewPackingListError> result = managePackingListUseCase.createNewPackingListUseCase(newPackingListDto);
 
@@ -56,6 +58,7 @@ public class PackingListRoute implements PackingListApi {
 	}
 
 	@Override
+	@HasAuthority(AuthorityEnumDto.PRINT)
 	public ResponseEntity<Resource> printPackingList(Long packingListId) {
 		Result<byte[], ManagePackingListUseCase.PrintPackingListError> result = managePackingListUseCase.printPackingList(packingListId);
 		return switch (result) {
@@ -69,6 +72,7 @@ public class PackingListRoute implements PackingListApi {
 	}
 
 	@Override
+	@HasAuthority(AuthorityEnumDto.MANAGE_RESOURCES)
 	public ResponseEntity<Void> modifyPackingList(Long packingListId, PackingListPatchDto packingListPatchDto) {
 		return switch (managePackingListUseCase.modifyPackingList(packingListId, packingListPatchDto)) {
 			case Result.Error<?, ManagePackingListUseCase.PackingListModError>(var error) -> switch (error) {

@@ -401,7 +401,7 @@ paths:
       operationId: printMultipleThings
       summary: Print multiple elements into one A4 PDF
       security:
-        - springCookieAuth: [ ]
+        - springCookieAuth: []
       requestBody:
         required: true
         content:
@@ -418,6 +418,22 @@ paths:
                 format: binary
         404:
           description: A resource didnt exist
+
+  /loggedInUser:
+    get:
+      operationId: getLoggedInUser
+      summary: Gets the currently logged in user
+      security:
+        - springCookieAuth: []
+      responses:
+        200:
+          description: User is logged in, here are the details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserDto"
+        401:
+          description: user is not logged in
 
   /login:
     post:
@@ -722,16 +738,22 @@ components:
         - username
         - password
 
-    SessionDto:
+    UserDto:
       type: object
       properties:
-        permissionGroup:
-          $ref: "#/components/schemas/PermissionGroupEnumDto"
+        username:
+          type: string
+          minLength: 3
+        authorities:
+          type: array
+          items:
+            $ref: "#/components/schemas/AuthorityEnumDto"
       required:
-        - sessionKey
+        - username
+        - authorities
 
-    PermissionGroupEnumDto:
+    AuthorityEnumDto:
       type: string
       enum:
-        - 'RegularUser'
-        - 'Organizer'
+        - 'manage_resources'
+        - 'print'

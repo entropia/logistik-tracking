@@ -1,7 +1,9 @@
 package de.entropia.logistiktracking.web;
 
+import de.entropia.logistiktracking.auth.HasAuthority;
 import de.entropia.logistiktracking.domain.euro_pallet.use_case.EuroPalletUseCase;
 import de.entropia.logistiktracking.openapi.api.EuroPalletApi;
+import de.entropia.logistiktracking.openapi.model.AuthorityEnumDto;
 import de.entropia.logistiktracking.openapi.model.EuroPalletDto;
 import de.entropia.logistiktracking.openapi.model.LocationDto;
 import de.entropia.logistiktracking.openapi.model.NewEuroPalletDto;
@@ -21,6 +23,7 @@ public class EuroPalletRoute implements EuroPalletApi {
 	private final EuroPalletUseCase createEuroPalletUseCase;
 
 	@Override
+	@HasAuthority(AuthorityEnumDto.MANAGE_RESOURCES)
 	public ResponseEntity<EuroPalletDto> createEuroPallet(NewEuroPalletDto newEuroPalletDto) {
 		Result<EuroPalletDto, EuroPalletUseCase.CreateEuroPalletError> result = createEuroPalletUseCase.createEuroPallet(newEuroPalletDto);
 
@@ -34,6 +37,7 @@ public class EuroPalletRoute implements EuroPalletApi {
 	}
 
 	@Override
+	@HasAuthority(AuthorityEnumDto.MANAGE_RESOURCES)
 	public ResponseEntity<Void> updateLastLocationOfEuroPallet(Long euroPalletId, LocationDto locationDto) {
 		Result<Void, EuroPalletUseCase.ModifyPalletError> result = createEuroPalletUseCase.updatePalletLocation(euroPalletId, locationDto);
 		return switch (result) {
@@ -63,6 +67,7 @@ public class EuroPalletRoute implements EuroPalletApi {
 	}
 
 	@Override
+	@HasAuthority(AuthorityEnumDto.PRINT)
 	public ResponseEntity<Resource> printEuroPallet(Long euroPalletId) {
 		Result<byte[], EuroPalletUseCase.PrintEuroPalletError> result = createEuroPalletUseCase.printEuroPallet(euroPalletId);
 		return switch (result) {

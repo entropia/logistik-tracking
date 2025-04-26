@@ -1,5 +1,6 @@
 package de.entropia.logistiktracking.web;
 
+import de.entropia.logistiktracking.auth.HasAuthority;
 import de.entropia.logistiktracking.domain.converter.EuroCrateConverter;
 import de.entropia.logistiktracking.domain.converter.OperationCenterConverter;
 import de.entropia.logistiktracking.domain.euro_crate.use_case.EuroCrateUseCase;
@@ -27,6 +28,7 @@ public class EuroCrateRoute implements EuroCrateApi {
 	private final OperationCenterConverter operationCenterConverter;
 
 	@Override
+	@HasAuthority(AuthorityEnumDto.MANAGE_RESOURCES)
 	public ResponseEntity<EuroCrateDto> createNewEuroCrate(NewEuroCrateDto newEuroCrateDto) {
 		Result<EuroCrateDto, EuroCrateUseCase.CreateEuroCrateError> result = euroCrateUseCase.createEuroCrate(newEuroCrateDto);
 
@@ -64,6 +66,7 @@ public class EuroCrateRoute implements EuroCrateApi {
 	}
 
 	@Override
+	@HasAuthority(AuthorityEnumDto.PRINT)
 	public ResponseEntity<Resource> printEuroCrate(Long id) {
 		Result<byte[], EuroCrateUseCase.PrintEuroCrateError> result = euroCrateUseCase.printEuroCrate(id);
 		return switch (result) {
@@ -86,6 +89,7 @@ public class EuroCrateRoute implements EuroCrateApi {
 	}
 
 	@Override
+	@HasAuthority(AuthorityEnumDto.MANAGE_RESOURCES)
 	public ResponseEntity<Void> modifyEuroCrate(Long id, EuroCratePatchDto euroCratePatchDto) {
 		return switch (euroCrateUseCase.modifyEuroCrate(id, euroCratePatchDto)) {
 			case Result.Error<?, EuroCrateUseCase.ModifyEuroCrateError>(var _) -> ResponseEntity.notFound().build();
