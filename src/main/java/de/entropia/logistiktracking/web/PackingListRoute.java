@@ -1,6 +1,5 @@
 package de.entropia.logistiktracking.web;
 
-import de.entropia.logistiktracking.domain.packing_list.use_case.AssociateEuroCrateWithPackingListUseCase;
 import de.entropia.logistiktracking.domain.packing_list.use_case.ManagePackingListUseCase;
 import de.entropia.logistiktracking.openapi.api.PackingListApi;
 import de.entropia.logistiktracking.openapi.model.*;
@@ -20,7 +19,6 @@ import java.util.Optional;
 @AllArgsConstructor
 public class PackingListRoute implements PackingListApi {
 	private final ManagePackingListUseCase managePackingListUseCase;
-	private final AssociateEuroCrateWithPackingListUseCase associateEuroCrateWithPackingListUseCase;
 
 	@Override
 	public ResponseEntity<PackingListDto> createPackingList(NewPackingListDto newPackingListDto) {
@@ -58,34 +56,6 @@ public class PackingListRoute implements PackingListApi {
 	}
 
 	@Override
-	public ResponseEntity<Void> addEuroCrateToPackingList(Long packingListId, OperationCenterDto operationCenterDto, String crateName, Optional<Boolean> reassign) {
-		Result<Void, AssociateEuroCrateWithPackingListUseCase.AddEuroCrateToPackingListError> result = associateEuroCrateWithPackingListUseCase.addEuroCrateToPackingList(packingListId, operationCenterDto, crateName, reassign.orElse(false));
-		return switch (result) {
-			case Result.Ok<Void, AssociateEuroCrateWithPackingListUseCase.AddEuroCrateToPackingListError> _ ->
-					ResponseEntity.ok().build();
-			case Result.Error<Void, AssociateEuroCrateWithPackingListUseCase.AddEuroCrateToPackingListError> error ->
-					switch (error.error()) {
-						case BadArguments -> ResponseEntity.badRequest().build();
-						case CrateNotFound, PackingListNotFound -> ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-						case CrateIsAlreadyAssociated -> ResponseEntity.status(HttpStatus.CONFLICT).build();
-					};
-		};
-	}
-
-	@Override
-	public ResponseEntity<Void> removeEuroCrateFromPackingList(Long packingListId, OperationCenterDto operationCenterDto, String crateName) {
-		Result<Void, AssociateEuroCrateWithPackingListUseCase.RemoveEuroCrateFromPackingListError> result = associateEuroCrateWithPackingListUseCase.removeEuroCrateFromPackingList(packingListId, operationCenterDto, crateName);
-		return switch (result) {
-			case Result.Ok<Void, ?> _ -> ResponseEntity.ok().build();
-			case Result.Error<?, AssociateEuroCrateWithPackingListUseCase.RemoveEuroCrateFromPackingListError> error ->
-					switch (error.error()) {
-						case BadArguments -> ResponseEntity.badRequest().build();
-						case CrateNotFound, PackingListNotFound -> ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-					};
-		};
-	}
-
-	@Override
 	public ResponseEntity<Resource> printPackingList(Long packingListId) {
 		Result<byte[], ManagePackingListUseCase.PrintPackingListError> result = managePackingListUseCase.printPackingList(packingListId);
 		return switch (result) {
@@ -99,10 +69,11 @@ public class PackingListRoute implements PackingListApi {
 	}
 
 	@Override
-	public ResponseEntity<Void> changeDeliveryStateOfPackingList(Long packingListId, DeliveryStateDto deliveryStateDto) {
-		return switch (managePackingListUseCase.updatePacklingListDeliveryState(packingListId, deliveryStateDto)) {
-			case Result.Error<?, ManagePackingListUseCase.UpdateDeliveryStateError>(var error) -> switch (error) {
-				case NotFound -> ResponseEntity.notFound().build();
+	public ResponseEntity<Void> modifyPackingList(Long packingListId, PackingListPatchDto packingListPatchDto) {
+		return switch (managePackingListUseCase.modifyPackingList(packingListId, packingListPatchDto)) {
+			case Result.Error<?, ManagePackingListUseCase.PackingListModError>(var error) -> switch (error) {
+				case SomethingNotFound -> ResponseEntity.notFound().build();
+				case ConflictingCrates -> ResponseEntity.badRequest().build();
 			};
 			case Result.Ok<Void, ?>(var _) -> ResponseEntity.ok().build();
 		};

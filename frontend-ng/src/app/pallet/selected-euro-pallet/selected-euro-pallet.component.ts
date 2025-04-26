@@ -23,20 +23,7 @@ import {MatSnackBar} from '@angular/material/snack-bar';
 })
 export class SelectedEuroPalletComponent implements OnInit {
 	@Input()
-	set id(id: number) {
-		this.apiService.getEuroPallet({
-			euroPalletId: id
-		}).subscribe({
-			next: euroPallet => {
-				this.pallet = euroPallet;
-				this.editingLocation = {...this.pallet.location};
-			},
-			error: err => {
-				alert("Failed to load pallet. See console for error")
-				console.error(err)
-			}
-		});
-	}
+	id!: number;
 
 	pallet?: EuroPalletDto;
 	editingLocation?: LocationDto;
@@ -55,6 +42,19 @@ export class SelectedEuroPalletComponent implements OnInit {
 	}
 
 	ngOnInit(): void {
+		console.log("loading it")
+		this.apiService.getEuroPallet({
+			euroPalletId: this.id
+		}).subscribe({
+			next: euroPallet => {
+				this.pallet = euroPallet;
+				this.editingLocation = {...this.pallet.location};
+			},
+			error: err => {
+				alert("Failed to load pallet. See console for error")
+				console.error(err)
+			}
+		});
 	}
 
 	saveIt() {

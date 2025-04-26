@@ -29,7 +29,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/EuroCrateDto'
+              $ref: '#/components/schemas/NewEuroCrateDto'
       responses:
         "201":
           description: "Successfully created a new euro crate."
@@ -46,17 +46,37 @@ paths:
         "409":
           description: "A euro crate with this combination of name and OC already exists."
 
-  /euroCrate/{operationCenter}/{euroCrateName}:
+  /euroCrate/{id}:
     get:
       operationId: getEuroCrate
       summary: "Get a specific euro crates with all details."
       parameters:
-        - name: "operationCenter"
+        - name: "id"
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/EuroCrateId"
+      responses:
+        "200":
+          description: "The euroCrate was successfully retrieved."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EuroCrateDto"
+        "404":
+          description: "The selected euroCrate does not exist."
+
+  /euroCrate/{oc}/{name}:
+    get:
+      operationId: findEuroCrate
+      summary: "Get a specific euro crate with oc and name"
+      parameters:
+        - name: "oc"
           in: path
           required: true
           schema:
             $ref: "#/components/schemas/OperationCenterDto"
-        - name: "euroCrateName"
+        - name: "name"
           in: path
           required: true
           schema:
@@ -71,122 +91,46 @@ paths:
         "404":
           description: "The selected euroCrate does not exist."
 
-  /euroCrate/{operationCenter}/{euroCrateName}/deliveryState:
+  /euroCrate/{id}/modify:
     post:
-      operationId: modifyDeliveryStateOfCrate
-      summary: "Change the delivery state of the selected crate"
+      operationId: modifyEuroCrate
+      summary: Modify multiple properties of a crate
       security:
-        - springCookieAuth: [ ]
+        - springCookieAuth: []
       parameters:
-        - name: "operationCenter"
+        - name: "id"
           in: path
           required: true
           schema:
-            $ref: "#/components/schemas/OperationCenterDto"
-        - name: "euroCrateName"
-          in: path
-          required: true
-          schema:
-            type: string
+            $ref: "#/components/schemas/EuroCrateId"
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/DeliveryStateDto"
+              $ref: "#/components/schemas/EuroCratePatchDto"
       responses:
-        "200":
-          description: "The delivery state was successfully changed."
-        "400":
-          description: "Provided changes were invalid."
-        "401":
-          description: "User did not provide valid session details and cannot change selected crate."
-        "404":
-          description: "The selected crate does not exist."
+        200:
+          description: Data updated
+        400:
+          description: Changes were invalid
+        401:
+          description: Unauthorized or not allowed to modify data
+        404:
+          description: Crate does not exist
 
-  /euroCrate/{operationCenter}/{euroCrateName}/location:
-    post:
-      operationId: modifyLocationOfCrate
-      summary: "Change the location of the selected crate"
-      security:
-        - springCookieAuth: [ ]
-      parameters:
-        - name: "operationCenter"
-          in: path
-          required: true
-          schema:
-            $ref: "#/components/schemas/OperationCenterDto"
-        - name: "euroCrateName"
-          in: path
-          required: true
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/LocationDto"
-      responses:
-        "200":
-          description: "The location was successfully changed."
-        "400":
-          description: "Provided changes were invalid."
-        "401":
-          description: "User did not provide valid session details and cannot change selected crate."
-        "404":
-          description: "The selected crate does not exist."
-
-  /euroCrate/{operationCenter}/{euroCrateName}/information:
-    post:
-      operationId: modifyInformationOfCrate
-      summary: "Change the free-text information of the selected crate"
-      security:
-        - springCookieAuth: [ ]
-      parameters:
-        - name: "operationCenter"
-          in: path
-          required: true
-          schema:
-            $ref: "#/components/schemas/OperationCenterDto"
-        - name: "euroCrateName"
-          in: path
-          required: true
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/InformationDto"
-      responses:
-        "200":
-          description: "The information was successfully changed."
-        "400":
-          description: "Provided changes were invalid."
-        "401":
-          description: "User did not provide valid session details and cannot change selected crate."
-        "404":
-          description: "The selected crate does not exist."
-
-  /euroCrate/{operationCenter}/{euroCrateName}/print:
+  /euroCrate/{id}/print:
     get:
       operationId: printEuroCrate
       summary: "Generate a printable document for the selected euroCrate."
       security:
         - springCookieAuth: [ ]
       parameters:
-        - name: "operationCenter"
+        - name: "id"
           in: path
           required: true
           schema:
-            $ref: "#/components/schemas/OperationCenterDto"
-        - name: "euroCrateName"
-          in: path
-          required: true
-          schema:
-            type: string
+            $ref: "#/components/schemas/EuroCrateId"
       responses:
         "200":
           description: "Successfully generated the euroPallet document."
@@ -198,21 +142,16 @@ paths:
         "404":
           description: "Selected euroPallet does not exist."
 
-  /euroCrate/{operationCenter}/{euroCrateName}/packingLists:
+  /euroCrate/{id}/packingLists:
     get:
       operationId: getPackingListsOfCrate
       summary: Get the associated packing list of the specified crate, if present
       parameters:
-        - name: operationCenter
+        - name: "id"
           in: path
           required: true
           schema:
-            $ref: "#/components/schemas/OperationCenterDto"
-        - name: euroCrateName
-          in: path
-          required: true
-          schema:
-            type: string
+            $ref: "#/components/schemas/EuroCrateId"
       responses:
         200:
           description: Found the packing list
@@ -403,83 +342,10 @@ paths:
               schema:
                 $ref: "#/components/schemas/PackingListDto"
 
-  /packingList/{packingListId}/deliveryState/:
+  /packingList/{packingListId}/modify:
     post:
-      operationId: changeDeliveryStateOfPackingList
-      summary: "Changes the delivery state of a packing list."
-      security:
-        - springCookieAuth: [ ]
-      parameters:
-        - in: path
-          description: "Identifier of packing list."
-          name: packingListId
-          schema:
-            type: integer
-            format: int64
-          required: true
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/DeliveryStateDto"
-      responses:
-        "200":
-          description: "Successfully modified the packing list."
-        "401":
-          description: "User did not provide valid session details."
-        "404":
-          description: "Selected packing list does not exist."
-        "400":
-          description: "packingListId is not a whole number or doesn't fit in 64 bits"
-
-  /packingList/{packingListId}/euroCrate/{operationCenter}/{euroCrateName}:
-    post:
-      operationId: addEuroCrateToPackingList
-      summary: "Add the selected euro crate to a packing list if the packing list is in the state 'Packing'"
-      security:
-        - springCookieAuth: [ ]
-      parameters:
-        - name: "packingListId"
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-        - name: "operationCenter"
-          in: path
-          required: true
-          schema:
-            $ref: "#/components/schemas/OperationCenterDto"
-        - name: "euroCrateName"
-          in: path
-          required: true
-          schema:
-            type: string
-        - name: force
-          description: If the crate is already assigned to a packing list, reassign it to this one. Default false
-          in: query
-          required: false
-          schema:
-            type: boolean
-      responses:
-        "200":
-          description: "User successfully added a crate to the packing list."
-        "401":
-          description: "User did not provide valid session details."
-        "403":
-          description: "User does not have permission."
-        "404":
-          description: "Selected pallet or selected crate do not exist."
-        "409":
-          description: "
-          The selected packing list is not in the state 'Packing' anymore and cannot be modified.
-          Or, the selected crate is already associated with another packing list. 
-          In this case, remove it from the other packing list first.
-          "
-    delete:
-      operationId: removeEuroCrateFromPackingList
-      summary: "Remove the selected crate from the packing list if the packing list is in the state 'Packing'."
+      operationId: modifyPackingList
+      summary: Modify multiple properties of a packing list
       security:
         - springCookieAuth: []
       parameters:
@@ -489,27 +355,23 @@ paths:
           schema:
             type: integer
             format: int64
-        - name: "operationCenter"
-          in: path
-          required: true
-          schema:
-            $ref: "#/components/schemas/OperationCenterDto"
-        - name: "euroCrateName"
-          in: path
-          required: true
-          schema:
-            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PackingListPatchDto"
       responses:
-        "200":
-          description: "User successfully removed the crate from the packing list."
-        "401":
-          description: "User did not provide valid session details."
-        "403":
-          description: "User does not have permission."
-        "404":
-          description: "Selected packing list or selected crate do not exist or selected crate does not belong to packing list."
-        "409":
-          description: "The selected packing list is not in the state 'Packing' and cannot be modified."
+        200:
+          description: Modified packing list
+        401:
+          description: Not logged in
+        403:
+          description: Logged in, not permitted to modify packing list
+        404:
+          description: Packing list does not exist
+        400:
+          description: Invalid patch
 
   /packingList/{packingListId}/print:
     get:
@@ -588,7 +450,38 @@ components:
       name: JSESSIONID
 
   schemas:
+    EuroCrateId:
+      type: integer
+      format: int64
+
+    PackingListPatchDto:
+      type: object
+      properties:
+        deliveryState:
+          $ref: "#/components/schemas/DeliveryStateEnumDto"
+        addCrates:
+          type: array
+          items:
+            allOf:
+              - $ref: "#/components/schemas/EuroCrateId"
+        removeCrates:
+          type: array
+          items:
+            allOf:
+              - $ref: "#/components/schemas/EuroCrateId"
+
+    EuroCratePatchDto:
+      allOf:
+        - $ref: "#/components/schemas/InformationDto"
+        - type: object
+          properties:
+            deliveryState:
+              $ref: "#/components/schemas/DeliveryStateEnumDto"
+            location:
+              $ref: "#/components/schemas/LocationDto"
+
     PrintMultipleDto:
+      # todo das kann man eigentlich vereinfachen
       type: array
       items:
         oneOf:
@@ -598,15 +491,11 @@ components:
                 description: Type of the print (Crate)
                 enum:
                   - "Crate"
-              oc:
-                $ref: "#/components/schemas/OperationCenterDto"
-              name:
-                type: string
-                description: Name of the crate
+              id:
+                $ref: "#/components/schemas/EuroCrateId"
             required:
               - type
-              - oc
-              - name
+              - id
           - type: object
             properties:
               type:
@@ -616,12 +505,12 @@ components:
               id:
                 type: integer
                 format: int64
-                description: ID of the crate
+                description: ID of the pallet
             required:
               - type
               - id
 
-    EuroCrateDto:
+    NewEuroCrateDto:
       allOf:
         - $ref: "#/components/schemas/InformationDto"
         - $ref: "#/components/schemas/DeliveryStateDto"
@@ -644,6 +533,18 @@ components:
             - name
             - returnBy
             - location
+
+    EuroCrateDto:
+      allOf:
+        - $ref: "#/components/schemas/NewEuroCrateDto"
+        - type: object
+          properties:
+            internalId:
+              description: 64 bit id describing this crate uniquely
+              type: integer
+              format: int64
+          required:
+            - internalId
 
     NewEuroPalletDto:
       allOf:

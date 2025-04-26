@@ -16,38 +16,30 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Setter
 @Getter
-@IdClass(EuroCrateDatabaseElement.EuroCrateDatabaseElementId.class)
-@Table(name = "euro_crate")
+@Table(name = "euro_crate", uniqueConstraints = {
+		@UniqueConstraint(columnNames = {"operation_center", "name"})
+})
 public class EuroCrateDatabaseElement {
 	@Id
-	@Column(name = "operationCenter", nullable = false)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id", nullable = false)
+	private Long id;
+
+	@Column(name = "operation_center", nullable = false)
 	private OperationCenter operationCenter;
 
-	@Id
 	@Column(name = "name", nullable = false)
 	private String name;
 
-	@Column(name = "returnBy", nullable = false)
+	@Column(name = "return_by", nullable = false)
 	private LocalDate returnBy;
 
 	@Column(name = "information", nullable = false)
 	private String information;
 
-	@Column(name = "deliveryState", nullable = false)
+	@Column(name = "delivery_state", nullable = false)
 	private DeliveryState deliveryState;
 
 	@Embedded
 	private LocationDatabaseElement location;
-
-	@Setter
-	@AllArgsConstructor
-	public static class EuroCrateDatabaseElementId {
-		private OperationCenter operationCenter;
-		private String name;
-
-		public EuroCrateDatabaseElementId() {
-			operationCenter = null;
-			name = null;
-		}
-	}
 }

@@ -58,7 +58,7 @@
 			</table>
 
 			<app-crate-add-widget (crateSubmitted)="crateSubmitted($event, true)"></app-crate-add-widget>
-			<button mat-flat-button (click)="scanMultiple()">
+			<button mat-flat-button (click)="scanMultiple()" type="button"	>
 				<mat-icon fontIcon="qr_code_scanner"></mat-icon>
 				Mehrere Scannen
 			</button>

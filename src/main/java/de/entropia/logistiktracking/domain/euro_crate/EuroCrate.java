@@ -12,6 +12,7 @@ import java.time.LocalDate;
 @Getter
 @Builder
 public class EuroCrate {
+	private final Long id;
 	private final OperationCenter operationCenter;
 	private final String name;
 	private final LocalDate returnBy;
@@ -20,6 +21,7 @@ public class EuroCrate {
 	private DeliveryState deliveryState;
 
 	EuroCrate(
+			Long id,
 			@NonNull OperationCenter operationCenter,
 			@NonNull String name,
 			@NonNull LocalDate returnBy,
@@ -27,6 +29,7 @@ public class EuroCrate {
 			@NonNull Location location,
 			@NonNull DeliveryState deliveryState
 	) {
+		this.id = id;
 		this.operationCenter = operationCenter;
 		this.name = name;
 		this.returnBy = returnBy;

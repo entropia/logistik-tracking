@@ -54,7 +54,7 @@ public class PrintMultipleRoute implements PrintMultipleApi {
 
 	private CompletableFuture<Result<byte[], ?>> createJob(PrintMultipleDtoInner it) {
 		return switch (it) {
-			case PrintMultipleDtoInnerOneOf crateJob -> CompletableFuture.supplyAsync(() -> euroCrateUseCase.printEuroCrate(crateJob.getOc(), crateJob.getName()));
+			case PrintMultipleDtoInnerOneOf crateJob -> CompletableFuture.supplyAsync(() -> euroCrateUseCase.printEuroCrate(crateJob.getId()));
 			case PrintMultipleDtoInnerOneOf1 palletJob -> CompletableFuture.supplyAsync(() -> euroPalletUseCase.printEuroPallet(palletJob.getId()));
 			default -> throw new IllegalStateException("unknown type "+it);
 		};

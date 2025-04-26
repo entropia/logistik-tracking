@@ -1,9 +1,9 @@
-import {Component, Input, ViewChild} from '@angular/core';
+import {Component, Input, OnInit, ViewChild} from '@angular/core';
 import {ApiService} from '../../api/services/api.service';
 import {PackingListDto} from '../../api/models/packing-list-dto';
 import {RouterLink} from '@angular/router';
 import {FormsModule, NgForm, NgModel} from '@angular/forms';
-import {DeliveryStateEnumDto, EuroCrateDto} from '../../api/models';
+import {DeliveryStateEnumDto, EuroCrateDto, PackingListPatchDto} from '../../api/models';
 import {MatFormField} from '@angular/material/input';
 import {MatOption, MatSelect} from '@angular/material/select';
 import {MatSnackBar} from '@angular/material/snack-bar';
@@ -13,7 +13,6 @@ import {MatSort, MatSortModule} from '@angular/material/sort';
 import {CrateAddWidgetComponent} from '../../util/crate-add-widget/crate-add-widget.component';
 import {MatIcon} from '@angular/material/icon';
 import {MatTooltip} from '@angular/material/tooltip';
-import {forkJoin} from 'rxjs';
 import {HttpErrorResponse} from '@angular/common/http';
 import {QrScannerService} from '../../qr-scanner.service';
 import {parseCrateId} from '../../util/qr-id-parser';
@@ -49,11 +48,13 @@ type TheItem = {
 	templateUrl: './selected-packing-list.component.html',
 	styleUrl: './selected-packing-list.component.scss'
 })
-export class SelectedPackingListComponent {
+export class SelectedPackingListComponent implements OnInit {
 	@Input()
-	set id(which: number) {
+	id!: number;
+
+	ngOnInit() {
 		this.apiService.getPackingList({
-			packingListId: which
+			packingListId: this.id
 		}).subscribe({
 			next: it => {
 				this.selected = it;
@@ -97,43 +98,29 @@ export class SelectedPackingListComponent {
 	}
 
 	saveIt() {
-		let runs = []
+		let thePatch: PackingListPatchDto = {
+			addCrates: [],
+			removeCrates: []
+		}
 		if (this.deliveryStateControl!.dirty) {
-			runs.push(this.apiService.changeDeliveryStateOfPackingList({
-				packingListId: this.selected!.packingListId,
-				body: this.selected!
-			}))
+			thePatch.deliveryState = this.selected!.deliveryState
 		}
 		for(let item of this.items) {
 			switch (item.status) {
 				case ItemStatus.ADDED:
-					runs.push(this.apiService.addEuroCrateToPackingList({
-						packingListId: this.selected!.packingListId,
-						operationCenter: item.operationCenter,
-						euroCrateName: item.name,
-						force: false
-					}))
-					item.status = ItemStatus.KEEP
-					break;
 				case ItemStatus.TRANSFERRED:
-					runs.push(this.apiService.addEuroCrateToPackingList({
-						packingListId: this.selected!.packingListId,
-						operationCenter: item.operationCenter,
-						euroCrateName: item.name,
-						force: true
-					}))
+					thePatch.addCrates!.push(item.internalId)
 					item.status = ItemStatus.KEEP
 					break;
 				case ItemStatus.REMOVED:
-					runs.push(this.apiService.removeEuroCrateFromPackingList({
-						packingListId: this.selected!.packingListId,
-						operationCenter: item.operationCenter,
-						euroCrateName: item.name
-					}))
+					thePatch.removeCrates!.push(item.internalId)
 					break;
 			}
 		}
-		forkJoin(runs).subscribe({
+		this.apiService.modifyPackingList({
+			packingListId: this.selected!.packingListId,
+			body: thePatch
+		}).subscribe({
 			next: _ => {
 				this.items = this.items.filter(f => f.status != ItemStatus.REMOVED)
 				this.source.data = this.items;
@@ -181,8 +168,7 @@ export class SelectedPackingListComponent {
 			}
 		} else {
 			this.apiService.getPackingListsOfCrate({
-				euroCrateName: $event.name,
-				operationCenter: $event.operationCenter
+				id: $event.internalId
 			}).subscribe({
 				next: _ => {
 					this.items.push({
@@ -234,8 +220,7 @@ export class SelectedPackingListComponent {
 				try {
 					let id = parseCrateId(v)
 					this.apiService.getEuroCrate({
-						euroCrateName: id.name,
-						operationCenter: id.oc
+						id
 					}).subscribe({
 						next: c => this.crateSubmitted(c, true),
 						error: e => {

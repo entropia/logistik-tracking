@@ -35,11 +35,7 @@ public class PackingListPdfGenerator {
 	private final TemplateEngine templateEngine;
 
 	private String encodeData(PackingList pl) {
-		byte[] content = new byte[8];
-		ByteBuffer bb = ByteBuffer.wrap(content);
-		bb.order(ByteOrder.BIG_ENDIAN);
-		bb.putLong(pl.getPackingListId());
-		return "L"+ Base64.getEncoder().encodeToString(content);
+		return "L"+ pl.getPackingListId();
 	}
 
 	public Result<byte[], Void> generatePdf(PackingList crate) {

@@ -34,16 +34,7 @@ public class EuroCratePdfGenerator {
 	private final TemplateEngine templateEngine;
 
 	private String encodeData(EuroCrate ep) {
-		byte[] encodedName = ep.getName().getBytes(StandardCharsets.UTF_8);
-		int cL = 1 + encodedName.length;
-		byte[] content = new byte[cL];
-		ByteBuffer bb = ByteBuffer.wrap(content);
-		bb.order(ByteOrder.BIG_ENDIAN);
-		int ordinal = ep.getOperationCenter().ordinal();
-		assert ordinal <= 0xFF : "ordinal is too big to fit into one byte";
-		bb.put((byte) ordinal);
-		bb.put(encodedName);
-		return "C"+Base64.getEncoder().encodeToString(content);
+		return "C"+ep.getId();
 	}
 
 	public Result<byte[], Void> generatePdf(EuroCrate crate) {

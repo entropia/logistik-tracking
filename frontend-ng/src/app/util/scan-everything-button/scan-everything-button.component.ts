@@ -30,7 +30,7 @@ export class ScanEverythingButtonComponent {
 					console.log(id)
 					switch (id.kind) {
 						case IdKind.Crate:
-							this.router.navigateByUrl(`/euroCrate/${id.oc}/${id.name}`)
+							this.router.navigateByUrl(`/euroCrate/${id.id}`)
 							break;
 						case IdKind.List:
 							this.router.navigateByUrl(`/packingList/${id.id}`)

@@ -1,6 +1,10 @@
 package de.entropia.logistiktracking.web;
 
+import de.entropia.logistiktracking.domain.converter.EuroCrateConverter;
+import de.entropia.logistiktracking.domain.converter.OperationCenterConverter;
 import de.entropia.logistiktracking.domain.euro_crate.use_case.EuroCrateUseCase;
+import de.entropia.logistiktracking.jpa.EuroCrateDatabaseElement;
+import de.entropia.logistiktracking.jpa.repo.EuroCrateDatabaseService;
 import de.entropia.logistiktracking.openapi.api.EuroCrateApi;
 import de.entropia.logistiktracking.openapi.model.*;
 import de.entropia.logistiktracking.utility.Result;
@@ -12,15 +16,19 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
 import java.util.List;
+import java.util.Optional;
 
 @Controller("/euroCrate")
 @AllArgsConstructor
 public class EuroCrateRoute implements EuroCrateApi {
 	private final EuroCrateUseCase euroCrateUseCase;
+	private final EuroCrateDatabaseService euroCrateDatabaseService;
+	private final EuroCrateConverter euroCrateConverter;
+	private final OperationCenterConverter operationCenterConverter;
 
 	@Override
-	public ResponseEntity<EuroCrateDto> createNewEuroCrate(EuroCrateDto euroCrateDto) {
-		Result<EuroCrateDto, EuroCrateUseCase.CreateEuroCrateError> result = euroCrateUseCase.createEuroCrate(euroCrateDto);
+	public ResponseEntity<EuroCrateDto> createNewEuroCrate(NewEuroCrateDto newEuroCrateDto) {
+		Result<EuroCrateDto, EuroCrateUseCase.CreateEuroCrateError> result = euroCrateUseCase.createEuroCrate(newEuroCrateDto);
 
 		return switch (result) {
 			case Result.Ok<EuroCrateDto, EuroCrateUseCase.CreateEuroCrateError> ok ->
@@ -33,62 +41,31 @@ public class EuroCrateRoute implements EuroCrateApi {
 	}
 
 	@Override
+	public ResponseEntity<EuroCrateDto> findEuroCrate(OperationCenterDto oc, String name) {
+		Optional<EuroCrateDatabaseElement> byId = euroCrateDatabaseService.findByOperationCenterAndName(
+				operationCenterConverter.from(oc), name
+		);
+		return byId
+				.map(it -> ResponseEntity.ok(euroCrateConverter.toDto(euroCrateConverter.from(it))))
+				.orElseGet(() -> ResponseEntity.notFound().build());
+	}
+
+	@Override
 	public ResponseEntity<List<EuroCrateDto>> getAllEuroCrates() {
 		return ResponseEntity.ok(euroCrateUseCase.findAllEuroCrates());
 	}
 
 	@Override
-	public ResponseEntity<EuroCrateDto> getEuroCrate(OperationCenterDto operationCenter, String euroCrateName) {
-		Result<EuroCrateDto, EuroCrateUseCase.FindEuroCrateError> result = euroCrateUseCase.findEuroCrate(operationCenter, euroCrateName);
-
-		return switch (result) {
-			case Result.Ok<EuroCrateDto, EuroCrateUseCase.FindEuroCrateError> ok -> ResponseEntity.ok(ok.result());
-			case Result.Error<EuroCrateDto, EuroCrateUseCase.FindEuroCrateError> error -> switch (error.error()) {
-				case BadArguments -> ResponseEntity.badRequest().build();
-				case CrateNotFound -> ResponseEntity.notFound().build();
-			};
-		};
+	public ResponseEntity<EuroCrateDto> getEuroCrate(Long id) {
+		Optional<EuroCrateDatabaseElement> byId = euroCrateDatabaseService.findById(id);
+		return byId
+				.map(it -> ResponseEntity.ok(euroCrateConverter.toDto(euroCrateConverter.from(it))))
+				.orElseGet(() -> ResponseEntity.notFound().build());
 	}
 
 	@Override
-	public ResponseEntity<Void> modifyDeliveryStateOfCrate(OperationCenterDto operationCenterDto, String euroCrateName, DeliveryStateDto deliveryStateDto) {
-		Result<Void, EuroCrateUseCase.ModifyCrateError> result = euroCrateUseCase.setEuroCrateLocation(operationCenterDto, euroCrateName, deliveryStateDto);
-		return switch (result) {
-			case Result.Ok<Void, EuroCrateUseCase.ModifyCrateError> _ -> ResponseEntity.ok().build();
-			case Result.Error<Void, EuroCrateUseCase.ModifyCrateError>(var err) -> switch (err) {
-				case BadArguments -> ResponseEntity.badRequest().build();
-				case CrateNotFound -> ResponseEntity.notFound().build();
-			};
-		};
-	}
-
-	@Override
-	public ResponseEntity<Void> modifyInformationOfCrate(OperationCenterDto operationCenterDto, String euroCrateName, InformationDto informationDto) {
-		Result<Void, EuroCrateUseCase.ModifyCrateError> result = euroCrateUseCase.setEuroCrateInformation(operationCenterDto, euroCrateName, informationDto);
-		return switch (result) {
-			case Result.Ok<Void, EuroCrateUseCase.ModifyCrateError> _ -> ResponseEntity.ok().build();
-			case Result.Error<Void, EuroCrateUseCase.ModifyCrateError>(var err) -> switch (err) {
-				case BadArguments -> ResponseEntity.badRequest().build();
-				case CrateNotFound -> ResponseEntity.notFound().build();
-			};
-		};
-	}
-
-	@Override
-	public ResponseEntity<Void> modifyLocationOfCrate(OperationCenterDto operationCenterDto, String euroCrateName, LocationDto locationDto) {
-		Result<Void, EuroCrateUseCase.ModifyCrateError> result = euroCrateUseCase.setEuroCrateLocation(operationCenterDto, euroCrateName, locationDto);
-		return switch (result) {
-			case Result.Ok<Void, EuroCrateUseCase.ModifyCrateError> _ -> ResponseEntity.ok().build();
-			case Result.Error<Void, EuroCrateUseCase.ModifyCrateError>(var err) -> switch (err) {
-				case BadArguments -> ResponseEntity.badRequest().build();
-				case CrateNotFound -> ResponseEntity.notFound().build();
-			};
-		};
-	}
-
-	@Override
-	public ResponseEntity<Resource> printEuroCrate(OperationCenterDto operationCenter, String euroCrateName) {
-		Result<byte[], EuroCrateUseCase.PrintEuroCrateError> result = euroCrateUseCase.printEuroCrate(operationCenter, euroCrateName);
+	public ResponseEntity<Resource> printEuroCrate(Long id) {
+		Result<byte[], EuroCrateUseCase.PrintEuroCrateError> result = euroCrateUseCase.printEuroCrate(id);
 		return switch (result) {
 			case Result.Ok<byte[], EuroCrateUseCase.PrintEuroCrateError> ok ->
 					ResponseEntity.ok(new ByteArrayResource(ok.result()));
@@ -100,11 +77,19 @@ public class EuroCrateRoute implements EuroCrateApi {
 	}
 
 	@Override
-	public ResponseEntity<BasicPackingListDto> getPackingListsOfCrate(OperationCenterDto operationCenter, String euroCrateName) {
-		Result<BasicPackingListDto, EuroCrateUseCase.FindRelatedPackingListError> packingListsOfCrate = euroCrateUseCase.getPackingListsOfCrate(operationCenter, euroCrateName);
+	public ResponseEntity<BasicPackingListDto> getPackingListsOfCrate(Long id) {
+		Result<BasicPackingListDto, EuroCrateUseCase.FindRelatedPackingListError> packingListsOfCrate = euroCrateUseCase.getPackingListsOfCrate(id);
 		return switch (packingListsOfCrate) {
 			case Result.Ok<BasicPackingListDto, ?>(var result) -> ResponseEntity.ok(result);
-			case Result.Error<?, EuroCrateUseCase.FindRelatedPackingListError>(var err) -> ResponseEntity.notFound().build();
+			case Result.Error<?, EuroCrateUseCase.FindRelatedPackingListError>(var _) -> ResponseEntity.notFound().build();
+		};
+	}
+
+	@Override
+	public ResponseEntity<Void> modifyEuroCrate(Long id, EuroCratePatchDto euroCratePatchDto) {
+		return switch (euroCrateUseCase.modifyEuroCrate(id, euroCratePatchDto)) {
+			case Result.Error<?, EuroCrateUseCase.ModifyEuroCrateError>(var _) -> ResponseEntity.notFound().build();
+			case Result.Ok<Void, ?>(var _) -> ResponseEntity.ok(null);
 		};
 	}
 }

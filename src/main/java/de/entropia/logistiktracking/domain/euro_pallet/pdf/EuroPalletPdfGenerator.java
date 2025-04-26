@@ -29,16 +29,11 @@ import java.util.Map;
 @Component
 @AllArgsConstructor
 public class EuroPalletPdfGenerator {
-	private static final int MAX_INFORMATION_LENGTH = 240;
 	private static final Logger logger = LoggerFactory.getLogger(EuroPalletPdfGenerator.class);
 	private final TemplateEngine templateEngine;
 
 	private String encodeData(EuroPallet ep) {
-		byte[] content = new byte[8];
-		ByteBuffer bb = ByteBuffer.wrap(content);
-		bb.order(ByteOrder.BIG_ENDIAN);
-		bb.putLong(ep.getPalletId());
-		return "P"+Base64.getEncoder().encodeToString(content);
+		return "P"+ep.getPalletId();
 	}
 
 	public Result<byte[], Void> generate(EuroPallet euroPallet) {

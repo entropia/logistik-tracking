@@ -50,9 +50,9 @@ export class CrateAddWidgetComponent {
 	}
 
 	saveIt(form: NgForm) {
-		this.api.getEuroCrate({
-			euroCrateName: this.inputModel.name,
-			operationCenter: this.inputModel.oc!
+		this.api.findEuroCrate({
+			name: this.inputModel.name,
+			oc: this.inputModel.oc!
 		}).subscribe({
 			next: t => {
 				this.err = false;
@@ -78,9 +78,21 @@ export class CrateAddWidgetComponent {
 	scanSuccess(qsc: QrScanRef, $event: string) {
 		try {
 			let crateId = parseCrateId($event);
-			this.inputModel.oc = crateId.oc
-			this.inputModel.name = crateId.name
-			qsc.close()
+			this.api.getEuroCrate({
+				id: crateId
+			}).subscribe({
+				next: v => {
+					this.inputModel.oc = v.operationCenter
+					this.inputModel.name = v.name
+					qsc.close()
+				},
+				error: e => {
+					console.error(e)
+					this.snack.open(`Fehler beim holen der informationen: ${e}`, "OK", {
+						duration: 7000
+					})
+				}
+			})
 		} catch (e) {
 			console.error(e)
 			if (e instanceof Error) {
