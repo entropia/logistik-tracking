@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {ApiService} from '../../api/services/api.service';
 import {EuroPalletDto} from '../../api/models/euro-pallet-dto';
 import {MatButton} from '@angular/material/button';
@@ -7,6 +7,9 @@ import {LocationComponent} from '../../util/location/location.component';
 import {MatDialog} from '@angular/material/dialog';
 import {CreateEuroPalletComponent} from '../create-euro-pallet/create-euro-pallet.component';
 import {NewEuroPalletDto} from '../../api/models/new-euro-pallet-dto';
+import {checkErrorAndAlertUser} from '../../util/auth';
+import {AuthorityStatus, UserService} from '../../util/user.service';
+import {AuthorityEnumDto} from '../../api/models/authority-enum-dto';
 
 @Component({
 	selector: 'app-euro-pallet',
@@ -21,10 +24,18 @@ import {NewEuroPalletDto} from '../../api/models/new-euro-pallet-dto';
 export class EuroPalletComponent implements OnInit {
 	euroPallets?: EuroPalletDto[];
 
+	@ViewChild("theButton", {static: false})
+	set theBtn(e: MatButton) {
+		this.users.hasAuthority(AuthorityEnumDto.ManageResources).then(yeah => {
+			e.disabled = yeah != AuthorityStatus.HasIt
+		})
+	}
+
 	constructor(
 		private apiService: ApiService,
 		private router: Router,
-		private diag: MatDialog
+		private diag: MatDialog,
+		private users: UserService
 	) {
 	}
 
@@ -50,6 +61,10 @@ export class EuroPalletComponent implements OnInit {
 							.catch(reason => {
 								console.log("Failed to redirect to newly created pallet because: " + reason);
 							});
+					},
+					error: e => {
+						console.error(e)
+						if (!checkErrorAndAlertUser(e)) alert(`Failed to save pallet: ${e}`)
 					}
 				});
 			})
@@ -58,9 +73,15 @@ export class EuroPalletComponent implements OnInit {
 	printPallet(euroPallet: EuroPalletDto) {
 		this.apiService.printEuroPallet({
 			euroPalletId: euroPallet.euroPalletId
-		}).subscribe(v => {
-			let ou = URL.createObjectURL(v)
-			window.open(ou, "_blank")
-		})
+		}).subscribe({
+			next: v => {
+				let ou = URL.createObjectURL(v)
+				window.open(ou, "_blank")
+			},
+			error: e => {
+				console.error(e)
+				if (!checkErrorAndAlertUser(e)) alert(`Failed to print pallet: ${e}`)
+			}
+	})
 	}
 }

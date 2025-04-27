@@ -4,6 +4,8 @@
 		<button
 			mat-raised-button
 			(click)="createPallet()"
+			[disabled]="false"
+			#theButton
 		>Pallette erstellen
 		</button>
 		<ul>

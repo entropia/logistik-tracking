@@ -8,6 +8,7 @@ import {DeliveryStateEnumDto, EuroCratePatchDto, LogisticsLocationDto} from '../
 import {MatError, MatFormField, MatInput, MatLabel} from '@angular/material/input';
 import {MatOption, MatSelect} from '@angular/material/select';
 import {MatButton} from '@angular/material/button';
+import {checkErrorAndAlertUser} from '../../util/auth';
 
 @Component({
 	selector: 'app-selected-euro-crate',
@@ -65,8 +66,8 @@ export class SelectedEuroCrateComponent implements OnInit {
 				form.control.markAsPristine()
 			},
 			error: e => {
-				alert(`failed to save! check console: ${e}`)
 				console.error(e)
+				if (!checkErrorAndAlertUser(e)) alert(`Failed to save crate: ${e}`)
 			}
 		})
 	}
