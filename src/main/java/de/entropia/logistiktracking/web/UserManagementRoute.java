@@ -2,6 +2,7 @@ package de.entropia.logistiktracking.web;
 
 import de.entropia.logistiktracking.auth.AuthorityEnumAuthority;
 import de.entropia.logistiktracking.openapi.api.UsersApi;
+import de.entropia.logistiktracking.openapi.model.CreateUserRequest;
 import de.entropia.logistiktracking.openapi.model.UserDto;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,5 +36,11 @@ public class UserManagementRoute implements UsersApi {
 						.toList()
 		);
 		return ResponseEntity.ok(udto);
+	}
+
+	@Override
+	public ResponseEntity<UserDto> createUser(CreateUserRequest createUserRequest) {
+		// TODO 28 Apr. 2025 17:11:
+		return UsersApi.super.createUser(createUserRequest);
 	}
 }

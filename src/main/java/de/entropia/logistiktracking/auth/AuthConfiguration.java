@@ -73,17 +73,6 @@ public class AuthConfiguration {
 		return new BCryptPasswordEncoder();
 	}
 
-
-	@Bean
-	public UserDetailsService usd() {
-		// FIXME 26 Apr. 2025 21:40: richtiges zeug
-		// test:test123
-		return new InMemoryUserDetailsManager(
-			new User("test", "$2a$12$cyRQM6S8EsD5HHHsrw5OYu/QF/yX9v1A/lX91rvxmv7hftiCSgoiS",
-					Set.of())
-		);
-	}
-
 	// TODO: Configure CORS based on DEV/PROD.
 	UrlBasedCorsConfigurationSource apiConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();

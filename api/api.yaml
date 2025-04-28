@@ -435,6 +435,39 @@ paths:
         401:
           description: user is not logged in
 
+  /users/create:
+    put:
+      operationId: createUser
+      summary: Create a user
+      security:
+        - springCookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: "#/components/schemas/UserDto"
+                - type: object
+                  properties:
+                    hashedPassword:
+                      description: BCrypt hashed password
+                      maxLength: 72
+                      example: $2a$10$cSa230uf6gXphAxdaFuzHuZ3nlxeCPVm1XUlwKuP1BP2BcnnkJI4S
+                  required:
+                    - hashedPassword
+      responses:
+        200:
+          description: User created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserDto"
+        401:
+          description: Not logged in
+        403:
+          description: Missing permission
+
   /login:
     post:
       operationId: login
@@ -732,6 +765,7 @@ components:
         username:
           type: string
           minLength: 3
+          maxLength: 255
         password:
           type: string
       required:
@@ -744,6 +778,7 @@ components:
         username:
           type: string
           minLength: 3
+          maxLength: 255
         authorities:
           type: array
           items:
