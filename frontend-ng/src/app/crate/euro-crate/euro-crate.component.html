@@ -1,5 +1,10 @@
 <main>
 	<h1>Euroboxen</h1>
+	<button
+		mat-raised-button
+		(click)="createCrate()"
+	>Eurobox erstellen
+	</button>
 	<ul>
 		@for(crate of crates; track crate.name) {
 			<li>{{crate.operationCenter}}: <a [routerLink]="'/euroCrate/' + crate.internalId">{{crate.name}}</a>: <app-location [location]="crate.location"></app-location></li>
