@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {ApiService} from '../../api/services/api.service';
 import {EuroCrateDto} from '../../api/models/euro-crate-dto';
-import {LocationComponent} from '../../util/location/location.component';
+import {LocationComponent} from '../../location/location/location.component';
 import {RouterLink} from '@angular/router';
 import {handleDefaultError} from '../../util/auth';
 
