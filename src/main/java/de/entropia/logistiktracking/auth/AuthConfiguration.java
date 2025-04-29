@@ -48,6 +48,9 @@ public class AuthConfiguration {
 
 					fl.failureUrl(frontendBaseUrl+"/#/login?loginFailed="); // ja das soll so, angular macht da sein eigenen scheiß
 				})
+				.logout(it -> {
+					it.logoutSuccessUrl(frontendBaseUrl+"/");
+				})
 				.cors((cors) -> cors.configurationSource(apiConfigurationSource()))
 				.csrf(AbstractHttpConfigurer::disable)
 				.exceptionHandling(it -> {

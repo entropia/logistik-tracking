@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {ApiService} from '../../api/services/api.service';
 import {EuroPalletDto} from '../../api/models/euro-pallet-dto';
 import {MatButton} from '@angular/material/button';
@@ -8,15 +8,16 @@ import {MatDialog} from '@angular/material/dialog';
 import {CreateEuroPalletComponent} from '../create-euro-pallet/create-euro-pallet.component';
 import {NewEuroPalletDto} from '../../api/models/new-euro-pallet-dto';
 import {checkErrorAndAlertUser} from '../../util/auth';
-import {AuthorityStatus, UserService} from '../../util/user.service';
 import {AuthorityEnumDto} from '../../api/models/authority-enum-dto';
+import {RequiresAuthorityDirective} from '../../util/requires-permission.directive';
 
 @Component({
 	selector: 'app-euro-pallet',
 	imports: [
 		MatButton,
 		LocationComponent,
-		RouterLink
+		RouterLink,
+		RequiresAuthorityDirective
 	],
 	templateUrl: './euro-pallet.component.html',
 	styleUrl: './euro-pallet.component.scss'
@@ -24,18 +25,10 @@ import {AuthorityEnumDto} from '../../api/models/authority-enum-dto';
 export class EuroPalletComponent implements OnInit {
 	euroPallets?: EuroPalletDto[];
 
-	@ViewChild("theButton", {static: false})
-	set theBtn(e: MatButton) {
-		this.users.hasAuthority(AuthorityEnumDto.ManageResources).then(yeah => {
-			e.disabled = yeah != AuthorityStatus.HasIt
-		})
-	}
-
 	constructor(
 		private apiService: ApiService,
 		private router: Router,
-		private diag: MatDialog,
-		private users: UserService
+		private diag: MatDialog
 	) {
 	}
 
@@ -84,4 +77,6 @@ export class EuroPalletComponent implements OnInit {
 			}
 	})
 	}
+
+	protected readonly AuthorityEnumDto = AuthorityEnumDto;
 }

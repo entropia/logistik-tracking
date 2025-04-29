@@ -4,8 +4,7 @@
 		<button
 			mat-raised-button
 			(click)="createPallet()"
-			[disabled]="false"
-			#theButton
+			[requireAuthority]="AuthorityEnumDto.ManageResources"
 		>Pallette erstellen
 		</button>
 		<ul>
