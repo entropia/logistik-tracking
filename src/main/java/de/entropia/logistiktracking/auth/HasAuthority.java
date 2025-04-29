@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
 
 @Target({ ElementType.METHOD, ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
-@PreAuthorize("isAuthenticated() && hasRole('{value}')")
+@PreAuthorize("isAuthenticated() && hasAuthority('{value}')")
 public @interface HasAuthority {
 	AuthorityEnumDto value();
 }

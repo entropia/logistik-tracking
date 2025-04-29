@@ -1,5 +1,6 @@
 package de.entropia.logistiktracking.utility;
 
+import com.itextpdf.kernel.geom.AffineTransform;
 import com.itextpdf.kernel.geom.PageSize;
 import com.itextpdf.kernel.pdf.*;
 import com.itextpdf.kernel.pdf.canvas.PdfCanvas;
@@ -43,15 +44,32 @@ public class PdfMerger {
 							}
 						}
 
+						AffineTransform at = new AffineTransform();
+
 						// if even: make a new page, position at top
 						// if odd: reuse existing page, position at bottom
-
 						if (counter % 2 == 0) {
 							currentPage = new PdfCanvas(result.addNewPage());
-							currentPage.addXObjectAt(doc, 0, a4.getHeight() / 2);
-						} else {
-							currentPage.addXObjectAt(doc, 0, 0);
+
+							at.translate(0, a4.getHeight() / 2);
 						}
+
+						// origin is bottom left, rotating it will put it off screen
+						// move to the right accordingly to keep it on screen
+						double rad = Math.toRadians(thePage.getRotation());
+						at.translate(Math.sin(rad) * a4.getWidth(), 0);
+						// and then rotate
+						at.rotate(rad);
+
+						// save matrix
+						currentPage.saveState();
+
+						currentPage.concatMatrix(at);
+						currentPage.addXObjectAt(doc, 0, 0);
+
+						// restore matrix after translating page
+						currentPage.restoreState();
+
 						counter++;
 					}
 				}

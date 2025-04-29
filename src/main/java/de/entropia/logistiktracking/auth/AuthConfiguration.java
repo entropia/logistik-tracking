@@ -9,23 +9,22 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AnnotationTemplateExpressionDefaults;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.DelegatingAuthenticationEntryPoint;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
+import org.springframework.security.web.session.SessionInformationExpiredStrategy;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Set;
 
 @Configuration
 public class AuthConfiguration {
@@ -36,9 +35,9 @@ public class AuthConfiguration {
 						.anyRequest().permitAll() // per default allow everything, secure routes individually
 				)
 				.formLogin(fl -> {
-					fl.loginProcessingUrl("/login");
+					fl.loginProcessingUrl("/login"); // POST /login to log in
 					SimpleUrlAuthenticationSuccessHandler handler = new SimpleUrlAuthenticationSuccessHandler();
-					handler.setDefaultTargetUrl("/"); // no idea where to go
+					handler.setDefaultTargetUrl("/"); // default: no idea where to go
 					handler.setAlwaysUseDefaultTargetUrl(false);
 					handler.setTargetUrlParameter("redirect"); // ?redirect=/to/where/after/login
 					fl.successHandler(handler);
@@ -60,7 +59,21 @@ public class AuthConfiguration {
 
 					it.authenticationEntryPoint(new DelegatingAuthenticationEntryPoint(aep));
 				})
+				.sessionManagement(it -> it
+						.maximumSessions(32) // placeholder, das müssen wir eig nicht limitieren
+						.sessionRegistry(sessionRegistry())
+						.expiredSessionStrategy(expireStrategy()))
 				.build();
+	}
+
+	@Bean
+	SessionRegistry sessionRegistry() {
+		return new SessionRegistryImpl();
+	}
+
+	@Bean
+	SessionInformationExpiredStrategy expireStrategy() {
+		return new Send401SessionInformationExpiredStrategy();
 	}
 
 	@Bean
