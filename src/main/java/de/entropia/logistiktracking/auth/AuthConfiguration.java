@@ -1,5 +1,6 @@
 package de.entropia.logistiktracking.auth;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -28,6 +29,9 @@ import java.util.List;
 
 @Configuration
 public class AuthConfiguration {
+	@Value("${logitrack.frontendBaseUrl}")
+	private String frontendBaseUrl;
+
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity security) throws Exception {
 		return security
@@ -37,12 +41,12 @@ public class AuthConfiguration {
 				.formLogin(fl -> {
 					fl.loginProcessingUrl("/login"); // POST /login to log in
 					SimpleUrlAuthenticationSuccessHandler handler = new SimpleUrlAuthenticationSuccessHandler();
-					handler.setDefaultTargetUrl("/"); // default: no idea where to go
+					handler.setDefaultTargetUrl(frontendBaseUrl+"/"); // default: no idea where to go
 					handler.setAlwaysUseDefaultTargetUrl(false);
 					handler.setTargetUrlParameter("redirect"); // ?redirect=/to/where/after/login
 					fl.successHandler(handler);
 
-					fl.failureUrl("/?loginFailed#/login");
+					fl.failureUrl(frontendBaseUrl+"/#/login?loginFailed="); // ja das soll so, angular macht da sein eigenen scheiß
 				})
 				.cors((cors) -> cors.configurationSource(apiConfigurationSource()))
 				.csrf(AbstractHttpConfigurer::disable)
@@ -86,10 +90,9 @@ public class AuthConfiguration {
 		return new BCryptPasswordEncoder();
 	}
 
-	// TODO: Configure CORS based on DEV/PROD.
 	UrlBasedCorsConfigurationSource apiConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
-		configuration.setAllowedOrigins(List.of("http://localhost:4200"));
+		configuration.setAllowedOrigins(List.of(frontendBaseUrl));
 		configuration.setAllowedMethods(List.of("GET", "POST", "OPTIONS", "PUT", "DELETE"));
 		configuration.setAllowedHeaders(List.of("Origin", "Content-Type", "Cookie"));
 		configuration.setAllowCredentials(true);

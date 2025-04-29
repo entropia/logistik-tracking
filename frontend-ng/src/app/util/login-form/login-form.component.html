@@ -1,6 +1,23 @@
 <!-- fixme sexy machen -->
-<form action="http://localhost:8080/login?redirect=http://localhost:4200/#" method="post">
-	<input type="text" name="username" placeholder="username">
-	<input type="password" name="password" placeholder="password">
-	<input type="submit">
-</form>
+<main>
+	<h1>Juten morgen</h1>
+	<p>anmelden bitte</p>
+	@if (hadError) {
+		<p class="error">Nutzername oder passwort falsch</p>
+	}
+	<!-- fixme url dynamisch rausfinden (window host?) -->
+	<form [action]="apiUrl()+'/login?redirect=http://localhost:4200/#'" method="post" class="theForm">
+		<mat-form-field>
+			<mat-label>Nutzername</mat-label>
+			<input matInput type="text" name="username" placeholder="username" required minlength="3">
+		</mat-form-field>
+		<mat-form-field>
+			<mat-label>Passwort</mat-label>
+			<input matInput type="password" name="password" placeholder="password" required>
+		</mat-form-field>
+
+		<button type="submit" mat-flat-button>
+			Los gehts
+		</button>
+	</form>
+</main>
