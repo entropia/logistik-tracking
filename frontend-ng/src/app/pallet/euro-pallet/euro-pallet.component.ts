@@ -10,6 +10,7 @@ import {NewEuroPalletDto} from '../../api/models/new-euro-pallet-dto';
 import {checkErrorAndAlertUser} from '../../util/auth';
 import {AuthorityEnumDto} from '../../api/models/authority-enum-dto';
 import {RequiresAuthorityDirective} from '../../util/requires-permission.directive';
+import {MatTooltipModule} from '@angular/material/tooltip';
 
 @Component({
 	selector: 'app-euro-pallet',
@@ -17,6 +18,7 @@ import {RequiresAuthorityDirective} from '../../util/requires-permission.directi
 		MatButton,
 		LocationComponent,
 		RouterLink,
+		MatTooltipModule,
 		RequiresAuthorityDirective
 	],
 	templateUrl: './euro-pallet.component.html',
