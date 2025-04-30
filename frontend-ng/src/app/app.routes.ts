@@ -17,5 +17,10 @@ export const routes: Routes = [
 	{path: 'euroPallet/:id', loadComponent: () => import("./pallet/selected-euro-pallet/selected-euro-pallet.component")
 			.then(it => it.SelectedEuroPalletComponent)},
 	{path: "login", loadComponent: () => import("./util/login-form/login-form.component")
-			.then(it => it.LoginFormComponent)}
+			.then(it => it.LoginFormComponent)},
+	{path: "users", loadComponent: () => import("./users/user-list/user-list.component").then(it => it.UserListComponent)},
+	{
+		path: "users/:id",
+		loadComponent: () => import("./users/selected-user/selected-user.component").then(it => it.SelectedUserComponent)
+	}
 ];

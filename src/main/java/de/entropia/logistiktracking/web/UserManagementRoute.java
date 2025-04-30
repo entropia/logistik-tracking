@@ -53,7 +53,8 @@ public class UserManagementRoute implements UsersApi {
 						.filter(f -> f instanceof AuthorityEnumAuthority)
 						.map(it -> ((AuthorityEnumAuthority) it))
 						.map(AuthorityEnumAuthority::authority)
-						.toList()
+						.toList(),
+				true
 		);
 		return ResponseEntity.ok(udto);
 	}
@@ -126,11 +127,21 @@ public class UserManagementRoute implements UsersApi {
 		UserDatabaseElement uae = new UserDatabaseElement(createUserRequest.getUsername(), createUserRequest.getHashedPassword(), createUserRequest.getAuthorities(), true);
 		UserDatabaseElement save = userDatabaseService.save(uae);
 
-		UserDto bruh = new UserDto(
-				save.getUsername(),
-				save.getAuthorities().stream().map(AuthorityEnumAuthority::authority).toList()
-		);
+		return ResponseEntity.ok(save.toDto());
+	}
 
-		return ResponseEntity.ok(bruh);
+	@Override
+	@HasAuthority(AuthorityEnumDto.MANAGE_USERS)
+	public ResponseEntity<UserDto> getSpecificUser(String name) {
+		Optional<UserDatabaseElement> byId = userDatabaseService.findById(name);
+		return byId
+				.map(userDatabaseElement -> ResponseEntity.ok(userDatabaseElement.toDto()))
+				.orElseGet(() -> ResponseEntity.notFound().build());
+	}
+
+	@Override
+	@HasAuthority(AuthorityEnumDto.MANAGE_USERS)
+	public ResponseEntity<List<UserDto>> getUsers() {
+		return ResponseEntity.ok(userDatabaseService.findAll().stream().map(UserDatabaseElement::toDto).toList());
 	}
 }

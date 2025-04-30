@@ -18,6 +18,7 @@ import {ActivatedRoute} from '@angular/router';
 export class LoginFormComponent {
 
 	hadError: boolean = false;
+	from?: string;
 
 	constructor(
 		private api: ApiService,
@@ -25,10 +26,19 @@ export class LoginFormComponent {
 	) {
 		route.queryParams.subscribe(it => {
 			this.hadError = this.hadError || it["loginFailed"] != undefined;
+			this.from = it["from"];
 		})
 	}
 
 	apiUrl() {
 		return this.api.rootUrl
+	}
+
+	getFromPart() {
+		if (this.from) {
+			// FIXME kinda hacky
+			return "?redirect="+window.location.origin+"#"+this.from;
+		}
+		return '';
 	}
 }

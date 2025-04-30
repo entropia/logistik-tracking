@@ -3,6 +3,7 @@
 		<a routerLink="/packingList">Packlisten</a>
 		<a routerLink="/euroPallet">Palleten</a>
 		<a routerLink="/euroCrate">Euroboxen</a>
+		<a routerLink="/users" *requireAuthority="AuthorityEnumDto.ManageUsers">Admin</a>
 	</nav>
 	<div class="right">
 		@if(actualU) {
@@ -14,7 +15,7 @@
 				<a mat-menu-item [href]="backendUrl+'/logout'">Abmelden</a>
 			</mat-menu>
 		} @else {
-			<a class="flexMyShit" [routerLink]="'/login'">
+			<a class="flexMyShit" routerLink="/login" [queryParams]="{from: router.url}">
 				<mat-icon fontIcon="account_circle" style="color: gray"></mat-icon>
 				<span>Nicht angemeldet</span>
 			</a>

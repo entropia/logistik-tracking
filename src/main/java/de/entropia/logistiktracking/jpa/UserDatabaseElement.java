@@ -2,6 +2,7 @@ package de.entropia.logistiktracking.jpa;
 
 import de.entropia.logistiktracking.auth.AuthorityEnumAuthority;
 import de.entropia.logistiktracking.openapi.model.AuthorityEnumDto;
+import de.entropia.logistiktracking.openapi.model.UserDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -46,5 +47,9 @@ public class UserDatabaseElement {
 
 	public String getPassword() {
 		return hashedPw;
+	}
+
+	public UserDto toDto() {
+		return new UserDto(getUsername(), getRoles(), isEnabled());
 	}
 }

@@ -1,0 +1,90 @@
+import {Component, Input, OnInit, ViewChild} from '@angular/core';
+import {ApiService} from '../../api/services/api.service';
+import {UserDto} from '../../api/models/user-dto';
+import {checkErrorAndAlertUser} from '../../util/auth';
+import {FormsModule, NgForm, NgModel} from '@angular/forms';
+import {MatInputModule} from '@angular/material/input';
+import {MatSelectModule} from '@angular/material/select';
+import {AuthorityEnumDto} from '../../api/models';
+import {MatButtonModule} from '@angular/material/button';
+import {MatCheckbox} from '@angular/material/checkbox';
+import {ModifyUser$Params} from '../../api/fn/operations/modify-user';
+import bcrypt from "bcryptjs";
+import {MatSnackBar} from '@angular/material/snack-bar';
+
+@Component({
+  selector: 'app-selected-user',
+	imports: [
+		FormsModule,
+		MatInputModule,
+		MatSelectModule,
+		MatButtonModule,
+		MatCheckbox
+
+	],
+  templateUrl: './selected-user.component.html',
+  styleUrl: './selected-user.component.scss'
+})
+export class SelectedUserComponent implements OnInit {
+	@Input()
+	id!: string;
+
+	user?: UserDto;
+
+	newPw: string = "";
+
+	@ViewChild("theForm") theForm!: NgForm;
+
+	constructor(
+		private api: ApiService,
+		private modal: MatSnackBar
+	) {
+	}
+
+	ngOnInit() {
+		this.api.getSpecificUser({
+			name: this.id
+		}).subscribe({
+			next: it => {
+				this.user = it;
+			},
+			error: e => {
+				console.error(e)
+				if (!checkErrorAndAlertUser(e)) alert(`Couldnt load user: ${e}`)
+			}
+		})
+	}
+
+	saveUser(authorities: NgModel, enabled: NgModel, newpw: NgModel) {
+		let patch: ModifyUser$Params = {
+			username: this.id,
+			body: {}
+		}
+		if (authorities.dirty) {
+			patch.body.authorities = this.user!.authorities;
+		}
+		if (enabled.dirty) {
+			patch.body.active = this.user!.enabled;
+		}
+		if (newpw.dirty) {
+			let salt = bcrypt.genSaltSync(12)
+			patch.body.hashedPassword = bcrypt.hashSync(this.newPw, salt)
+		}
+		this.api.modifyUser(patch)
+			.subscribe({
+				next: _ => {
+					this.modal.open("Saved!", undefined, {
+						duration: 4000
+					})
+					this.theForm.control.markAsPristine()
+				},
+				error: e => {
+					console.error(e)
+					if (!checkErrorAndAlertUser(e)) alert(`Failed to save: ${e}`)
+				}
+			})
+	}
+
+	protected readonly Object = Object;
+	protected readonly AuthorityEnumDto = AuthorityEnumDto;
+}

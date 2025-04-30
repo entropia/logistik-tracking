@@ -8,7 +8,7 @@
     "build": "npm run ng-openapi-gen && ng build",
     "watch": "npm run ng-openapi-gen && ng build --watch --configuration development",
     "test": "npm run ng-openapi-gen && ng test",
-	  "build-install-spring": "npm run build -- --output-path ../src/main/resources/temp && rsync -vrh --delete ../src/main/resources/temp/browser/ ../src/main/resources/static/ && rm -rv ../src/main/resources/temp"
+    "build-install-spring": "npm run build -- --output-path ../src/main/resources/temp && rsync -vrh --delete ../src/main/resources/temp/browser/ ../src/main/resources/static/ && rm -rv ../src/main/resources/temp"
   },
   "private": true,
   "dependencies": {
@@ -21,6 +21,7 @@
     "@angular/platform-browser": "^19.2.0",
     "@angular/platform-browser-dynamic": "^19.2.0",
     "@angular/router": "^19.2.0",
+    "bcryptjs": "^3.0.2",
     "qr-scanner": "^1.4.2",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",

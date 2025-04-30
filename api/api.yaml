@@ -419,7 +419,7 @@ paths:
         404:
           description: A resource didnt exist
 
-  /users/loggedInUser:
+  /users/me:
     get:
       operationId: getLoggedInUser
       summary: Gets the currently logged in user
@@ -434,6 +434,35 @@ paths:
                 $ref: "#/components/schemas/UserDto"
         401:
           description: user is not logged in
+
+  /users/other/{name}:
+    get:
+      operationId: getSpecificUser
+      summary: Get user by username
+      security:
+        - springCookieAuth: [ ]
+      parameters:
+        - name: "name"
+          in: path
+          required: true
+          description: Username
+          schema:
+            type: string
+            minLength: 3
+      responses:
+        200:
+          description: User found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserDto"
+        404:
+          description: User not found
+        401:
+          description: user is not logged in
+        403:
+          description: Missing permission
+
 
   /users/{username}:
     post:
@@ -532,6 +561,20 @@ paths:
           description: Not logged in
         403:
           description: Missing permission
+    get:
+      operationId: getUsers
+      summary: Get all users
+      security:
+        - springCookieAuth: [ ]
+      responses:
+        200:
+          description: User list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/UserDto"
 
   /login:
     post:
@@ -848,9 +891,13 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/AuthorityEnumDto"
+        enabled:
+          type: boolean
+          description: Account enabled?
       required:
         - username
         - authorities
+        - enabled
 
     AuthorityEnumDto:
       type: string

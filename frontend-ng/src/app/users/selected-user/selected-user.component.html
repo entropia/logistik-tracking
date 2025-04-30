@@ -1,0 +1,28 @@
+@if (!user) {
+	<p>Nutzer wird geladen</p>
+} @else {
+	<h1>Nutzer {{user.username}}</h1>
+
+	<form #theForm="ngForm" (ngSubmit)="saveUser(authorities, enabled, newPwA)">
+		<mat-form-field>
+			<mat-label>Berechtigungen</mat-label>
+			<mat-select multiple [(ngModel)]="user.authorities" name="authorities" #authorities="ngModel">
+				@for (auth of Object.values(AuthorityEnumDto); track auth) {
+					<mat-option [value]="auth">{{auth}}</mat-option>
+				}
+			</mat-select>
+		</mat-form-field>
+
+		<mat-checkbox [(ngModel)]="user.enabled" name="enabled" #enabled="ngModel">Aktiv</mat-checkbox>
+
+		<mat-form-field>
+			<mat-label>Neues passwort</mat-label>
+			<input matInput type="password" name="passwd" [(ngModel)]="newPw" #newPwA="ngModel">
+		</mat-form-field>
+
+		<button mat-flat-button [disabled]="!theForm.dirty" type="submit">
+			Speichern
+		</button>
+	</form>
+
+}
