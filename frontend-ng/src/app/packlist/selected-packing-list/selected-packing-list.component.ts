@@ -16,7 +16,7 @@ import {MatTooltip} from '@angular/material/tooltip';
 import {HttpErrorResponse} from '@angular/common/http';
 import {QrScannerService} from '../../qr-scanner.service';
 import {parseCrateId} from '../../util/qr-id-parser';
-import {checkErrorAndAlertUser} from '../../util/auth';
+import {handleDefaultError} from '../../util/auth';
 
 enum ItemStatus {
 	KEEP,
@@ -69,10 +69,7 @@ export class SelectedPackingListComponent implements OnInit {
 				this.source.data = this.items;
 				// this.source.sort = this.sort!;
 			},
-			error: e => {
-				alert("failed to load packing list! see console")
-				console.error(e)
-			}
+			error: handleDefaultError
 		})
 	}
 
@@ -129,10 +126,7 @@ export class SelectedPackingListComponent implements OnInit {
 					duration: 3000
 				})
 			},
-			error: e => {
-				console.error(e)
-				if (!checkErrorAndAlertUser(e)) alert(`Failed to save packing list: ${e}`)
-			}
+			error: handleDefaultError
 		})
 	}
 
@@ -220,10 +214,7 @@ export class SelectedPackingListComponent implements OnInit {
 						id
 					}).subscribe({
 						next: c => this.crateSubmitted(c, true),
-						error: e => {
-							alert(`failed to get crate details! ${e}`)
-							console.error(e)
-						}
+						error: handleDefaultError
 					})
 				} catch (e) {
 					this.feedback(`Wahrscheinlich keine Box: ${e}`)

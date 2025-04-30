@@ -1,7 +1,7 @@
 import {Component, Input, OnInit, ViewChild} from '@angular/core';
 import {ApiService} from '../../api/services/api.service';
 import {UserDto} from '../../api/models/user-dto';
-import {checkErrorAndAlertUser} from '../../util/auth';
+import {handleDefaultError} from '../../util/auth';
 import {FormsModule, NgForm, NgModel} from '@angular/forms';
 import {MatInputModule} from '@angular/material/input';
 import {MatSelectModule} from '@angular/material/select';
@@ -11,6 +11,7 @@ import {MatCheckbox} from '@angular/material/checkbox';
 import {ModifyUser$Params} from '../../api/fn/operations/modify-user';
 import bcrypt from "bcryptjs";
 import {MatSnackBar} from '@angular/material/snack-bar';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-selected-user',
@@ -37,7 +38,8 @@ export class SelectedUserComponent implements OnInit {
 
 	constructor(
 		private api: ApiService,
-		private modal: MatSnackBar
+		private modal: MatSnackBar,
+		private router: Router
 	) {
 	}
 
@@ -48,10 +50,7 @@ export class SelectedUserComponent implements OnInit {
 			next: it => {
 				this.user = it;
 			},
-			error: e => {
-				console.error(e)
-				if (!checkErrorAndAlertUser(e)) alert(`Couldnt load user: ${e}`)
-			}
+			error: handleDefaultError
 		})
 	}
 
@@ -78,13 +77,23 @@ export class SelectedUserComponent implements OnInit {
 					})
 					this.theForm.control.markAsPristine()
 				},
-				error: e => {
-					console.error(e)
-					if (!checkErrorAndAlertUser(e)) alert(`Failed to save: ${e}`)
-				}
+				error: handleDefaultError
 			})
 	}
 
 	protected readonly Object = Object;
 	protected readonly AuthorityEnumDto = AuthorityEnumDto;
+
+	delete() {
+		this.api.deleteUser({
+			username: this.id
+		}).subscribe({
+			next: _ => {
+				this.modal.open("Deleted!", undefined, {
+					duration: 4000
+				})
+				this.router.navigate(["/users"])
+			}, error: handleDefaultError
+		})
+	}
 }

@@ -7,7 +7,7 @@ import {LocationComponent} from '../../util/location/location.component';
 import {MatDialog} from '@angular/material/dialog';
 import {CreateEuroPalletComponent} from '../create-euro-pallet/create-euro-pallet.component';
 import {NewEuroPalletDto} from '../../api/models/new-euro-pallet-dto';
-import {checkErrorAndAlertUser} from '../../util/auth';
+import {handleDefaultError} from '../../util/auth';
 import {AuthorityEnumDto} from '../../api/models/authority-enum-dto';
 import {RequiresAuthorityDirective} from '../../util/requires-permission.directive';
 import {MatTooltipModule} from '@angular/material/tooltip';
@@ -57,10 +57,7 @@ export class EuroPalletComponent implements OnInit {
 								console.log("Failed to redirect to newly created pallet because: " + reason);
 							});
 					},
-					error: e => {
-						console.error(e)
-						if (!checkErrorAndAlertUser(e)) alert(`Failed to save pallet: ${e}`)
-					}
+					error: handleDefaultError
 				});
 			})
 	}
@@ -77,10 +74,7 @@ export class EuroPalletComponent implements OnInit {
 				}
 				URL.revokeObjectURL(ou)
 			},
-			error: e => {
-				console.error(e)
-				if (!checkErrorAndAlertUser(e)) alert(`Failed to print pallet: ${e}`)
-			}
+			error: handleDefaultError
 	})
 	}
 

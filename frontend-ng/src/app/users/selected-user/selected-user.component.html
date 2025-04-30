@@ -20,9 +20,12 @@
 			<input matInput type="password" name="passwd" [(ngModel)]="newPw" #newPwA="ngModel">
 		</mat-form-field>
 
-		<button mat-flat-button [disabled]="!theForm.dirty" type="submit">
-			Speichern
-		</button>
+		<div>
+			<button mat-flat-button class="danger" type="button" (click)="delete()">Löschen</button>
+			<button mat-flat-button [disabled]="!theForm.dirty" type="submit">
+				Speichern
+			</button>
+		</div>
 	</form>
 
 }

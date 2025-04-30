@@ -3,6 +3,7 @@ import {ApiService} from '../../api/services/api.service';
 import {EuroCrateDto} from '../../api/models/euro-crate-dto';
 import {LocationComponent} from '../../util/location/location.component';
 import {RouterLink} from '@angular/router';
+import {handleDefaultError} from '../../util/auth';
 
 @Component({
 	selector: 'app-euro-crate',
@@ -26,10 +27,7 @@ export class EuroCrateComponent implements OnInit {
 			next: res => {
 				this.crates = res;
 			},
-			error: e => {
-				console.error(e)
-				alert(`error! ${e}`)
-			}
+			error: handleDefaultError
 		})
 	}
 }
