@@ -8,6 +8,7 @@ import {LocationDto} from '../../api/models/location-dto';
 import {MatError} from '@angular/material/input';
 import {MatButton} from '@angular/material/button';
 import {MatSnackBar} from '@angular/material/snack-bar';
+import {checkErrorAndAlertUser} from '../../util/auth';
 
 @Component({
 	selector: 'app-selected-euro-pallet',
@@ -68,8 +69,8 @@ export class SelectedEuroPalletComponent implements OnInit {
 				})
 			},
 			error(e) {
-				alert("Failed to save! check logs for details")
 				console.error(e)
+				if (!checkErrorAndAlertUser(e)) alert(`Failed to save pallet: ${e}`)
 			}
 		})
 	}

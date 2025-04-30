@@ -8,7 +8,7 @@
     "build": "npm run ng-openapi-gen && ng build",
     "watch": "npm run ng-openapi-gen && ng build --watch --configuration development",
     "test": "npm run ng-openapi-gen && ng test",
-	  "build-install-spring": "npm run build -- --output-path ../src/main/resources/temp && rm -rv ../src/main/resources/static && mkdir -v ../src/main/resources/static  && cp -rv ../src/main/resources/temp/browser/* ../src/main/resources/static && rm -rv ../src/main/resources/temp"
+	  "build-install-spring": "npm run build -- --output-path ../src/main/resources/temp && rsync -vrh --delete ../src/main/resources/temp/browser/ ../src/main/resources/static/ && rm -rv ../src/main/resources/temp"
   },
   "private": true,
   "dependencies": {

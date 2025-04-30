@@ -1,0 +1,23 @@
+main {
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+	// wahrscheinlich hacky aber was anderes fällt mir nicht ein
+	// breite ist komplette fensterbreite minus 30 px padding links und rechts
+	width: calc(100vw - 60px);
+	// aber sollte nicht zu breit werden, deshalb max width 500px
+	max-width: 500px;
+	// wenns fenster weniger als 560px breit ist schrumpft die form mit
+}
+
+.theForm {
+	display: flex;
+	flex-direction: column;
+	row-gap: 10px;
+}
+
+.error {
+	color: orangered;
+	font-size: large;
+}

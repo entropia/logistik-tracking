@@ -4,6 +4,7 @@
 		<button
 			mat-raised-button
 			(click)="createPallet()"
+			*requireAuthority="AuthorityEnumDto.ManageResources"
 		>Pallette erstellen
 		</button>
 		<ul>
@@ -11,7 +12,8 @@
 				<li>
 					<a [routerLink]="'/euroPallet/' + euroPallet.euroPalletId">{{ euroPallet.euroPalletId }}</a>:
 					<app-location [location]="euroPallet.location"></app-location>
-					<button mat-button (click)="printPallet(euroPallet)">
+
+					<button mat-button (click)="printPallet(euroPallet)" *requireAuthority="AuthorityEnumDto.Print">
 						Drucken
 					</button>
 				</li>

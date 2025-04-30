@@ -15,5 +15,7 @@ export const routes: Routes = [
 			.then(it => it.SelectedEuroCrateComponent)},
 	{path: 'euroPallet', loadComponent: () => import("./pallet/euro-pallet/euro-pallet.component").then(it => it.EuroPalletComponent)},
 	{path: 'euroPallet/:id', loadComponent: () => import("./pallet/selected-euro-pallet/selected-euro-pallet.component")
-			.then(it => it.SelectedEuroPalletComponent)}
+			.then(it => it.SelectedEuroPalletComponent)},
+	{path: "login", loadComponent: () => import("./util/login-form/login-form.component")
+			.then(it => it.LoginFormComponent)}
 ];

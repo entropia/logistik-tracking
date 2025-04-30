@@ -2,9 +2,11 @@ package de.entropia.logistiktracking.web;
 
 import com.itextpdf.kernel.pdf.PdfReader;
 import com.itextpdf.kernel.pdf.PdfWriter;
+import de.entropia.logistiktracking.auth.HasAuthority;
 import de.entropia.logistiktracking.domain.euro_crate.use_case.EuroCrateUseCase;
 import de.entropia.logistiktracking.domain.euro_pallet.use_case.EuroPalletUseCase;
 import de.entropia.logistiktracking.openapi.api.PrintMultipleApi;
+import de.entropia.logistiktracking.openapi.model.AuthorityEnumDto;
 import de.entropia.logistiktracking.openapi.model.PrintMultipleDtoInner;
 import de.entropia.logistiktracking.openapi.model.PrintMultipleDtoInnerOneOf;
 import de.entropia.logistiktracking.openapi.model.PrintMultipleDtoInnerOneOf1;
@@ -31,6 +33,7 @@ public class PrintMultipleRoute implements PrintMultipleApi {
 
 	@SneakyThrows
 	@Override
+	@HasAuthority(AuthorityEnumDto.PRINT)
 	public ResponseEntity<Resource> printMultipleThings(List<PrintMultipleDtoInner> printMultipleDtoInner) {
 		List<CompletableFuture<Result<byte[], ?>>> theFunny = printMultipleDtoInner.stream().map(this::createJob).toList();
 		PdfReader[] reader = new PdfReader[theFunny.size()];

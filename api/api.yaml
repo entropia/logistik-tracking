@@ -401,7 +401,7 @@ paths:
       operationId: printMultipleThings
       summary: Print multiple elements into one A4 PDF
       security:
-        - springCookieAuth: [ ]
+        - springCookieAuth: []
       requestBody:
         required: true
         content:
@@ -418,6 +418,120 @@ paths:
                 format: binary
         404:
           description: A resource didnt exist
+
+  /users/loggedInUser:
+    get:
+      operationId: getLoggedInUser
+      summary: Gets the currently logged in user
+      security:
+        - springCookieAuth: []
+      responses:
+        200:
+          description: User is logged in, here are the details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserDto"
+        401:
+          description: user is not logged in
+
+  /users/{username}:
+    post:
+      operationId: modifyUser
+      summary: Modify a user
+      security:
+        - springCookieAuth: [ ]
+      parameters:
+        - name: username
+          in: path
+          required: true
+          description: Username
+          schema:
+            type: string
+            minLength: 3
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                authorities:
+                  description: New authorities
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/AuthorityEnumDto"
+                hashedPassword:
+                  description: New BCrypt hashed password
+                  maxLength: 72
+                  example: $2a$10$cSa230uf6gXphAxdaFuzHuZ3nlxeCPVm1XUlwKuP1BP2BcnnkJI4S
+                  type: string
+                active:
+                  description: New active status
+                  type: boolean
+      responses:
+        200:
+          description: User modified
+        401:
+          description: Not logged in
+        403:
+          description: Missing permission
+    delete:
+      operationId: deleteUser
+      summary: Delete a user
+      security:
+        - springCookieAuth: [ ]
+      parameters:
+        - name: username
+          in: path
+          required: true
+          description: Username
+          schema:
+            type: string
+            minLength: 3
+      responses:
+        200:
+          description: User deleted
+        404:
+          description: User not found
+        401:
+          description: Not logged in
+        403:
+          description: Missing permission
+
+  /users:
+    put:
+      operationId: createUser
+      summary: Create a user
+      security:
+        - springCookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: "#/components/schemas/UserDto"
+                - type: object
+                  properties:
+                    hashedPassword:
+                      description: BCrypt hashed password
+                      maxLength: 72
+                      example: $2a$10$cSa230uf6gXphAxdaFuzHuZ3nlxeCPVm1XUlwKuP1BP2BcnnkJI4S
+                      type: string
+                  required:
+                    - hashedPassword
+      responses:
+        200:
+          description: User created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserDto"
+        401:
+          description: Not logged in
+        403:
+          description: Missing permission
 
   /login:
     post:
@@ -716,22 +830,34 @@ components:
         username:
           type: string
           minLength: 3
+          maxLength: 255
         password:
           type: string
       required:
         - username
         - password
 
-    SessionDto:
+    UserDto:
       type: object
       properties:
-        permissionGroup:
-          $ref: "#/components/schemas/PermissionGroupEnumDto"
+        username:
+          type: string
+          minLength: 3
+          maxLength: 255
+        authorities:
+          type: array
+          items:
+            $ref: "#/components/schemas/AuthorityEnumDto"
       required:
-        - sessionKey
+        - username
+        - authorities
 
-    PermissionGroupEnumDto:
+    AuthorityEnumDto:
       type: string
+      # die müssen caps sein wegen @HasAuthority, der enum -> string converter
+      # nutzt toString was den namen vom enum gibt. codegen macht die namen caps
+      # -> die namen hier müssen mit den java enum namen übereinstimmen, die caps sind
       enum:
-        - 'RegularUser'
-        - 'Organizer'
+        - 'MANAGE_USERS'
+        - 'MANAGE_RESOURCES'
+        - 'PRINT'

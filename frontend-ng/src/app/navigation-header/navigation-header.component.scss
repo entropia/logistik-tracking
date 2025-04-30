@@ -1,0 +1,17 @@
+.theNav {
+	flex-wrap: wrap;
+	justify-content: space-between;
+	width: 100%;
+	column-gap: 0;
+	row-gap: 5px;
+}
+.flexMyShit {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	column-gap: 5px;
+}
+
+.pointerOnHover:hover {
+	cursor: pointer;
+}

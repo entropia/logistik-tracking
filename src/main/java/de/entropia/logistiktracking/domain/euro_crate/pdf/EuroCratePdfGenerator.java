@@ -5,6 +5,10 @@ import com.google.zxing.EncodeHintType;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfPage;
+import com.itextpdf.kernel.pdf.PdfReader;
+import com.itextpdf.kernel.pdf.PdfWriter;
 import com.lowagie.text.DocumentException;
 import de.entropia.logistiktracking.domain.euro_crate.EuroCrate;
 import de.entropia.logistiktracking.utility.Result;
@@ -17,11 +21,9 @@ import org.xhtmlrenderer.pdf.ITextRenderer;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Locale;
 import java.util.Map;
@@ -78,7 +80,20 @@ public class EuroCratePdfGenerator {
 			renderer.setDocumentFromString(html);
 			renderer.layout();
 			renderer.createPDF(htmlOs);
-			return new Result.Ok<>(htmlOs.toByteArray());
+			byte[] ba = htmlOs.toByteArray();
+			try (PdfReader pdfReader = new PdfReader(new ByteArrayInputStream(ba));
+				 ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+				try(PdfWriter pw = new PdfWriter(baos);
+					PdfDocument pd = new PdfDocument(pdfReader, pw)) {
+					for (int i = 1; i <= pd.getNumberOfPages(); i++) {
+						PdfPage page = pd.getPage(i);
+						// seite ist bei single nach rechts rotiert und bei batch auf links aber das juckt mich grade GAR nicht
+						page.setRotation(90);
+					}
+				}
+				// pdf is written at this point
+				return new Result.Ok<>(baos.toByteArray());
+			}
 		} catch (DocumentException | IOException e) {
 			log.error("Failed to generate EuroPallet PDF", e);
 			return new Result.Error<>(null);

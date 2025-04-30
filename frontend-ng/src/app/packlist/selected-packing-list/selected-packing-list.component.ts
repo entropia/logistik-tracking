@@ -16,6 +16,7 @@ import {MatTooltip} from '@angular/material/tooltip';
 import {HttpErrorResponse} from '@angular/common/http';
 import {QrScannerService} from '../../qr-scanner.service';
 import {parseCrateId} from '../../util/qr-id-parser';
+import {checkErrorAndAlertUser} from '../../util/auth';
 
 enum ItemStatus {
 	KEEP,
@@ -129,12 +130,8 @@ export class SelectedPackingListComponent implements OnInit {
 				})
 			},
 			error: e => {
-				if (e instanceof Error) {
-					alert(`Failed to save! Check console: ${e.message}`)
-				} else {
-					alert("Failed to save! Check console")
-				}
 				console.error(e)
+				if (!checkErrorAndAlertUser(e)) alert(`Failed to save packing list: ${e}`)
 			}
 		})
 	}

@@ -22,8 +22,14 @@ export class EuroCrateComponent implements OnInit {
 	}
 
 	ngOnInit() {
-		this.apiService.getAllEuroCrates().subscribe(res => {
-			this.crates = res;
+		this.apiService.getAllEuroCrates().subscribe({
+			next: res => {
+				this.crates = res;
+			},
+			error: e => {
+				console.error(e)
+				alert(`error! ${e}`)
+			}
 		})
 	}
 }
