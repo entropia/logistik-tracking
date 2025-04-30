@@ -1,46 +1,34 @@
-import {Directive, Input, OnInit} from '@angular/core';
+import {Directive, Input, TemplateRef, ViewContainerRef, ViewRef} from '@angular/core';
 import {AuthorityStatus, UserService} from './user.service';
 import {AuthorityEnumDto} from '../api/models/authority-enum-dto';
-import {MatTooltip} from '@angular/material/tooltip';
 
 @Directive({
-	selector: "[requireAuthority]",
-	hostDirectives: [
-		MatTooltip
-	]
+	selector: "[requireAuthority]"
 })
-export class RequiresAuthorityDirective implements OnInit{
-	@Input() requireAuthority!: AuthorityEnumDto;
-	@Input() buttonToDisable!: {disabled: boolean};
+export class RequiresAuthorityDirective {
+	@Input()
+	set requireAuthority(it: AuthorityEnumDto) {
+		this.api.hasAuthority(it).then(w => {
+			this.show(w == AuthorityStatus.HasIt)
+		})
+	}
 
 	constructor(
 		private api: UserService,
-		private mt: MatTooltip
+		private templateRef: TemplateRef<any>,
+		private vcr: ViewContainerRef
 	) {
 	}
 
-	ngOnInit() {
-		this.buttonToDisable.disabled = true
-		this.api.hasAuthority(this.requireAuthority).then(it => {
-			switch (it) {
-				case AuthorityStatus.HasIt:
-					this.buttonToDisable.disabled = false
-					this.mt.message = ""
-					break;
-				case AuthorityStatus.Idk:
-					this.buttonToDisable.disabled = true
-					this.mt.message = "Failed to get user information"
-					break;
-				case AuthorityStatus.NotLoggedIn:
-					this.mt.message = `Not logged in; this action requires authority ${this.requireAuthority}`
-					this.buttonToDisable.disabled = true
-					break;
-				case AuthorityStatus.DoesNotHave:
-					this.mt.message = `This action requires authority ${this.requireAuthority}`
-					this.buttonToDisable.disabled = true
-					break;
-			}
-		})
-		this.mt.disabled = false;
+	existingVR?: ViewRef;
+
+	private show(yeah: boolean) {
+		if (yeah) {
+			// not yet instantiated, create
+			if (!this.existingVR) this.existingVR = this.vcr.createEmbeddedView(this.templateRef)
+		} else {
+			this.vcr.clear()
+			this.existingVR = undefined
+		}
 	}
 }

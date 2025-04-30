@@ -1,21 +1,19 @@
 <main>
 	<h1>Palletten</h1>
 	<div class="content">
-		<div style="display: inline-block" [requireAuthority]="AuthorityEnumDto.ManageResources" [buttonToDisable]="theFuck">
-			<button
-				mat-raised-button
-				(click)="createPallet()"
-				#theFuck="matButton"
-			>Pallette erstellen
-			</button>
-		</div>
+		<button
+			mat-raised-button
+			(click)="createPallet()"
+			*requireAuthority="AuthorityEnumDto.ManageResources"
+		>Pallette erstellen
+		</button>
 		<ul>
 			@for (euroPallet of euroPallets ?? []; track euroPallet.euroPalletId) {
 				<li>
 					<a [routerLink]="'/euroPallet/' + euroPallet.euroPalletId">{{ euroPallet.euroPalletId }}</a>:
 					<app-location [location]="euroPallet.location"></app-location>
 
-					<button mat-button (click)="printPallet(euroPallet)">
+					<button mat-button (click)="printPallet(euroPallet)" *requireAuthority="AuthorityEnumDto.Print">
 						Drucken
 					</button>
 				</li>

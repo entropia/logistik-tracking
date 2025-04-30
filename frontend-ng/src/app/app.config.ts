@@ -12,8 +12,8 @@ export const appConfig: ApplicationConfig = {
 		provideZoneChangeDetection({eventCoalescing: true}),
 		provideRouter(routes, withComponentInputBinding()),
 		// FIXME das sollte eigentlich besser aussehen. funktioniert aber um den api host auf die jetzige url zu setzen mit port 8080
-		// nochmal FIXME https > http
-		importProvidersFrom(ApiModule.forRoot({rootUrl: "http://"+window.location.hostname+":8080"})),
+		//    evtl global config mit dem hostname?
+		importProvidersFrom(ApiModule.forRoot({rootUrl: window.location.protocol+"//"+window.location.hostname+":8080"})),
 		provideHttpClient(
 			withInterceptors([
 				(request: HttpRequest<any>, next: HttpHandlerFn) => {

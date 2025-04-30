@@ -71,7 +71,11 @@ export class EuroPalletComponent implements OnInit {
 		}).subscribe({
 			next: v => {
 				let ou = URL.createObjectURL(v)
-				window.open(ou, "_blank")
+				let opened = window.open(ou, "_blank")
+				if (!opened) {
+					alert("Konnte kein Fenster öffnen! Bitte erlaube für diese Webseite popups.")
+				}
+				URL.revokeObjectURL(ou)
 			},
 			error: e => {
 				console.error(e)
