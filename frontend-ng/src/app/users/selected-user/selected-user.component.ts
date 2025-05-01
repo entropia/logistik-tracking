@@ -12,6 +12,7 @@ import {ModifyUser$Params} from '../../api/fn/operations/modify-user';
 import bcrypt from "bcryptjs";
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {Router} from '@angular/router';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-selected-user',
@@ -20,8 +21,8 @@ import {Router} from '@angular/router';
 		MatInputModule,
 		MatSelectModule,
 		MatButtonModule,
-		MatCheckbox
-
+		MatCheckbox,
+		MatProgressSpinnerModule
 	],
   templateUrl: './selected-user.component.html',
   styleUrl: './selected-user.component.scss'

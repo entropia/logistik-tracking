@@ -5,7 +5,6 @@ import {MatButton} from '@angular/material/button';
 import {Router, RouterLink} from '@angular/router';
 import {LocationComponent} from '../../util/location/location.component';
 import {MatDialog} from '@angular/material/dialog';
-import {CreateEuroPalletComponent} from '../create-euro-pallet/create-euro-pallet.component';
 import {NewEuroPalletDto} from '../../api/models/new-euro-pallet-dto';
 import {handleDefaultError} from '../../util/auth';
 import {AuthorityEnumDto} from '../../api/models/authority-enum-dto';
@@ -43,23 +42,26 @@ export class EuroPalletComponent implements OnInit {
 	}
 
 	createPallet() {
-		this.diag.open<CreateEuroPalletComponent, any, NewEuroPalletDto>(CreateEuroPalletComponent)
-			.afterClosed()
-			.subscribe(value => {
-				if (!value) return;
-				// console.log(value)
-				this.apiService.createEuroPallet({
-					body: value
-				}).subscribe({
-					next: pallet => {
-						this.router.navigate(['euroPallet/' + pallet.euroPalletId])
-							.catch(reason => {
-								console.log("Failed to redirect to newly created pallet because: " + reason);
-							});
-					},
-					error: handleDefaultError
-				});
-			})
+		import("../create-euro-pallet/create-euro-pallet.component").then(it => {
+			this.diag.open<any, any, NewEuroPalletDto>(it.CreateEuroPalletComponent)
+				.afterClosed()
+				.subscribe(value => {
+					if (!value) return;
+					// console.log(value)
+					this.apiService.createEuroPallet({
+						body: value
+					}).subscribe({
+						next: pallet => {
+							this.router.navigate(['euroPallet/' + pallet.euroPalletId])
+								.catch(reason => {
+									console.log("Failed to redirect to newly created pallet because: " + reason);
+								});
+						},
+						error: handleDefaultError
+					});
+				})
+		})
+
 	}
 
 	printPallet(euroPallet: EuroPalletDto) {

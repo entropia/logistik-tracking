@@ -32,21 +32,14 @@ export class QrScannerService {
 		private ps: OverlayPositionBuilder
 	) {
 	}
-
-	public async hasCamera() {
-		return await QrScanner.hasCamera()
-	}
-
-	public startScanning(fullscreen: boolean = true, ...customClasses: string[]) {
-		if (fullscreen) {
-			customClasses.push("spl-panel-fullscreen_yes_i_know_this_is_global_cope_about_it")
-		}
+	public startScanning() {
 		let ovRef = this.overlay.create({
 			disposeOnNavigation: true,
 			hasBackdrop: false,
 			scrollStrategy: this.sso.close(),
-			panelClass: customClasses,
 			positionStrategy: this.ps.global(),
+			width: "100vw",
+			height: "100vh"
 		})
 
 		let ref = new QrScanRef(ovRef)

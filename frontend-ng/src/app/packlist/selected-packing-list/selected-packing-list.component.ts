@@ -17,6 +17,7 @@ import {HttpErrorResponse} from '@angular/common/http';
 import {QrScannerService} from '../../qr-scanner.service';
 import {parseCrateId} from '../../util/qr-id-parser';
 import {handleDefaultError} from '../../util/auth';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 
 enum ItemStatus {
 	KEEP,
@@ -44,7 +45,8 @@ type TheItem = {
 		CrateAddWidgetComponent,
 		MatMiniFabButton,
 		MatIcon,
-		MatTooltip
+		MatTooltip,
+		MatProgressSpinnerModule
 	],
 	templateUrl: './selected-packing-list.component.html',
 	styleUrl: './selected-packing-list.component.scss'

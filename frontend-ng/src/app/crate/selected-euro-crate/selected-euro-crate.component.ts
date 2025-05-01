@@ -9,6 +9,7 @@ import {MatError, MatFormField, MatInput, MatLabel} from '@angular/material/inpu
 import {MatOption, MatSelect} from '@angular/material/select';
 import {MatButton} from '@angular/material/button';
 import {handleDefaultError} from '../../util/auth';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 
 @Component({
 	selector: 'app-selected-euro-crate',
@@ -22,7 +23,8 @@ import {handleDefaultError} from '../../util/auth';
 		MatSelect,
 		MatOption,
 		MatInput,
-		MatButton
+		MatButton,
+		MatProgressSpinnerModule
 	],
 	templateUrl: './selected-euro-crate.component.html',
 	styleUrl: './selected-euro-crate.component.scss'

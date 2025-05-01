@@ -1,5 +1,5 @@
 @if(!selected) {
-	<h1>Loading Packliste</h1>
+	<div class="centerLoading"><mat-spinner mode="indeterminate"></mat-spinner></div>
 } @else {
 	<h1>Packliste {{selected.packingListId}} / {{selected.packingListName}}</h1>
 	<p>Auf palette: <a [routerLink]="'/euroPallet/' + selected.packedOn.euroPalletId">Pallette {{ selected.packedOn.euroPalletId }}</a></p>

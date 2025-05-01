@@ -11,7 +11,6 @@ import {AuthorityEnumDto} from '../../api/models';
 import {MatButtonModule} from '@angular/material/button';
 import {Router, RouterLink} from '@angular/router';
 import {MatDialog} from '@angular/material/dialog';
-import {CreateUserComponent} from '../create-user/create-user.component';
 
 @Component({
   selector: 'app-user-list',
@@ -58,19 +57,21 @@ export class UserListComponent implements OnInit, AfterViewInit {
     }
 
 	createUser() {
-		this.diag.open<CreateUserComponent, any, UserDto & {hashedPassword: string}>(CreateUserComponent)
-			.afterClosed()
-			.subscribe(value => {
-				if (!value) return;
-				this.api.createUser({
-					body: value
-				}).subscribe({
-					next: u => {
-						this.router.navigate(["users/", u.username])
-					},
-					error: handleDefaultError
+		import("../create-user/create-user.component").then(it => {
+			this.diag.open<any, any, UserDto & {hashedPassword: string}>(it.CreateUserComponent)
+				.afterClosed()
+				.subscribe(value => {
+					if (!value) return;
+					this.api.createUser({
+						body: value
+					}).subscribe({
+						next: u => {
+							this.router.navigate(["users/", u.username])
+						},
+						error: handleDefaultError
+					})
 				})
-			})
+		})
 	}
 
 	protected readonly AuthorityEnumDto = AuthorityEnumDto;

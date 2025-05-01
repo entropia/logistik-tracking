@@ -9,6 +9,7 @@ import {MatError} from '@angular/material/input';
 import {MatButton} from '@angular/material/button';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {handleDefaultError} from '../../util/auth';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 
 @Component({
 	selector: 'app-selected-euro-pallet',
@@ -18,6 +19,7 @@ import {handleDefaultError} from '../../util/auth';
 		ValidateLocationDirective,
 		MatError,
 		MatButton,
+		MatProgressSpinnerModule
 	],
 	templateUrl: './selected-euro-pallet.component.html',
 	styleUrl: './selected-euro-pallet.component.scss'

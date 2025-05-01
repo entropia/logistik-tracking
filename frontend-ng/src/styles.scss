@@ -6,10 +6,11 @@ html {
 		color: mat.$orange-palette,
 		typography: (
 			plain-family: Roboto,
-			brand-family: Open Sans,
-			bold-weight: 900,
+			brand-family: Roboto,
+			bold-weight: 800,
 			medium-weight: 500,
 			regular-weight: 300,
+
 		),
 		density: 0
 	));
@@ -29,7 +30,9 @@ nav {
 	}
 }
 
-.spl-panel-fullscreen_yes_i_know_this_is_global_cope_about_it {
-	width: 100vw;
-	height: 100vh;
+.centerLoading {
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
 }

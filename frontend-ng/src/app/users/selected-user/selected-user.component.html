@@ -1,5 +1,5 @@
 @if (!user) {
-	<p>Nutzer wird geladen</p>
+	<div class="centerLoading"><mat-spinner mode="indeterminate"></mat-spinner></div>
 } @else {
 	<h1>Nutzer {{user.username}}</h1>
 

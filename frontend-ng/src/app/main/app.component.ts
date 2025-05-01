@@ -2,6 +2,7 @@ import {Component} from '@angular/core';
 import {RouterOutlet} from '@angular/router';
 import {NavigationHeaderComponent} from '../navigation-header/navigation-header.component';
 import {ScanEverythingButtonComponent} from '../util/scan-everything-button/scan-everything-button.component';
+import {MatIconRegistry} from '@angular/material/icon';
 
 @Component({
 	selector: 'app-root',
@@ -14,4 +15,9 @@ import {ScanEverythingButtonComponent} from '../util/scan-everything-button/scan
 	styleUrl: './app.component.scss'
 })
 export class AppComponent {
+	constructor(
+		iconReg: MatIconRegistry
+	) {
+		iconReg.setDefaultFontSetClass("material-symbols", "mat-ligature-font")
+	}
 }

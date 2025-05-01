@@ -1,6 +1,6 @@
 <main>
 	@if (!pallet) {
-		<h1>Palette wird geladen...</h1>
+		<div class="centerLoading"><mat-spinner mode="indeterminate"></mat-spinner></div>
 	} @else {
 		<h1>Pallette {{ pallet.euroPalletId }}</h1>
 		<form (ngSubmit)="saveIt(); theForm.control.markAsPristine()" #theForm="ngForm">

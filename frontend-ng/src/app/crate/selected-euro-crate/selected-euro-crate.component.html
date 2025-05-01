@@ -1,5 +1,5 @@
 @if (!crate) {
-	<h1>Box wird geladen...</h1>
+	<div class="centerLoading"><mat-spinner mode="indeterminate"></mat-spinner></div>
 } @else {
 	<h1>Box {{crate.operationCenter}} / {{crate.name}}</h1>
 	<form (ngSubmit)="saveIt(theForm, location, delStatus, ftInfo);" #theForm="ngForm">
