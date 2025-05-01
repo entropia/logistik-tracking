@@ -2,24 +2,33 @@
 	@if (!pallet) {
 		<div class="centerLoading"><mat-spinner mode="indeterminate"></mat-spinner></div>
 	} @else {
-		<h1>Pallette {{ pallet.euroPalletId }}</h1>
+		<h1>Palette {{ pallet.euroPalletId }}</h1>
+		<button
+			(click)="createPackingList()"
+			mat-raised-button
+		>
+			Neue Packliste erstellen
+		</button>
 		<form (ngSubmit)="saveIt(); theForm.control.markAsPristine()" #theForm="ngForm">
 			<div class="content">
-				<app-location-editor appValidateLocation [(ngModel)]="editingLocation" name="location" #name="ngModel"></app-location-editor>
+				<app-location-editor appValidateLocation [(ngModel)]="editingLocation" name="location"
+									 #name="ngModel"></app-location-editor>
 				@if (name.invalid && (name.dirty || name.touched)) {
-					@if(name.hasError("ocRequired")) {
+					@if (name.hasError("ocRequired")) {
 						<mat-error>OC nicht gefüllt!</mat-error>
 					}
-					@if(name.hasError("locRequired")) {
+					@if (name.hasError("locRequired")) {
 						<mat-error>LOC ort nicht gefüllt!</mat-error>
 					}
-					@if(name.hasError("locFreetextRequired")) {
+					@if (name.hasError("locFreetextRequired")) {
 						<mat-error>Ort nicht gefüllt!</mat-error>
 					}
 				}
 				<p>Information:</p>
 				<pre><code>{{ getInfos() }}</code></pre>
-				<button mat-flat-button type="submit" [disabled]="!theForm.form.valid || !theForm.dirty">Änderungen Speichern</button>
+				<button mat-flat-button type="submit" [disabled]="!theForm.form.valid || !theForm.dirty">Änderungen
+					Speichern
+				</button>
 			</div>
 		</form>
 	}
