@@ -22,5 +22,9 @@ export const routes: Routes = [
 	{
 		path: "users/:id",
 		loadComponent: () => import("./users/selected-user/selected-user.component").then(it => it.SelectedUserComponent)
+	},
+	{
+		path: "printMultiple",
+		loadComponent: () => import("./multiple-print-builder/multiple-print-builder.component").then(it => it.MultiplePrintBuilderComponent)
 	}
 ];

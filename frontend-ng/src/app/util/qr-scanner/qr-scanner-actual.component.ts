@@ -59,7 +59,15 @@ export class QrScannerActualComponent implements OnInit, OnDestroy {
 		})
 	}
 
+	debouncer: Map<string, number> = new Map()
+
 	scanSuccess($event: ScanResult) {
-		this.ref.onScanned.next($event.data)
+		let d = $event.data
+		let lastScanned = this.debouncer.get(d)
+		let now = Date.now()
+		if (lastScanned == undefined || now - lastScanned > 2000) {
+			this.ref.onScanned.next($event.data)
+			this.debouncer.set(d, now)
+		}
 	}
 }

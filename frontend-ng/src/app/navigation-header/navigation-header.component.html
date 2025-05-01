@@ -3,6 +3,7 @@
 		<a routerLink="/packingList">Packlisten</a>
 		<a routerLink="/euroPallet">Palleten</a>
 		<a routerLink="/euroCrate">Euroboxen</a>
+		<a routerLink="/printMultiple" *requireAuthority="AuthorityEnumDto.Print">Drucken</a>
 		<a routerLink="/users" *requireAuthority="AuthorityEnumDto.ManageUsers">Admin</a>
 	</nav>
 	<div class="right">

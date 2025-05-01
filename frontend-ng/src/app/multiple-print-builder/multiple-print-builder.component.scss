@@ -1,0 +1,83 @@
+.theRow {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	column-gap: 20px;
+	row-gap: 5px;
+	width: 100%;
+	margin-bottom: 17px;
+	//justify-items: stretch;
+}
+
+.col {
+	max-width: 400px;
+	//background-color: red;
+	width: 100%;
+	//height: 50px;
+}
+.the {
+	padding: 10px;
+	display: flex;
+	flex-direction: row;
+	column-gap: 10px;
+	align-items: center;
+	background-color: rgb(50, 50, 50);
+	border-radius: 10px;
+}
+.draggable:hover {
+	cursor: move;
+}
+
+.search {
+	width: 100%;
+	margin-bottom: 10px;
+}
+
+.placeholderAlign {
+	height: 56px;
+	margin-bottom: 10px;
+}
+
+@media (max-width: calc(400px*2 + 20px + 44px - 1px)) {
+	.placeholderAlign {
+		display: none;
+	}
+}
+
+.whenthe {
+	//margin-top: 10px;
+	display: flex;
+	flex-direction: column;
+	row-gap: 5px;
+	min-height: 100px;
+	border: 1px dashed white;
+}
+.right {
+	margin-left: auto;
+}
+
+
+.cdk-drop-list-dragging .cdk-drag {
+	transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.cdk-drag {
+	height: unset !important;
+}
+
+/* Animate an item that has been dropped. */
+.cdk-drag-animating {
+	transition: transform 300ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.actionsRow {
+	display: flex;
+	flex-direction: row;
+	column-gap: 20px;
+	align-items: center;
+}
+
+.maxHeightWithScroll {
+	max-height: 500px;
+	overflow: scroll;
+}

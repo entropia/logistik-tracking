@@ -1,0 +1,50 @@
+<div class="theRow">
+	<div class="col">
+		<h2>Auswahl</h2>
+
+		<mat-form-field class="search">
+			<mat-label>Suchen</mat-label>
+			<input matInput [(ngModel)]="filter">
+		</mat-form-field>
+
+		<div class="whenthe maxHeightWithScroll">
+
+			@for(a of availableRes.filter(theFilter); track a.label) {
+				<div class="the">
+					<mat-icon [fontIcon]="a.icon"></mat-icon>
+					{{a.label}}
+					<button mat-mini-fab class="right" type="button" (click)="addItem(a)">
+						<mat-icon>arrow_right_alt</mat-icon>
+					</button>
+				</div>
+			}
+		</div>
+	</div>
+	<div class="col">
+		<h2>Wird gedruckt</h2>
+
+		<div class="search placeholderAlign"></div>
+
+		<div cdkDropList (cdkDropListDropped)="drop($event)" class="whenthe" [cdkDropListData]="existingRes">
+			@for(a of existingRes; track a.label) {
+				<div cdkDrag class="the draggable">
+					<mat-icon [fontIcon]="a.icon"></mat-icon>
+					{{a.label}}
+					<button mat-mini-fab class="right" type="button" (click)="removeItem(a)">
+						<mat-icon>arrow_left_alt</mat-icon>
+					</button>
+				</div>
+			}
+		</div>
+
+	</div>
+</div>
+<div class="actionsRow">
+	<button mat-flat-button type="button" (click)="printIt()" [disabled]="existingRes.length==0 || printInProgress">
+		<mat-icon fontIcon="print"></mat-icon>
+		Drucken
+	</button>
+	@if (printInProgress) {
+		<mat-spinner mode="indeterminate" [diameter]="30"></mat-spinner>
+	}
+</div>
