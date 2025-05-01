@@ -5,7 +5,11 @@ import {MatFormField, MatInput, MatLabel} from '@angular/material/input';
 import {FormControl, FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {NewEuroPalletDto} from '../../api/models/new-euro-pallet-dto';
 import {LocationDto} from '../../api/models/location-dto';
-import {CreateLocationComponent} from '../../location/create-location/create-location.component';
+import {LocationEditorComponent} from '../../location/location-editor/location-editor.component';
+import {ValidateLocationDirective} from '../../location/location-editor/location-validator';
+import {LocationTypeDto} from '../../api/models/location-type-dto';
+import {OperationCenterDto} from '../../api/models/operation-center-dto';
+import {LogisticsLocationDto} from '../../api/models/logistics-location-dto';
 
 @Component({
 	selector: 'app-create-euro-pallet',
@@ -19,13 +23,19 @@ import {CreateLocationComponent} from '../../location/create-location/create-loc
 		FormsModule,
 		ReactiveFormsModule,
 		MatLabel,
-		CreateLocationComponent
+		LocationEditorComponent,
+		ValidateLocationDirective
 	],
 	templateUrl: './create-euro-pallet.component.html',
 	styleUrl: './create-euro-pallet.component.scss'
 })
 export class CreateEuroPalletComponent {
-	locationFormData?: LocationDto;
+	locationFormData: LocationDto = {
+		locationType: LocationTypeDto.Logistics,
+		logisticsLocation: LogisticsLocationDto.Entropia,
+		operationCenter: OperationCenterDto.Aussenbar,
+		somewhereElse: ''
+	};
 	readonly form;
 
 	constructor(private dialogRef: MatDialogRef<CreateEuroPalletComponent>) {
@@ -48,9 +58,5 @@ export class CreateEuroPalletComponent {
 			information: this.form.value.infos ?? undefined
 		}
 		this.dialogRef.close(epd)
-	}
-
-	onLocationChange(locationData: any) {
-		this.locationFormData = locationData;
 	}
 }
