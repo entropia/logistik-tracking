@@ -97,7 +97,7 @@ export class SelectedPackingListComponent implements OnInit {
 	) {
 	}
 
-	saveIt() {
+	saveIt(f: NgForm) {
 		let thePatch: PackingListPatchDto = {
 			addCrates: [],
 			removeCrates: []
@@ -110,7 +110,7 @@ export class SelectedPackingListComponent implements OnInit {
 				case ItemStatus.ADDED:
 				case ItemStatus.TRANSFERRED:
 					thePatch.addCrates!.push(item.internalId)
-					item.status = ItemStatus.KEEP
+					// item.status = ItemStatus.KEEP
 					break;
 				case ItemStatus.REMOVED:
 					thePatch.removeCrates!.push(item.internalId)
@@ -123,6 +123,10 @@ export class SelectedPackingListComponent implements OnInit {
 		}).subscribe({
 			next: _ => {
 				this.items = this.items.filter(f => f.status != ItemStatus.REMOVED)
+				this.items.forEach(it => {
+					it.status = it.originalStatus = ItemStatus.KEEP;
+				});
+				f.control.markAsPristine()
 				this.source.data = this.items;
 				this.snackbar.open("Gespeichert!", undefined, {
 					duration: 3000

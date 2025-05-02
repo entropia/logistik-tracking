@@ -1,0 +1,17 @@
+<mat-nav-list>
+	<a mat-list-item (click)="doAction(Action.Delivered)">
+		<span matListItemTitle>Ausgeliefert</span>
+		<span matLine>Die Kiste ist beim Ziel-OC angekommen</span>
+	</a>
+	<a mat-list-item (click)="doAction(Action.BroughtBackToLoc)">
+		<span matListItemTitle>Zurück zum LOC</span>
+		<span matLine>Konnte nicht ausgeliefert werden, wird zum LOC gebracht</span>
+	</a>
+	<a mat-list-item (click)="doAction(Action.ResetDelivery)">
+		<span matListItemTitle>Zurückgezogen</span>
+		<span matLine>Fehler unterlaufen; ist jetzt wieder in Auslieferung</span>
+	</a>
+	<a mat-list-item (click)="doAction(undefined)">
+		<span matListItemTitle>Abbrechen</span>
+	</a>
+</mat-nav-list>

@@ -3,7 +3,10 @@
 } @else {
 	<h1>Packliste {{selected.packingListId}} / {{selected.packingListName}}</h1>
 	<p>Auf palette: <a [routerLink]="'/euroPallet/' + selected.packedOn.euroPalletId">Pallette {{ selected.packedOn.euroPalletId }}</a></p>
-	<form (ngSubmit)="saveIt(); theForm.control.markAsPristine()" #theForm="ngForm">
+
+	<a [routerLink]="'/packingList/'+selected.packingListId+'/delivery'">Ausliefern</a>
+
+	<form (ngSubmit)="saveIt(theForm);" #theForm="ngForm">
 		<div class="content">
 
 			<mat-form-field>

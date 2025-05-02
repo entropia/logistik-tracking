@@ -67,22 +67,24 @@ public class UserManagementRoute implements UsersApi {
 		if (byId.isEmpty()) return ResponseEntity.notFound().build();
 		UserDatabaseElement theUser = byId.get();
 
-		CriteriaBuilder builder = em.getCriteriaBuilder();
-		CriteriaUpdate<UserDatabaseElement> update = builder.createCriteriaUpdate(UserDatabaseElement.class);
+		if (modifyUserRequest.getActive().isPresent() || modifyUserRequest.getHashedPassword().isPresent()) {
+			CriteriaBuilder builder = em.getCriteriaBuilder();
+			CriteriaUpdate<UserDatabaseElement> update = builder.createCriteriaUpdate(UserDatabaseElement.class);
 
-		// root komponent (update EuroCrateDatabaseElement); die zeile
-		Root<UserDatabaseElement> root = update.from(UserDatabaseElement.class);
+			// root komponent (update EuroCrateDatabaseElement); die zeile
+			Root<UserDatabaseElement> root = update.from(UserDatabaseElement.class);
 
-		// where klausel (... where x = y and z = w), properties aus dem root beziehen
-		update.where(
-				builder.equal(root.get(UserDatabaseElement_.username), username)
-		);
+			// where klausel (... where x = y and z = w), properties aus dem root beziehen
+			update.where(
+					builder.equal(root.get(UserDatabaseElement_.username), username)
+			);
 
-		modifyUserRequest.getActive()
-						.ifPresent(it -> update.set(UserDatabaseElement_.enabled, it));
-		modifyUserRequest.getHashedPassword()
-						.ifPresent(it -> update.set(UserDatabaseElement_.hashedPw, it));
-		em.createQuery(update).executeUpdate();
+			modifyUserRequest.getActive()
+					.ifPresent(it -> update.set(UserDatabaseElement_.enabled, it));
+			modifyUserRequest.getHashedPassword()
+					.ifPresent(it -> update.set(UserDatabaseElement_.hashedPw, it));
+			em.createQuery(update).executeUpdate();
+		}
 
 		List<AuthorityEnumDto> newAuthorities = modifyUserRequest.getAuthorities();
 		if (!newAuthorities.isEmpty()) {

@@ -10,6 +10,9 @@ export const routes: Routes = [
 			.then(it => it.PackingListComponent)},
 	{path: 'packingList/:id', loadComponent: () => import("./packlist/selected-packing-list/selected-packing-list.component")
 			.then(it => it.SelectedPackingListComponent)},
+	{path: 'packingList/:id/delivery', loadComponent: () => import("./packlist/packliste-auslieferung/packliste-auslieferung.component")
+			.then(it => it.PacklisteAuslieferungComponent)},
+
 	{path: 'euroCrate', loadComponent: () => import("./crate/euro-crate/euro-crate.component").then(it => it.EuroCrateComponent)},
 	{path: 'euroCrate/:id', loadComponent: () => import("./crate/selected-euro-crate/selected-euro-crate.component")
 			.then(it => it.SelectedEuroCrateComponent)},
