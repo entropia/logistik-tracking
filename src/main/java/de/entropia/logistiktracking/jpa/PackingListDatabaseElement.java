@@ -28,7 +28,7 @@ public class PackingListDatabaseElement {
 	@Column(name = "delivery_state")
 	private DeliveryState deliveryState;
 
-	@OneToOne(optional = false, fetch = FetchType.EAGER)
+	@ManyToOne(optional = false, fetch = FetchType.EAGER)
 	@JoinColumn(name = "packed_on", nullable = false)
 	private EuroPalletDatabaseElement packedOn;
 
