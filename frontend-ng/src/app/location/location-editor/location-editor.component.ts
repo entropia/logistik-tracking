@@ -28,8 +28,8 @@ import {LogisticsLocationDto, OperationCenterDto} from '../../api/models';
 })
 export class LocationEditorComponent implements ControlValueAccessor {
 
-	private _onChange: any;
-	private _onTouch: any;
+	private _onChange: any = (_: any) => {};
+	private _onTouch: any = (_: any) => {};
 	private _isDisabled: boolean = false;
 
 
@@ -47,7 +47,6 @@ export class LocationEditorComponent implements ControlValueAccessor {
     }
 
 	update() {
-		console.log("updated")
 		this._onChange(this.location)
 		this._onTouch(true)
 	}

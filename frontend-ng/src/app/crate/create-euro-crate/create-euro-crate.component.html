@@ -1,0 +1,50 @@
+<h2 mat-dialog-title>Neue Euro-Kiste Erstellen</h2>
+<form [formGroup]="form" (ngSubmit)="handleSubmit()">
+	<mat-dialog-content>
+		<div class="content">
+			<app-location-editor appValidateLocation formControlName="location"></app-location-editor>
+
+			<mat-form-field>
+				<mat-label>Name</mat-label>
+				<input matInput placeholder="Name" formControlName="name" required>
+			</mat-form-field>
+
+			<mat-form-field>
+				<mat-label>Operation Center</mat-label>
+				<mat-select formControlName="operationCenter">
+					<mat-option *ngFor="let oc of operationCenters" [value]="oc">
+						{{ oc }}
+					</mat-option>
+				</mat-select>
+			</mat-form-field>
+
+			<mat-form-field>
+				<mat-label>Lieferstatus</mat-label>
+				<mat-select formControlName="deliveryState">
+					<mat-option *ngFor="let state of deliveryStates" [value]="state">
+						{{ state }}
+					</mat-option>
+				</mat-select>
+			</mat-form-field>
+
+			<mat-form-field>
+				<mat-label>Rückgabe bis</mat-label>
+				<mat-select formControlName="returnBy" required>
+					<mat-option *ngFor="let date of returnDates" [value]="date">
+						{{ date | date:'dd.MM.yyyy' }}
+					</mat-option>
+				</mat-select>
+			</mat-form-field>
+
+			<mat-form-field>
+				<mat-label>Informationen</mat-label>
+				<textarea matInput placeholder="Informationen" formControlName="infos"></textarea>
+			</mat-form-field>
+		</div>
+	</mat-dialog-content>
+
+	<mat-dialog-actions>
+		<button mat-button (click)="cancel()" type="button">Abbrechen</button>
+		<button mat-button type="submit">Speichern</button>
+	</mat-dialog-actions>
+</form>

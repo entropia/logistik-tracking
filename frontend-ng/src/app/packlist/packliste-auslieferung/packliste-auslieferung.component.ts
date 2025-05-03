@@ -11,7 +11,6 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';
 import {MatSort, MatSortModule} from '@angular/material/sort';
 import {EuroCrateDto} from '../../api/models/euro-crate-dto';
-import {LocationComponent} from '../../util/location/location.component';
 import {LocationTypeDto} from '../../api/models/location-type-dto';
 import {LocationDto} from '../../api/models/location-dto';
 import {MatBottomSheet} from '@angular/material/bottom-sheet';
@@ -21,6 +20,7 @@ import {LogisticsLocationDto} from '../../api/models/logistics-location-dto';
 import {MatButtonModule} from '@angular/material/button';
 import {parseCrateId} from '../../util/qr-id-parser';
 import {MatIconModule} from '@angular/material/icon';
+import {LocationComponent} from '../../location/location/location.component';
 
 function stringifyLocation(location: LocationDto) {
 	switch (location.locationType) {

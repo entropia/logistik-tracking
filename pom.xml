@@ -177,6 +177,7 @@
                         </goals>
                         <phase>generate-sources</phase>
                         <configuration>
+                            <skipIfSpecIsUnchanged>false</skipIfSpecIsUnchanged>
                             <inputSpec>${project.basedir}/api/api.yaml</inputSpec>
                             <generatorName>spring</generatorName>
                             <configOptions>
