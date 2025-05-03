@@ -30,16 +30,16 @@ import {LogisticsLocationDto} from '../../api/models/logistics-location-dto';
 	styleUrl: './create-euro-pallet.component.scss'
 })
 export class CreateEuroPalletComponent {
-	locationFormData: LocationDto = {
-		locationType: LocationTypeDto.Logistics,
-		logisticsLocation: LogisticsLocationDto.Entropia,
-		operationCenter: OperationCenterDto.Aussenbar,
-		somewhereElse: ''
-	};
 	readonly form;
 
 	constructor(private dialogRef: MatDialogRef<CreateEuroPalletComponent>) {
 		this.form = new FormGroup({
+			location: new FormControl<LocationDto>({
+				locationType: LocationTypeDto.Logistics,
+				logisticsLocation: LogisticsLocationDto.Entropia,
+				operationCenter: OperationCenterDto.Aussenbar,
+				somewhereElse: ''
+			}, {nonNullable: true}),
 			infos: new FormControl<string>("", [])
 		});
 	}
@@ -49,12 +49,8 @@ export class CreateEuroPalletComponent {
 	}
 
 	handleSubmit() {
-		if (!this.locationFormData) {
-			return;
-		}
-
 		let epd: NewEuroPalletDto = {
-			location: this.locationFormData,
+			location: this.form.value.location!,
 			information: this.form.value.infos ?? undefined
 		}
 		this.dialogRef.close(epd)

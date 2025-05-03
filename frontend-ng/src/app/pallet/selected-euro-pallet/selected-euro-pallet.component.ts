@@ -54,7 +54,6 @@ export class SelectedEuroPalletComponent implements OnInit {
 	}
 
 	ngOnInit(): void {
-		console.log("loading it")
 		this.apiService.getEuroPallet({
 			euroPalletId: this.id
 		}).subscribe({

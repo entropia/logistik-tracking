@@ -2,7 +2,7 @@
 <form [formGroup]="form" (ngSubmit)="handleSubmit()">
 	<mat-dialog-content>
 		<div class="content">
-			<app-location-editor [(ngModel)]="locationFormData" appValidateLocation name="location"></app-location-editor>
+			<app-location-editor appValidateLocation formControlName="location"></app-location-editor>
 
 			<mat-form-field>
 				<mat-label>Informationen</mat-label>

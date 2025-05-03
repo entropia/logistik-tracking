@@ -85,7 +85,6 @@ export class SelectedPackingListComponent implements OnInit {
 
 	@ViewChild(MatSort, {static: false})
 	set sort(sort: MatSort) {
-		console.log(sort)
 		this.source.sort = sort;
 	}
 
