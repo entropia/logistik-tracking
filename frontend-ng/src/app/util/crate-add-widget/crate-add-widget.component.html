@@ -1,26 +1,29 @@
-<form (ngSubmit)="saveIt(theForm);" #theForm="ngForm" class="theForm">
+<form (ngSubmit)="saveIt();" class="theForm" [formGroup]="fg">
 	<div class="row">
 		<mat-form-field>
-			<mat-label>OC</mat-label>
-			<mat-select [(ngModel)]="inputModel.oc" required name="oc">
-				@for (v of Object.values(OperationCenterDto); track v) {
-					<mat-option [value]="v">{{ v }}</mat-option>
+			<mat-label>Box</mat-label>
+			<input type="text"
+				   name="whenthe"
+				   matInput
+				   formControlName="search"
+				   [matAutocomplete]="auto"
+					required>
+			<mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
+				@for (option of filteredAvailable | async; track option) {
+					<mat-option [value]="option">{{option}}</mat-option>
 				}
-			</mat-select>
+			</mat-autocomplete>
 		</mat-form-field>
 
-		<mat-form-field>
-			<mat-label>Name</mat-label>
-			<input matInput [(ngModel)]="inputModel.name" required name="name" placeholder="Boxname">
-		</mat-form-field>
+		<div class="bgroup">
+			<button mat-fab type="button" (click)="scan()">
+				<mat-icon fontIcon="qr_code_scanner"></mat-icon>
+			</button>
 
-		<button mat-fab type="button" (click)="scan()">
-			<mat-icon fontIcon="qr_code_scanner"></mat-icon>
-		</button>
-
-		<button mat-fab type="submit" [disabled]="theForm.invalid">
-			<mat-icon fontIcon="add"></mat-icon>
-		</button>
+			<button mat-fab type="submit" [disabled]="fg.invalid">
+				<mat-icon fontIcon="add"></mat-icon>
+			</button>
+		</div>
 	</div>
 
 	@if(err) {

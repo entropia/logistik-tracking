@@ -1,7 +1,7 @@
 import {Component, EventEmitter, Output} from '@angular/core';
 import {ApiService} from '../../api/services/api.service';
 import {EuroCrateDto} from '../../api/models/euro-crate-dto';
-import {FormsModule, NgForm} from '@angular/forms';
+import {FormControl, FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatSelectModule} from '@angular/material/select';
 import {OperationCenterDto} from '../../api/models/operation-center-dto';
@@ -11,12 +11,11 @@ import {MatIcon} from '@angular/material/icon';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {parseCrateId} from '../qr-id-parser';
 import {QrScannerService, QrScanRef} from '../../qr-scanner.service';
-
-interface InputModel {
-	oc?: OperationCenterDto;
-	name: string;
-}
-
+import {handleDefaultError} from '../auth';
+import {Observable, startWith, Subject} from 'rxjs';
+import {map} from 'rxjs/operators';
+import {MatAutocompleteModule} from '@angular/material/autocomplete';
+import {AsyncPipe} from '@angular/common';
 @Component({
   selector: 'app-crate-add-widget',
 	imports: [
@@ -25,7 +24,10 @@ interface InputModel {
 		MatSelectModule,
 		MatInput,
 		MatIcon,
-		MatFabButton
+		MatFabButton,
+		ReactiveFormsModule,
+		MatAutocompleteModule,
+		AsyncPipe
 
 	],
   templateUrl: './crate-add-widget.component.html',
@@ -34,35 +36,49 @@ interface InputModel {
 export class CrateAddWidgetComponent {
 
 	@Output() crateSubmitted = new EventEmitter<EuroCrateDto>();
-
-	inputModel: InputModel = {
-		oc: undefined,
-		name: ""
-	}
-
 	err = false;
+	allCrates: EuroCrateDto[] = [];
+
+	input = new FormControl("")
+	fg = new FormGroup({
+		search: this.input
+	})
+
+	filteredAvailable: Observable<string[]>;
 
 	constructor(
 		private api: ApiService,
 		private snack: MatSnackBar,
 		private qrCode: QrScannerService
 	) {
+		this.filteredAvailable = new Subject()
+		this.api.getAllEuroCrates().subscribe({
+			next: v => {
+				this.allCrates = v
+				this.filteredAvailable = this.input.valueChanges.pipe(
+					startWith(""),
+					map(v => this._filter(v || ""))
+				)
+			},
+			error: handleDefaultError
+		})
 	}
 
-	saveIt(form: NgForm) {
-		this.api.findEuroCrate({
-			name: this.inputModel.name,
-			oc: this.inputModel.oc!
-		}).subscribe({
-			next: t => {
-				this.err = false;
-				form.resetForm()
-				this.crateSubmitted.next(t)
-			},
-			error: _ => {
-				this.err = true;
-			}
-		})
+	private _filter(value: string): string[] {
+		const filterValue = value.toLowerCase().trim();
+
+		return this.allCrates.map(it => it.operationCenter+"/"+it.name).filter(option => option.toLowerCase().includes(filterValue));
+	}
+
+	saveIt() {
+		let the = this.allCrates.find(it => (it.operationCenter+"/"+it.name) == this.input.value)
+		if (the) {
+			this.err = false;
+			this.input.reset()
+			this.crateSubmitted.next(the)
+		} else {
+			this.err = true
+		}
 	}
 
 	async scan() {
@@ -78,21 +94,11 @@ export class CrateAddWidgetComponent {
 	scanSuccess(qsc: QrScanRef, $event: string) {
 		try {
 			let crateId = parseCrateId($event);
-			this.api.getEuroCrate({
-				id: crateId
-			}).subscribe({
-				next: v => {
-					this.inputModel.oc = v.operationCenter
-					this.inputModel.name = v.name
-					qsc.close()
-				},
-				error: e => {
-					console.error(e)
-					this.snack.open(`Fehler beim holen der informationen: ${e}`, "OK", {
-						duration: 7000
-					})
-				}
-			})
+			let the = this.allCrates.find(it => it.internalId == crateId)
+			if (the) {
+				this.input.setValue(the.operationCenter+"/"+the.name)
+				qsc.close()
+			}
 		} catch (e) {
 			console.error(e)
 			if (e instanceof Error) {
