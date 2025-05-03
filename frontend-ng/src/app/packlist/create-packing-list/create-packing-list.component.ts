@@ -6,6 +6,8 @@ import {FormControl, FormGroup, FormsModule, ReactiveFormsModule} from '@angular
 import {NewPackingListDto} from '../../api/models/new-packing-list-dto';
 import {ApiService} from '../../api/services/api.service';
 import {DIALOG_DATA} from '@angular/cdk/dialog';
+import {NgForOf, NgIf} from '@angular/common';
+import {MatOption, MatSelect} from '@angular/material/select';
 
 @Component({
 	selector: 'app-create-euro-pallet',
@@ -19,6 +21,10 @@ import {DIALOG_DATA} from '@angular/cdk/dialog';
 		FormsModule,
 		ReactiveFormsModule,
 		MatLabel,
+		MatOption,
+		MatSelect,
+		NgForOf,
+		NgIf,
 	],
 	templateUrl: './create-packing-list.component.html',
 	styleUrl: './create-packing-list.component.scss'
@@ -33,13 +39,13 @@ export class CreatePackingListComponent implements OnInit {
 	constructor(
 		private dialogRef: MatDialogRef<CreatePackingListComponent>,
 		private apiService: ApiService,
-		@Inject(DIALOG_DATA) data: {
+		@Inject(DIALOG_DATA) data?: {
 			packedOnPallet?: number
 		}
 	) {
 		this.form = new FormGroup({
 			name: new FormControl<string>("", { nonNullable: true }),
-			packedOnPallet: new FormControl<number>(data.packedOnPallet ?? -1, { nonNullable: true })
+			packedOnPallet: new FormControl<number>(data?.packedOnPallet ?? -1, { nonNullable: true })
 		});
 	}
 

@@ -2,7 +2,7 @@
 <form [formGroup]="form" (ngSubmit)="handleSubmit()">
 	<mat-dialog-content>
 		<div class="content">
-			<app-location-editor [(ngModel)]="locationFormData" appValidateLocation name="location"></app-location-editor>
+			<app-location-editor appValidateLocation formControlName="location"></app-location-editor>
 
 			<mat-form-field>
 				<mat-label>Name</mat-label>
@@ -10,7 +10,7 @@
 			</mat-form-field>
 
 			<mat-form-field>
-				<mat-label>Operationszentrum</mat-label>
+				<mat-label>Operation Center</mat-label>
 				<mat-select formControlName="operationCenter">
 					<mat-option *ngFor="let oc of operationCenters" [value]="oc">
 						{{ oc }}

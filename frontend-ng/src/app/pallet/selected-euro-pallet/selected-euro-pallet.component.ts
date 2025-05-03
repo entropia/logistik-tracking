@@ -14,6 +14,8 @@ import {NewPackingListDto} from '../../api/models/new-packing-list-dto';
 import {Router} from '@angular/router';
 import {MatDialog} from '@angular/material/dialog';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import {RequiresAuthorityDirective} from '../../util/requires-permission.directive';
+import {AuthorityEnumDto} from '../../api/models/authority-enum-dto';
 
 @Component({
 	selector: 'app-selected-euro-pallet',
@@ -23,7 +25,8 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 		ValidateLocationDirective,
 		MatError,
 		MatButton,
-		MatProgressSpinnerModule
+		MatProgressSpinnerModule,
+		RequiresAuthorityDirective
 	],
 	templateUrl: './selected-euro-pallet.component.html',
 	styleUrl: './selected-euro-pallet.component.scss'
@@ -97,4 +100,6 @@ export class SelectedEuroPalletComponent implements OnInit {
 				});
 			});
 	}
+
+	protected readonly AuthorityEnumDto = AuthorityEnumDto;
 }

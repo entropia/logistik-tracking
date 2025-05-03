@@ -3,6 +3,7 @@
 	<button
 		mat-raised-button
 		(click)="createCrate()"
+		*requireAuthority="AuthorityEnumDto.ManageResources"
 	>Eurobox erstellen
 	</button>
 	<ul>

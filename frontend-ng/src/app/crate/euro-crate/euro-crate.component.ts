@@ -8,13 +8,16 @@ import {CreateEuroCrateComponent} from '../create-euro-crate/create-euro-crate.c
 import {NewEuroCrateDto} from '../../api/models/new-euro-crate-dto';
 import {MatButton} from '@angular/material/button';
 import {handleDefaultError} from '../../util/auth';
+import {RequiresAuthorityDirective} from '../../util/requires-permission.directive';
+import {AuthorityEnumDto} from '../../api/models/authority-enum-dto';
 
 @Component({
 	selector: 'app-euro-crate',
 	imports: [
 		LocationComponent,
 		RouterLink,
-		MatButton
+		MatButton,
+		RequiresAuthorityDirective
 	],
 	templateUrl: './euro-crate.component.html',
 	styleUrl: './euro-crate.component.scss'
@@ -55,4 +58,6 @@ export class EuroCrateComponent implements OnInit {
 				});
 			})
 	}
+
+	protected readonly AuthorityEnumDto = AuthorityEnumDto;
 }

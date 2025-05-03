@@ -7,13 +7,16 @@ import {MatButton} from '@angular/material/button';
 import {MatDialog} from '@angular/material/dialog';
 import {CreatePackingListComponent} from '../create-packing-list/create-packing-list.component';
 import {NewPackingListDto} from '../../api/models/new-packing-list-dto';
+import {RequiresAuthorityDirective} from '../../util/requires-permission.directive';
+import {AuthorityEnumDto} from '../../api/models/authority-enum-dto';
 
 @Component({
 	selector: 'app-packing-list',
 	imports: [
 		NgForOf,
 		RouterLink,
-		MatButton
+		MatButton,
+		RequiresAuthorityDirective
 	],
 	templateUrl: './packing-list.component.html',
 	styleUrl: './packing-list.component.scss'
@@ -53,4 +56,6 @@ export class PackingListComponent implements OnInit {
 				});
 			});
 	}
+
+	protected readonly AuthorityEnumDto = AuthorityEnumDto;
 }

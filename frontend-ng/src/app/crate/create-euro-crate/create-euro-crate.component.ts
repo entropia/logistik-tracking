@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { MatButtonModule } from '@angular/material/button';
+import {Component} from '@angular/core';
+import {MatButtonModule} from '@angular/material/button';
 import {MatDialogActions, MatDialogContent, MatDialogRef, MatDialogTitle} from '@angular/material/dialog';
 import {MatFormField, MatInput, MatLabel} from '@angular/material/input';
 import {FormControl, FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms';
@@ -12,7 +12,7 @@ import {DatePipe, NgForOf} from '@angular/common';
 import {LocationEditorComponent} from '../../location/location-editor/location-editor.component';
 import {ValidateLocationDirective} from '../../location/location-editor/location-validator';
 import {LocationTypeDto} from '../../api/models/location-type-dto';
-import {LogisticsLocationDto} from '../../api/models/logistics-location-dto';
+
 
 @Component({
   selector: 'app-create-euro-crate',
@@ -36,12 +36,6 @@ import {LogisticsLocationDto} from '../../api/models/logistics-location-dto';
   styleUrl: './create-euro-crate.component.scss'
 })
 export class CreateEuroCrateComponent {
-	locationFormData: LocationDto = {
-		locationType: LocationTypeDto.Logistics,
-		logisticsLocation: LogisticsLocationDto.Entropia,
-		operationCenter: OperationCenterDto.Aussenbar,
-		somewhereElse: ''
-	};
 	readonly form;
 	operationCenters = Object.values(OperationCenterDto);
 	deliveryStates = Object.values(DeliveryStateEnumDto);
@@ -50,6 +44,7 @@ export class CreateEuroCrateComponent {
 	constructor(private dialogRef: MatDialogRef<CreateEuroCrateComponent>) {
 		this.form = new FormGroup({
 			name: new FormControl<string>('', { nonNullable: true }),
+			location: new FormControl<LocationDto>({locationType: LocationTypeDto.Logistics}, {nonNullable: true}),
 			operationCenter: new FormControl<OperationCenterDto>(this.operationCenters[0], { nonNullable: true }),
 			deliveryState: new FormControl<DeliveryStateEnumDto>(this.deliveryStates[0], { nonNullable: true }),
 			returnBy: new FormControl<string>(this.returnDates[0], { nonNullable: true }),
@@ -75,17 +70,13 @@ export class CreateEuroCrateComponent {
 	}
 
 	handleSubmit() {
-		if (!this.locationFormData) {
-			return;
-		}
-
 		let crate: NewEuroCrateDto = {
 			name: this.form.value.name!,
 			operationCenter: this.form.value.operationCenter!,
 			deliveryState: this.form.value.deliveryState!,
 			returnBy: this.form.value.returnBy!,
 			information: this.form.value.infos ?? undefined,
-			location: this.locationFormData
+			location: this.form.value.location!
 		};
 		this.dialogRef.close(crate);
 	}

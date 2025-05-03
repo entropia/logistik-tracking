@@ -1,10 +1,19 @@
-<h2 mat-dialog-title>Neue Packliste Erstellen</h2>
+<h2 mat-dialog-title>Packliste erstellen</h2>
 <form [formGroup]="form" (ngSubmit)="handleSubmit()">
 	<mat-dialog-content>
 		<div class="content">
 			<mat-form-field>
 				<mat-label>Name</mat-label>
-				<textarea matInput placeholder="Name" formControlName="name"></textarea>
+				<input type="text" matInput placeholder="Name" formControlName="name" />
+			</mat-form-field>
+			<mat-form-field>
+				<mat-label>Auf Palette</mat-label>
+				<mat-select formControlName="packedOnPallet">
+					<mat-option *ngFor="let pallet of euroPallets" [value]="pallet.palletId">
+						{{pallet.palletId}}
+						<span *ngIf="pallet.information != undefined && pallet.information.length > 0">- {{ pallet.information }}</span>
+					</mat-option>
+				</mat-select>
 			</mat-form-field>
 		</div>
 	</mat-dialog-content>

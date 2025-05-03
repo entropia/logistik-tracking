@@ -3,6 +3,7 @@
 	<button
 		mat-raised-button
 		(click)="createPackingList()"
+		*requireAuthority="AuthorityEnumDto.ManageResources"
 	>Packliste erstellen
 	</button>
 	<div class="content">
@@ -13,7 +14,7 @@
 				<a [routerLink]="'/packingList/' + packingList.packingListId">Packliste {{ packingList.packingListId }} / {{packingList.packingListName}}</a>
 				liegt auf
 				<a [routerLink]="'/euroPallet/' + packingList.packedOn.euroPalletId">Pallette {{ packingList.packedOn.euroPalletId }}</a>
-				im status {{packingList.deliveryState}}
+				im Status {{packingList.deliveryState}}
 			</li>
 		</ul>
 	</div>

@@ -3,7 +3,7 @@
 	<h1>Juten morgen</h1>
 	<p>anmelden bitte</p>
 	@if (hadError) {
-		<p class="error">Nutzername oder passwort falsch</p>
+		<p class="error">Nutzername oder Passwort ist falsch</p>
 	}
 	<!-- fixme url dynamisch rausfinden (window host?) -->
 	<form [action]="apiUrl()+'/login'+getFromPart()" method="post" class="theForm">

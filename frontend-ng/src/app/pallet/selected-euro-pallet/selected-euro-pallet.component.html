@@ -6,8 +6,9 @@
 		<button
 			(click)="createPackingList()"
 			mat-raised-button
+			*requireAuthority="AuthorityEnumDto.ManageResources"
 		>
-			Neue Packliste erstellen
+			Zugehörige Packliste erstellen
 		</button>
 		<form (ngSubmit)="saveIt(); theForm.control.markAsPristine()" #theForm="ngForm">
 			<div class="content">
