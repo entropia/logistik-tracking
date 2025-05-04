@@ -3,8 +3,16 @@ import {ApiService} from '../../api/services/api.service';
 import {PackingListDto} from '../../api/models/packing-list-dto';
 import {RouterLink} from '@angular/router';
 import {FormsModule, NgForm, NgModel} from '@angular/forms';
-import {DeliveryStateEnumDto, EuroCrateDto, PackingListPatchDto} from '../../api/models';
-import {MatFormField} from '@angular/material/input';
+import {
+	AuthorityEnumDto,
+	DeliveryStateEnumDto,
+	EuroCrateDto,
+	LocationDto,
+	LocationTypeDto,
+	LogisticsLocationDto,
+	PackingListPatchDto
+} from '../../api/models';
+import {MatFormField, MatLabel} from '@angular/material/input';
 import {MatOption, MatSelect} from '@angular/material/select';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {MatButton, MatMiniFabButton} from '@angular/material/button';
@@ -18,6 +26,11 @@ import {QrScannerService} from '../../qr-scanner.service';
 import {parseCrateId} from '../../util/qr-id-parser';
 import {handleDefaultError} from '../../util/auth';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import {LocationEditorComponent} from '../../location/location-editor/location-editor.component';
+import {ValidateLocationDirective} from '../../location/location-editor/location-validator';
+import {forkJoin} from 'rxjs';
+import {AuthorityStatus, UserService} from '../../util/user.service';
+import {LocationComponent} from '../../location/location/location.component';
 
 enum ItemStatus {
 	KEEP,
@@ -46,7 +59,11 @@ type TheItem = {
 		MatMiniFabButton,
 		MatIcon,
 		MatTooltip,
-		MatProgressSpinnerModule
+		MatProgressSpinnerModule,
+		MatLabel,
+		LocationEditorComponent,
+		ValidateLocationDirective,
+		LocationComponent
 	],
 	templateUrl: './selected-packing-list.component.html',
 	styleUrl: './selected-packing-list.component.scss'
@@ -88,12 +105,21 @@ export class SelectedPackingListComponent implements OnInit {
 		this.source.sort = sort;
 	}
 
+	canEdit = false
+
 	protected selected?: PackingListDto;
 	constructor(
 		private apiService: ApiService,
 		private snackbar: MatSnackBar,
-		private qr: QrScannerService
+		private qr: QrScannerService,
+		userService: UserService
 	) {
+		userService.hasAuthority(AuthorityEnumDto.ManageResources).then(does => {
+			this.canEdit = does == AuthorityStatus.HasIt
+			if (this.canEdit) {
+				this.displayedColumns.push('actions')
+			}
+		})
 	}
 
 	saveIt(f: NgForm) {
@@ -123,8 +149,17 @@ export class SelectedPackingListComponent implements OnInit {
 			next: _ => {
 				this.items = this.items.filter(f => f.status != ItemStatus.REMOVED)
 				this.items.forEach(it => {
+					if (it.status == ItemStatus.ADDED || it.status == ItemStatus.TRANSFERRED) {
+						it.deliveryState = DeliveryStateEnumDto.Packing;
+					}
 					it.status = it.originalStatus = ItemStatus.KEEP;
 				});
+				if (this.deliveryStateControl!.dirty) {
+					// we set a new delivery state
+					this.items.forEach(it => {
+						it.deliveryState = this.selected!.deliveryState
+					})
+				}
 				f.control.markAsPristine()
 				this.source.data = this.items;
 				this.snackbar.open("Gespeichert!", undefined, {
@@ -138,7 +173,7 @@ export class SelectedPackingListComponent implements OnInit {
 	protected readonly Object = Object;
 	protected readonly DeliveryStateEnumDto = DeliveryStateEnumDto;
 
-	displayedColumns: string[] = ['status', 'operationCenter', 'name', 'actions'];
+	displayedColumns: string[] = ['status', 'operationCenter', 'name', "location"];
 	source = new MatTableDataSource<TheItem>(undefined);
 
 	feedback(v: string) {
@@ -227,5 +262,43 @@ export class SelectedPackingListComponent implements OnInit {
 				}
 			}
 		})
+	}
+
+	massOpLocation?: LocationDto;
+
+	doMassOp(form: NgForm) {
+		let theReal = this.massOpLocation!;
+		forkJoin([
+			this.apiService.modifyMultipleEcLocations({
+				body: {
+					location: theReal,
+					ids: this.items.map(it => it.internalId)
+				}
+			}),
+			this.apiService.updateLastLocationOfEuroPallet({
+				body: theReal,
+				euroPalletId: this.selected!.packedOn.euroPalletId
+			})
+		]).subscribe({
+			next: _ => {
+				this.feedback("Gespeichert!")
+				form.reset()
+				this.selected!.packedOn.location = theReal
+				for (let item of this.items) {
+					item.location = theReal
+				}
+			},
+			error: handleDefaultError
+		})
+	}
+
+	protected readonly LocationTypeDto = LocationTypeDto;
+	protected readonly LogisticsLocationDto = LogisticsLocationDto;
+
+	suggestLocation(param: LogisticsLocationDto) {
+		this.massOpLocation = {
+			locationType: LocationTypeDto.Logistics,
+			logisticsLocation: param
+		}
 	}
 }

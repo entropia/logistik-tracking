@@ -1,12 +1,15 @@
 package de.entropia.logistiktracking.web;
 
 import de.entropia.logistiktracking.auth.HasAuthority;
+import de.entropia.logistiktracking.domain.converter.PackingListConverter;
 import de.entropia.logistiktracking.domain.euro_pallet.use_case.EuroPalletUseCase;
+import de.entropia.logistiktracking.domain.repository.PackingListRepository;
+import de.entropia.logistiktracking.jpa.EuroPalletDatabaseElement;
+import de.entropia.logistiktracking.jpa.PackingListDatabaseElement;
+import de.entropia.logistiktracking.jpa.repo.EuroPalletDatabaseService;
+import de.entropia.logistiktracking.jpa.repo.PackingListDatabaseService;
 import de.entropia.logistiktracking.openapi.api.EuroPalletApi;
-import de.entropia.logistiktracking.openapi.model.AuthorityEnumDto;
-import de.entropia.logistiktracking.openapi.model.EuroPalletDto;
-import de.entropia.logistiktracking.openapi.model.LocationDto;
-import de.entropia.logistiktracking.openapi.model.NewEuroPalletDto;
+import de.entropia.logistiktracking.openapi.model.*;
 import de.entropia.logistiktracking.utility.Result;
 import lombok.AllArgsConstructor;
 import org.springframework.core.io.ByteArrayResource;
@@ -16,11 +19,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
 import java.util.List;
+import java.util.Optional;
 
 @Controller("/euroPallet")
 @AllArgsConstructor
 public class EuroPalletRoute implements EuroPalletApi {
 	private final EuroPalletUseCase createEuroPalletUseCase;
+	private final PackingListDatabaseService packingListDatabaseService;
+	private final EuroPalletDatabaseService euroPalletDatabaseService;
+	private final PackingListConverter packingListConverter;
 
 	@Override
 	@HasAuthority(AuthorityEnumDto.MANAGE_RESOURCES)
@@ -79,5 +86,14 @@ public class EuroPalletRoute implements EuroPalletApi {
 				case FailedToGeneratePdf -> ResponseEntity.internalServerError().build();
 			};
 		};
+	}
+
+	@Override
+	public ResponseEntity<List<VeryBasicPackingListDto>> getEuroPalletLists(Long euroPalletId) {
+		Optional<EuroPalletDatabaseElement> byId = euroPalletDatabaseService.findById(euroPalletId);
+		if (byId.isEmpty()) return ResponseEntity.notFound().build();
+		EuroPalletDatabaseElement ep = byId.get();
+		List<PackingListDatabaseElement> byPackedOn = packingListDatabaseService.findByPackedOn(ep);
+		return ResponseEntity.ok(byPackedOn.stream().map(packingListConverter::from).map(packingListConverter::toVeryBasicDto).toList());
 	}
 }

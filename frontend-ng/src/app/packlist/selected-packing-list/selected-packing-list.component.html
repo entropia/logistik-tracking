@@ -9,13 +9,37 @@
 	<form (ngSubmit)="saveIt(theForm);" #theForm="ngForm">
 		<div class="content">
 
-			<mat-form-field>
-				<mat-select [(ngModel)]="selected.deliveryState" name="deliveryState" required #deliveryStateControl="ngModel">
-					@for(vs of Object.keys(DeliveryStateEnumDto); track vs) {
-						<mat-option [value]="vs">{{vs}}</mat-option>
+			@if (canEdit) {
+				<div class="thRow">
+				<mat-form-field>
+					<mat-label>Status</mat-label>
+					<mat-select [(ngModel)]="selected.deliveryState" name="deliveryState" required #deliveryStateControl="ngModel">
+						@for(vs of Object.values(DeliveryStateEnumDto); track vs) {
+							<mat-option [value]="vs">{{vs}}</mat-option>
+						}
+					</mat-select>
+				</mat-form-field>
+
+					@switch (selected!.deliveryState) {
+						@case (DeliveryStateEnumDto.TravelingToGpn) {
+							<button mat-button type="button" (click)="suggestLocation(LogisticsLocationDto.InTransport)">Inhalte auf Ort InTransport setzen?</button>
+						}
+						@case (DeliveryStateEnumDto.WaitingAtGpn) {
+							<button mat-button type="button" (click)="suggestLocation(LogisticsLocationDto.Loc)">Inhalte auf Ort LOC setzen?</button>
+						}
+						@case (DeliveryStateEnumDto.Packing) {
+							<button mat-button type="button" (click)="suggestLocation(LogisticsLocationDto.Entropia)">Inhalte auf Ort Entropia setzen?</button>
+						}
+						@case (DeliveryStateEnumDto.WaitingForDelivery) {
+							<button mat-button type="button" (click)="suggestLocation(LogisticsLocationDto.Entropia)">Inhalte auf Ort Entropia setzen?</button>
+						}
 					}
-				</mat-select>
-			</mat-form-field>
+			</div>
+			} @else {
+				<p>Status: {{selected.deliveryState}}</p>
+			}
+
+			<h2>Kisten</h2>
 
 			<table mat-table [dataSource]="source" matSort>
 
@@ -47,6 +71,12 @@
 					<th mat-header-cell *matHeaderCellDef mat-sort-header="name" sortActionDescription="Sort by name">Name</th>
 					<td mat-cell *matCellDef="let element">{{element.name}}</td>
 				</ng-container>
+
+				<ng-container matColumnDef="location">
+					<th mat-header-cell *matHeaderCellDef>Ort</th>
+					<td mat-cell *matCellDef="let element"><app-location [location]="element.location"></app-location></td>
+				</ng-container>
+
 				<ng-container matColumnDef="actions">
 					<th mat-header-cell *matHeaderCellDef>Aktionen</th>
 					<td mat-cell *matCellDef="let element">
@@ -58,15 +88,34 @@
 
 				<tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
 				<tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+				<tr class="mat-row" *matNoDataRow>
+					<td class="mat-cell" colspan="4">Keine Kisten</td>
+				</tr>
 			</table>
 
-			<app-crate-add-widget (crateSubmitted)="crateSubmitted($event, true)"></app-crate-add-widget>
-			<button mat-flat-button (click)="scanMultiple()" type="button">
-				<mat-icon fontIcon="qr_code_scanner"></mat-icon>
-				Mehrere Scannen
-			</button>
+			@if (canEdit) {
+				<app-crate-add-widget (crateSubmitted)="crateSubmitted($event, true)"></app-crate-add-widget>
+				<div class="bgroup">
+					<button mat-flat-button (click)="scanMultiple()" type="button">
+						<mat-icon fontIcon="qr_code_scanner"></mat-icon>
+						Mehrere Scannen
+					</button>
 
-			<button mat-flat-button type="submit" [disabled]="!theForm.form.valid || !theForm.dirty">Änderungen Speichern</button>
+					<button mat-flat-button type="submit" [disabled]="!theForm.form.valid || !theForm.dirty">Änderungen Speichern</button>
+				</div>
+			}
 		</div>
 	</form>
+
+	@if (canEdit) {
+		<h2 id="mass_ops">Massenoperationen</h2>
+		<form (ngSubmit)="doMassOp(form)" #form="ngForm">
+			<p>Ort aller kisten setzen:</p>
+			<app-location-editor required appValidateLocation [(ngModel)]="massOpLocation" name="real"></app-location-editor>
+			<button mat-flat-button type="submit" [disabled]="form.invalid" style="margin-top: 10px">
+				<mat-icon fontIcon="check"></mat-icon>
+				Anwenden
+			</button>
+		</form>
+	}
 }

@@ -2,9 +2,11 @@ package de.entropia.logistiktracking.web;
 
 import de.entropia.logistiktracking.auth.HasAuthority;
 import de.entropia.logistiktracking.domain.converter.EuroCrateConverter;
+import de.entropia.logistiktracking.domain.converter.LocationConverter;
 import de.entropia.logistiktracking.domain.converter.OperationCenterConverter;
 import de.entropia.logistiktracking.domain.euro_crate.use_case.EuroCrateUseCase;
 import de.entropia.logistiktracking.jpa.EuroCrateDatabaseElement;
+import de.entropia.logistiktracking.jpa.LocationDatabaseElement;
 import de.entropia.logistiktracking.jpa.repo.EuroCrateDatabaseService;
 import de.entropia.logistiktracking.openapi.api.EuroCrateApi;
 import de.entropia.logistiktracking.openapi.model.*;
@@ -15,6 +17,8 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionInterceptor;
 
 import java.util.List;
 import java.util.Optional;
@@ -26,6 +30,7 @@ public class EuroCrateRoute implements EuroCrateApi {
 	private final EuroCrateDatabaseService euroCrateDatabaseService;
 	private final EuroCrateConverter euroCrateConverter;
 	private final OperationCenterConverter operationCenterConverter;
+	private final LocationConverter locationConverter;
 
 	@Override
 	@HasAuthority(AuthorityEnumDto.MANAGE_RESOURCES)
@@ -95,5 +100,17 @@ public class EuroCrateRoute implements EuroCrateApi {
 			case Result.Error<?, EuroCrateUseCase.ModifyEuroCrateError>(var _) -> ResponseEntity.notFound().build();
 			case Result.Ok<Void, ?>(var _) -> ResponseEntity.ok(null);
 		};
+	}
+
+	@Override
+	@Transactional
+	public ResponseEntity<Void> modifyMultipleECLocations(ModifyMultipleECLocationsRequest modifyMultipleECLocationsRequest) {
+		long[] ids = modifyMultipleECLocationsRequest.getIds().stream().mapToLong(it -> it).toArray();
+		LocationDatabaseElement dbel = locationConverter.toDatabaseElement(locationConverter.from(modifyMultipleECLocationsRequest.getLocation()));
+		if (euroCrateDatabaseService.setMultipleLocations(ids, dbel) != ids.length) {
+			TransactionInterceptor.currentTransactionStatus().setRollbackOnly();
+			return ResponseEntity.notFound().build();
+		}
+		return ResponseEntity.ok().build();
 	}
 }

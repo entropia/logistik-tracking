@@ -1,3 +1,17 @@
 .icon-vert-center > mat-icon {
 	vertical-align: middle;
 }
+.thRow {
+	display: flex;
+	flex-direction: row;
+	column-gap: 10px;
+	align-items: center;
+}
+
+.bgroup > *:first-child {
+	--mdc-filled-button-container-shape: var(--mat-sys-corner-large) 0 0 var(--mat-sys-corner-large);
+}
+
+.bgroup> *:last-child {
+	--mdc-filled-button-container-shape: 0 var(--mat-sys-corner-large) var(--mat-sys-corner-large) 0;
+}

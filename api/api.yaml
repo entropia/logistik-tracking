@@ -115,9 +115,48 @@ paths:
         400:
           description: Changes were invalid
         401:
-          description: Unauthorized or not allowed to modify data
+          description: Not logged in
+        403:
+          description: Not allowed to modify resources
         404:
           description: Crate does not exist
+
+  /euroCrate/setMultipleLocations:
+    post:
+      operationId: modifyMultipleECLocations
+      summary: Modify location of multiple euro crates
+      security:
+        - springCookieAuth: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ids:
+                  type: array
+                  description: Crate IDs
+                  items:
+                    type: integer
+                    format: int64
+                location:
+                  $ref: "#/components/schemas/LocationDto"
+              required:
+                - ids
+                - location
+
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad request
+        401:
+          description: Not logged in
+        403:
+          description: Not allowed to modify resources
+        404:
+          description: A crate didn't exist
 
   /euroCrate/{id}/print:
     get:
@@ -218,6 +257,31 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/EuroPalletDto"
+        "404":
+          description: "Selected euro pallet does not exist."
+        "400":
+          description: "euroPalletId is not a whole number or doesn't fit in 64 bits"
+
+  /euroPallet/{euroPalletId}/lists:
+    get:
+      operationId: getEuroPalletLists
+      summary: "Get all associated lists of a pallet"
+      parameters:
+        - name: "euroPalletId"
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: "Successfully retrieved euro pallet lists"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/VeryBasicPackingListDto"
         "404":
           description: "Selected euro pallet does not exist."
         "400":
@@ -638,34 +702,22 @@ components:
               $ref: "#/components/schemas/LocationDto"
 
     PrintMultipleDto:
-      # todo das kann man eigentlich vereinfachen
       type: array
       items:
-        oneOf:
-          - type: object
-            properties:
-              type:
-                description: Type of the print (Crate)
-                enum:
-                  - "Crate"
-              id:
-                $ref: "#/components/schemas/EuroCrateId"
-            required:
-              - type
-              - id
-          - type: object
-            properties:
-              type:
-                description: Type of the print (Pallet)
-                enum:
-                  - "Pallet"
-              id:
-                type: integer
-                format: int64
-                description: ID of the pallet
-            required:
-              - type
-              - id
+        type: object
+        properties:
+          type:
+            description: Type of the print
+            enum:
+              - "Crate"
+              - "Pallet"
+          id:
+            type: integer
+            format: int64
+            description: Id of the resource
+        required:
+          - type
+          - id
 
     NewEuroCrateDto:
       allOf:
@@ -740,7 +792,7 @@ components:
         - name
         - packedOnPallet
 
-    BasicPackingListDto:
+    VeryBasicPackingListDto:
       allOf:
         - $ref: "#/components/schemas/DeliveryStateDto"
         - type: object
@@ -754,12 +806,19 @@ components:
               description: "Internal ID for this packing list"
               type: integer
               format: int64
+          required:
+            - packingListId
+            - deliveryState
+
+    BasicPackingListDto:
+      allOf:
+        - $ref: "#/components/schemas/VeryBasicPackingListDto"
+        - type: object
+          properties:
             packedOn:
               $ref: "#/components/schemas/EuroPalletDto"
           required:
-            - packingListId
             - packedOn
-            - deliveryState
 
     PackingListDto:
       type: object

@@ -29,5 +29,9 @@ export const routes: Routes = [
 	{
 		path: "printMultiple",
 		loadComponent: () => import("./multiple-print-builder/multiple-print-builder.component").then(it => it.MultiplePrintBuilderComponent)
+	},
+	{
+		path: "overview",
+		loadComponent: () => import("./overview-page/overview-page.component").then(it => it.OverviewPageComponent)
 	}
 ];

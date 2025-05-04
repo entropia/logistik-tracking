@@ -8,8 +8,6 @@ import de.entropia.logistiktracking.domain.euro_pallet.use_case.EuroPalletUseCas
 import de.entropia.logistiktracking.openapi.api.PrintMultipleApi;
 import de.entropia.logistiktracking.openapi.model.AuthorityEnumDto;
 import de.entropia.logistiktracking.openapi.model.PrintMultipleDtoInner;
-import de.entropia.logistiktracking.openapi.model.PrintMultipleDtoInnerOneOf;
-import de.entropia.logistiktracking.openapi.model.PrintMultipleDtoInnerOneOf1;
 import de.entropia.logistiktracking.utility.PdfMerger;
 import de.entropia.logistiktracking.utility.Result;
 import lombok.AllArgsConstructor;
@@ -56,10 +54,9 @@ public class PrintMultipleRoute implements PrintMultipleApi {
 	}
 
 	private CompletableFuture<Result<byte[], ?>> createJob(PrintMultipleDtoInner it) {
-		return switch (it) {
-			case PrintMultipleDtoInnerOneOf crateJob -> CompletableFuture.supplyAsync(() -> euroCrateUseCase.printEuroCrate(crateJob.getId()));
-			case PrintMultipleDtoInnerOneOf1 palletJob -> CompletableFuture.supplyAsync(() -> euroPalletUseCase.printEuroPallet(palletJob.getId()));
-			default -> throw new IllegalStateException("unknown type "+it);
+		return switch (it.getType()) {
+			case PrintMultipleDtoInner.TypeEnum.CRATE -> CompletableFuture.supplyAsync(() -> euroCrateUseCase.printEuroCrate(it.getId()));
+			case PrintMultipleDtoInner.TypeEnum.PALLET -> CompletableFuture.supplyAsync(() -> euroPalletUseCase.printEuroPallet(it.getId()));
 		};
 	}
 }

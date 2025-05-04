@@ -7,6 +7,7 @@ import de.entropia.logistiktracking.jpa.EuroPalletDatabaseElement;
 import de.entropia.logistiktracking.jpa.PackingListDatabaseElement;
 import de.entropia.logistiktracking.openapi.model.BasicPackingListDto;
 import de.entropia.logistiktracking.openapi.model.PackingListDto;
+import de.entropia.logistiktracking.openapi.model.VeryBasicPackingListDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -67,5 +68,12 @@ public class PackingListConverter {
 				.packingListName(packingList.getName())
 				.packedOn(euroPalletConverter.toDto(packingList.getPackedOn()))
 				.deliveryState(deliveryStateConverter.toDto(packingList.getDeliveryState()));
+	}
+
+	public VeryBasicPackingListDto toVeryBasicDto(PackingList pl)  {
+		return new VeryBasicPackingListDto()
+				.packingListId(pl.getPackingListId())
+				.packingListName(pl.getName())
+				.deliveryState(deliveryStateConverter.toDto(pl.getDeliveryState()));
 	}
 }
