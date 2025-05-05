@@ -11,11 +11,10 @@ import {MatSort, MatSortModule} from '@angular/material/sort';
 import {LocationComponent} from '../location/location/location.component';
 import {LocationDto} from '../api/models/location-dto';
 import {RouterLink} from '@angular/router';
-import {
-	MatButtonToggleModule
-} from '@angular/material/button-toggle';
+import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import {FormsModule} from '@angular/forms';
 import {PackingListDto} from '../api/models/packing-list-dto';
+import {DeliveryStateEnumDto} from '../api/models/delivery-state-enum-dto';
 
 function stringifyLocation(location: LocationDto) {
 	switch (location.locationType) {
@@ -80,7 +79,7 @@ export class OverviewPageComponent implements OnDestroy {
 	}
 
 	viewColsEuroCrate = ["internalId", "operationCenter", "name", "location", "deliveryState"]
-	viewColsEuroPallet = ["euroPalletId", "location"]
+	viewColsEuroPallet = ["euroPalletId", "location", "packlisten"]
 	viewColsLists = ["packingListId", "packingListName", "deliveryState"]
 
 	euroCrates: EuroCrateDto[] = [];
@@ -174,5 +173,12 @@ export class OverviewPageComponent implements OnDestroy {
 		if (this.prevTimeout != undefined) {
 			window.clearInterval(this.prevTimeout)
 		}
+	}
+
+	getPacklistenText(row: EuroPalletDto) {
+		return this.dsPacklisten.data.filter(f => f.packedOn.euroPalletId == row.euroPalletId)
+			// fertige listen nach hinten schieben
+			.sort((a, b) => (a.deliveryState == DeliveryStateEnumDto.Delivered ? 1 : 0) - (b.deliveryState == DeliveryStateEnumDto.Delivered ? 1 : 0))
+			.map(e => e.packingListName+" ("+e.packingListId+(e.deliveryState == DeliveryStateEnumDto.Delivered ? ", Ausg." : "")+")").join(", ");
 	}
 }

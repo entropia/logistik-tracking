@@ -1,5 +1,9 @@
-<app-navigation-header></app-navigation-header>
+@if (router.url != "/departures") {
+	<app-navigation-header></app-navigation-header>
+}
 
 <router-outlet/>
 
-<app-scan-everything-button></app-scan-everything-button>
+@if (router.url != "/departures") {
+	<app-scan-everything-button></app-scan-everything-button>
+}

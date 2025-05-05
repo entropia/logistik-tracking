@@ -33,5 +33,9 @@ export const routes: Routes = [
 	{
 		path: "overview",
 		loadComponent: () => import("./overview-page/overview-page.component").then(it => it.OverviewPageComponent)
-	}
+	},
+	{
+		path: "departures",
+		loadComponent: () => import("./departures/departures.component").then(it => it.DeparturesComponent)
+	},
 ];
