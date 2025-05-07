@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {RouterOutlet} from '@angular/router';
+import {Router, RouterOutlet} from '@angular/router';
 import {NavigationHeaderComponent} from '../navigation-header/navigation-header.component';
 import {ScanEverythingButtonComponent} from '../util/scan-everything-button/scan-everything-button.component';
 import {MatIconRegistry} from '@angular/material/icon';
@@ -16,7 +16,8 @@ import {MatIconRegistry} from '@angular/material/icon';
 })
 export class AppComponent {
 	constructor(
-		iconReg: MatIconRegistry
+		iconReg: MatIconRegistry,
+		protected router: Router
 	) {
 		iconReg.setDefaultFontSetClass("material-symbols", "mat-ligature-font")
 	}
