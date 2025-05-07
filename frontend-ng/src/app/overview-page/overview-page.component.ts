@@ -13,8 +13,8 @@ import {LocationDto} from '../api/models/location-dto';
 import {RouterLink} from '@angular/router';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import {FormsModule} from '@angular/forms';
-import {PackingListDto} from '../api/models/packing-list-dto';
 import {DeliveryStateEnumDto} from '../api/models/delivery-state-enum-dto';
+import {BasicPackingListDto} from '../api/models/basic-packing-list-dto';
 
 function stringifyLocation(location: LocationDto) {
 	switch (location.locationType) {
@@ -120,7 +120,7 @@ export class OverviewPageComponent implements OnDestroy {
 
 	dsEuroCrates = new MatTableDataSource<EuroCrateDto>()
 	dsEuroPallet = new MatTableDataSource<EuroPalletDto>()
-	dsPacklisten = new MatTableDataSource<PackingListDto>()
+	dsPacklisten = new MatTableDataSource<BasicPackingListDto>()
 
 	updateData() {
 		this.api.getAllEuroCrates().subscribe({
