@@ -26,7 +26,7 @@ class CreateEuroCrateUseCaseTest {
 
     @Test
     public void canCreateEuroCrate() {
-        EuroCrateDto newEuroCrate = new EuroCrateDto()
+        NewEuroCrateDto newEuroCrate = new NewEuroCrateDto()
                 .operationCenter(OperationCenterDto.FRUEHSTUECK)
                 .name("Butterbrote")
                 .deliveryState(DeliveryStateEnumDto.PACKING)

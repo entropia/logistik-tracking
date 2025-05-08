@@ -1,0 +1,35 @@
+<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.2.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.2.0 http://maven.apache.org/xsd/assembly-2.2.0.xsd">
+    <id>main</id>
+    <formats>
+        <format>tar.gz</format>
+        <format>dir</format>
+    </formats>
+    <fileSets>
+        <fileSet>
+            <outputDirectory>frontend</outputDirectory>
+            <directory>frontend-ng/dist/frontend-ng/browser</directory>
+        </fileSet>
+    </fileSets>
+    <files>
+        <file>
+            <source>src/assembly/start.sh</source>
+            <outputDirectory>bin</outputDirectory>
+<!--            rwxr__r__ -->
+            <fileMode>0744</fileMode>
+            <filtered>true</filtered>
+        </file>
+    </files>
+    <dependencySets>
+        <dependencySet>
+            <outputDirectory>bin</outputDirectory>
+            <useProjectArtifact>true</useProjectArtifact>
+<!--            Die dependencies werden schon geshadowed von spring plugin, also nicht nochmal reinkopieren -->
+            <useTransitiveDependencies>false</useTransitiveDependencies>
+            <includes>
+                <include>de.entropia:logistik-tracking</include>
+            </includes>
+        </dependencySet>
+    </dependencySets>
+</assembly>

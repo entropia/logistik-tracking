@@ -1,6 +1,5 @@
 package de.entropia.logistiktracking.domain.euro_pallet;
 
-import com.google.common.base.Preconditions;
 import de.entropia.logistiktracking.domain.location.Location;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,7 +17,6 @@ public class EuroPallet {
 
 	@Builder
 	EuroPallet(long palletId, @NonNull Location location, String information) {
-		Preconditions.checkArgument(palletId >= 0, "palletId < 0");
 		this.palletId = palletId;
 		this.location = location;
 		this.information = information == null ? "" : information;

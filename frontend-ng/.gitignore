@@ -45,3 +45,6 @@ package-lock.json
 # System files
 .DS_Store
 Thumbs.db
+.yarn
+.pnp.cjs
+.pnp.loader.mjs
