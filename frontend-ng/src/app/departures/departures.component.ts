@@ -97,7 +97,10 @@ export class DeparturesComponent implements AfterViewInit{
 		console.log(this.canv)
 		this.ctx = this.canv.getContext("2d")!
 		this.setup()
-		requestAnimationFrame(this.drawFrame.bind(this))
+		// FIXME wtf
+		setTimeout(() => {
+			requestAnimationFrame(this.drawFrame.bind(this))
+		}, 2000)
 		this.updateData()
 		setInterval(() => {
 			this.updateData()

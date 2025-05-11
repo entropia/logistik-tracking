@@ -6,7 +6,6 @@ import {
 import {ComponentPortal} from '@angular/cdk/portal';
 import {QrScannerActualComponent} from './util/qr-scanner/qr-scanner-actual.component';
 import {Subject} from 'rxjs';
-import QrScanner from 'qr-scanner';
 
 export class QrScanRef {
 	public onScanned = new Subject<string>()

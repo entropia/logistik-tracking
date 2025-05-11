@@ -15,3 +15,6 @@
 .bgroup> *:last-child {
 	--mdc-filled-button-container-shape: 0 var(--mat-sys-corner-large) var(--mat-sys-corner-large) 0;
 }
+.mat-column-status {
+	max-width: min-content;
+}

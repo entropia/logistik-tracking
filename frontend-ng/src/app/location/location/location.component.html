@@ -1,9 +1,3 @@
-<span *ngIf="isLOC()">
-  Beim LOC: {{ location?.logisticsLocation ?? '' }}
-</span>
-<span *ngIf="isOC()">
-  Bei OC: {{ location?.operationCenter ?? '' }}
-</span>
-<span *ngIf="isSomewhereElse()">
-  Anderer Ort: {{ location?.somewhereElse ?? '' }}
+<span>
+	{{formatLocationString(location)}}
 </span>

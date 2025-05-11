@@ -9,7 +9,6 @@ import {MatError} from '@angular/material/input';
 import {MatButton} from '@angular/material/button';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {handleDefaultError} from '../../util/auth';
-import {CreatePackingListComponent} from '../../packlist/create-packing-list/create-packing-list.component';
 import {NewPackingListDto} from '../../api/models/new-packing-list-dto';
 import {Router} from '@angular/router';
 import {MatDialog} from '@angular/material/dialog';
@@ -80,24 +79,26 @@ export class SelectedEuroPalletComponent implements OnInit {
 	}
 
 	createPackingList() {
-		this.diag.open<CreatePackingListComponent, any, NewPackingListDto>(CreatePackingListComponent, {
-			data: {
-				packedOnPallet: this.pallet?.euroPalletId
-			}
-		}).afterClosed()
-			.subscribe(value => {
-				if (!value) return;
-				this.apiService.createPackingList({
-					body: value
-				}).subscribe({
-					next: crate => {
-						this.router.navigate(['packingList/' + crate.packingListId])
-							.catch(reason => {
-								console.log("Failed to redirect to newly created packing list because: " + reason);
-							});
-					}
+		import("../../packlist/create-packing-list/create-packing-list.component").then(it => {
+			this.diag.open<any, any, NewPackingListDto>(it.CreatePackingListComponent, {
+				data: {
+					packedOnPallet: this.pallet?.euroPalletId
+				}
+			}).afterClosed()
+				.subscribe(value => {
+					if (!value) return;
+					this.apiService.createPackingList({
+						body: value
+					}).subscribe({
+						next: crate => {
+							this.router.navigate(['packingList/' + crate.packingListId])
+								.catch(reason => {
+									console.log("Failed to redirect to newly created packing list because: " + reason);
+								});
+						}
+					});
 				});
-			});
+		})
 	}
 
 	protected readonly AuthorityEnumDto = AuthorityEnumDto;

@@ -8,38 +8,23 @@ import {LogisticsLocationDto} from '../api/models/logistics-location-dto';
 import {MatTableDataSource, MatTableModule} from '@angular/material/table';
 import {MatPaginator, MatPaginatorModule} from '@angular/material/paginator';
 import {MatSort, MatSortModule} from '@angular/material/sort';
-import {LocationComponent} from '../location/location/location.component';
-import {LocationDto} from '../api/models/location-dto';
+import {formatLocationString, LocationComponent} from '../location/location/location.component';
 import {RouterLink} from '@angular/router';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import {FormsModule} from '@angular/forms';
 import {DeliveryStateEnumDto} from '../api/models/delivery-state-enum-dto';
 import {BasicPackingListDto} from '../api/models/basic-packing-list-dto';
 
-function stringifyLocation(location: LocationDto) {
-	switch (location.locationType) {
-		case LocationTypeDto.SomewhereElse:
-			return "Anderer Ort: "+location.somewhereElse!;
-		case LocationTypeDto.Logistics:
-			return "Beim LOC: "+ location.logisticsLocation!;
-		case LocationTypeDto.AtOperationCenter:
-			return "Bei OC: "+location.operationCenter!;
-		default:
-			throw new Error("invalid location type? "+location.locationType)
-	}
-}
-
 function getDataForSortEC(original: (d: EuroCrateDto, a: string) => number | string, data: EuroCrateDto, active: string): number | string {
 	if (active == "location") {
-		let location = data.location;
-		return stringifyLocation(location)
+		return formatLocationString(data.location)
 	} else return original(data, active)
 }
 
 function customFilterPredicateEC(data: EuroCrateDto | EuroPalletDto, filter: string): boolean {
 	const transformedFilter = filter.trim().toLowerCase();
 	// Loops over the values in the array and returns true if any of them match the filter string
-	if (stringifyLocation(data.location).toLowerCase().includes(transformedFilter)) return true;
+	if (formatLocationString(data.location).toLowerCase().includes(transformedFilter)) return true;
 	return Object.entries(data as {[key: string]: any}).some(value =>
 		value[0] != "location" && `${value[1]}`.toLowerCase().includes(transformedFilter)
 	);
@@ -47,8 +32,7 @@ function customFilterPredicateEC(data: EuroCrateDto | EuroPalletDto, filter: str
 
 function getDataForSortEP(original: (d: EuroPalletDto, a: string) => number | string, data: EuroPalletDto, active: string): number | string {
 	if (active == "location") {
-		let location = data.location;
-		return stringifyLocation(location)
+		return formatLocationString(data.location)
 	} else return original(data, active)
 }
 

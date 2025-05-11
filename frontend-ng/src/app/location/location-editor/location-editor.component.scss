@@ -3,4 +3,8 @@
 	flex-direction: row;
 	gap: 10px;
 	flex-wrap: wrap;
+	width: fit-content;
+}
+.editor > mat-form-field {
+	flex-grow: 1;
 }

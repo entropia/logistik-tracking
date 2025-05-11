@@ -1,29 +1,28 @@
 import {Component, Input} from '@angular/core';
 import {LocationDto} from '../../api/models/location-dto';
-import {NgIf} from '@angular/common';
 import {LocationTypeDto} from '../../api/models';
+
+export function formatLocationString(l: LocationDto) {
+	switch (l.locationType) {
+		case LocationTypeDto.SomewhereElse:
+			return "Anderswo: "+l.somewhereElse!;
+		case LocationTypeDto.Logistics:
+			return "LOC: "+l.logisticsLocation!;
+		case LocationTypeDto.AtOperationCenter:
+			return "OC: "+l.operationCenter;
+	}
+}
 
 @Component({
 	selector: 'app-location',
 	imports: [
-		NgIf
+
 	],
 	templateUrl: './location.component.html',
 	styleUrl: './location.component.scss'
 })
 export class LocationComponent {
-	@Input() location?: LocationDto;
+	@Input() location!: LocationDto;
 
-	isLOC() {
-		return this.location?.locationType == LocationTypeDto.Logistics;
-	}
-
-	isOC() {
-		return this.location?.locationType == LocationTypeDto.AtOperationCenter;
-	}
-
-
-	isSomewhereElse() {
-		return this.location?.locationType == LocationTypeDto.SomewhereElse;
-	}
+	protected readonly formatLocationString = formatLocationString;
 }

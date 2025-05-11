@@ -31,6 +31,7 @@ import {ValidateLocationDirective} from '../../location/location-editor/location
 import {forkJoin} from 'rxjs';
 import {AuthorityStatus, UserService} from '../../util/user.service';
 import {LocationComponent} from '../../location/location/location.component';
+import {MatTab, MatTabGroup} from '@angular/material/tabs';
 
 enum ItemStatus {
 	KEEP,
@@ -63,7 +64,9 @@ type TheItem = {
 		MatLabel,
 		LocationEditorComponent,
 		ValidateLocationDirective,
-		LocationComponent
+		LocationComponent,
+		MatTabGroup,
+		MatTab
 	],
 	templateUrl: './selected-packing-list.component.html',
 	styleUrl: './selected-packing-list.component.scss'
@@ -122,13 +125,36 @@ export class SelectedPackingListComponent implements OnInit {
 		})
 	}
 
-	saveIt(f: NgForm) {
+	saveInfo(f: NgForm) {
+		let thePatch: PackingListPatchDto = {}
+		if (this.deliveryStateControl!.dirty) {
+			thePatch.deliveryState = this.selected!.deliveryState
+		}
+		this.apiService.modifyPackingList({
+			packingListId: this.selected!.packingListId,
+			body: thePatch
+		}).subscribe({
+			next: _ => {
+				if (this.deliveryStateControl!.dirty) {
+					// we set a new delivery state
+					this.items.forEach(it => {
+						it.deliveryState = this.selected!.deliveryState
+					})
+				}
+				f.control.markAsPristine()
+				this.source.data = this.items;
+				this.snackbar.open("Gespeichert!", undefined, {
+					duration: 3000
+				})
+			},
+			error: handleDefaultError
+		})
+	}
+
+	saveCrates(f: NgForm) {
 		let thePatch: PackingListPatchDto = {
 			addCrates: [],
 			removeCrates: []
-		}
-		if (this.deliveryStateControl!.dirty) {
-			thePatch.deliveryState = this.selected!.deliveryState
 		}
 		for(let item of this.items) {
 			switch (item.status) {
@@ -154,12 +180,6 @@ export class SelectedPackingListComponent implements OnInit {
 					}
 					it.status = it.originalStatus = ItemStatus.KEEP;
 				});
-				if (this.deliveryStateControl!.dirty) {
-					// we set a new delivery state
-					this.items.forEach(it => {
-						it.deliveryState = this.selected!.deliveryState
-					})
-				}
 				f.control.markAsPristine()
 				this.source.data = this.items;
 				this.snackbar.open("Gespeichert!", undefined, {

@@ -1,7 +1,7 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {ApiService} from '../../api/services/api.service';
 import {EuroPalletDto} from '../../api/models/euro-pallet-dto';
-import {MatButton} from '@angular/material/button';
+import {MatButton, MatMiniFabButton} from '@angular/material/button';
 import {Router, RouterLink} from '@angular/router';
 import {LocationComponent} from '../../location/location/location.component';
 import {MatDialog} from '@angular/material/dialog';
@@ -9,36 +9,76 @@ import {NewEuroPalletDto} from '../../api/models/new-euro-pallet-dto';
 import {handleDefaultError} from '../../util/auth';
 import {AuthorityEnumDto} from '../../api/models/authority-enum-dto';
 import {RequiresAuthorityDirective} from '../../util/requires-permission.directive';
-import {MatTooltipModule} from '@angular/material/tooltip';
+import {MatTableDataSource, MatTableModule} from '@angular/material/table';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatInputModule} from '@angular/material/input';
+import {MatSort, MatSortModule} from '@angular/material/sort';
+import {MatPaginator, MatPaginatorModule} from '@angular/material/paginator';
+import {AuthorityStatus, UserService} from '../../util/user.service';
+import {MatIconModule} from '@angular/material/icon';
 
 @Component({
 	selector: 'app-euro-pallet',
 	imports: [
-		MatButton,
 		LocationComponent,
 		RouterLink,
-		MatTooltipModule,
-		RequiresAuthorityDirective
+		MatButton,
+		RequiresAuthorityDirective,
+		MatTableModule,
+		MatFormFieldModule,
+		MatInputModule,
+		MatSortModule,
+		MatPaginatorModule,
+		MatIconModule,
+		MatMiniFabButton
 	],
 	templateUrl: './euro-pallet.component.html',
 	styleUrl: './euro-pallet.component.scss'
 })
 export class EuroPalletComponent implements OnInit {
 	euroPallets?: EuroPalletDto[];
+	protected displayedColumns = [
+		'euroPalletId', 'location'
+	]
+	protected ds: MatTableDataSource<EuroPalletDto> = new MatTableDataSource<EuroPalletDto>();
 
 	constructor(
 		private apiService: ApiService,
 		private router: Router,
-		private diag: MatDialog
+		private diag: MatDialog,
+		us: UserService
 	) {
+		us.hasAuthority(AuthorityEnumDto.Print).then(it => {
+			if (it == AuthorityStatus.HasIt) this.displayedColumns.push("actions")
+		})
+	}
+
+	@ViewChild(MatSort)
+	set matSort(matSort: MatSort) {
+		this.ds.sort = matSort;
+	}
+
+	@ViewChild(MatPaginator)
+	set paginator(paginator: MatPaginator) {
+		this.ds.paginator = paginator;
 	}
 
 	ngOnInit(): void {
 		this.apiService.getAllEuroPallets().subscribe({
 			next: euroPallets => {
 				this.euroPallets = euroPallets;
+				this.ds.data = euroPallets;
 			}
 		})
+	}
+
+	applyFilter(event: Event) {
+		const filterValue = (event.target as HTMLInputElement).value;
+		this.ds.filter = filterValue.trim().toLowerCase();
+
+		if (this.ds.paginator) {
+			this.ds.paginator.firstPage();
+		}
 	}
 
 	createPallet() {
