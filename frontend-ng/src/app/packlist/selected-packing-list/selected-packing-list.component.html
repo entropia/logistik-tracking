@@ -60,7 +60,7 @@
 
 		</mat-tab>
 		<mat-tab label="Kisten">
-			<form (ngSubmit)="saveCrates(theForm);" #theForm="ngForm" class="content">
+			<form (ngSubmit)="saveCrates(theForm2);" #theForm2="ngForm" class="content">
 				<div>
 					<table mat-table [dataSource]="source" matSort>
 
@@ -124,7 +124,7 @@
 								Scannen
 							</button>
 
-							<button mat-flat-button type="submit" [disabled]="!theForm.form.valid || !theForm.dirty">
+							<button mat-flat-button type="submit" [disabled]="!theForm2.form.valid || !theForm2.dirty">
 								<mat-icon fontIcon="save"></mat-icon>
 								Speichern
 							</button>

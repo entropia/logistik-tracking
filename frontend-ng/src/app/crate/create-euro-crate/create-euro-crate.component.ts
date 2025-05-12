@@ -12,6 +12,7 @@ import {ValidateLocationDirective} from '../../location/location-editor/location
 import {LocationTypeDto} from '../../api/models/location-type-dto';
 import {MatOption, MatSelect} from '@angular/material/select';
 import {MatButton} from '@angular/material/button';
+import {LogisticsLocationDto} from '../../api/models/logistics-location-dto';
 
 
 @Component({
@@ -45,7 +46,7 @@ export class CreateEuroCrateComponent {
 	constructor(private dialogRef: MatDialogRef<CreateEuroCrateComponent>) {
 		this.form = new FormGroup({
 			name: new FormControl<string>('', { nonNullable: true }),
-			location: new FormControl<LocationDto>({locationType: LocationTypeDto.Logistics}, {nonNullable: true}),
+			location: new FormControl<LocationDto>({locationType: LocationTypeDto.Logistics, logisticsLocation: LogisticsLocationDto.Entropia}, {nonNullable: true}),
 			operationCenter: new FormControl<OperationCenterDto>(this.operationCenters[0], { nonNullable: true }),
 			deliveryState: new FormControl<DeliveryStateEnumDto>(this.deliveryStates[0], { nonNullable: true }),
 			returnBy: new FormControl<string>(this.returnDates[0], { nonNullable: true }),

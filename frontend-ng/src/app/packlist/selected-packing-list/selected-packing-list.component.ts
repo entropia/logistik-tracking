@@ -111,7 +111,7 @@ export class SelectedPackingListComponent implements OnInit {
 		})
 	}
 
-	@ViewChild("theForm", {static: false})
+	@ViewChild("theForm2", {static: false})
 	theForm?: NgForm;
 
 	@ViewChild("deliveryStateControl", {static:false})

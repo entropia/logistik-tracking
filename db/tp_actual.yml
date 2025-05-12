@@ -1,0 +1,36 @@
+services:
+  db:
+    image: postgres
+    restart: no
+    environment:
+      POSTGRES_USER: logitrack
+      POSTGRES_PASSWORD: VTwGyF0l6xrq&6VC7^6kVey%hro^F72w%q!&h*Py9qZiFak^R&y$0jJAF^V57QSQ
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdataProd:/var/lib/postgresql/data
+  adminer:
+    image: adminer
+    restart: no
+    ports:
+      - "23646:8080"
+  web:
+    build: ..
+    environment:
+      - JAVA_OPTS=-Dspring.profiles.active=prod
+  nginx:
+    image: nginx
+    volumes:
+      - ./nginx_default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ../cert.pem:/cert.pem:ro
+      - ../key.pem:/key.pem:ro
+    ports:
+      - "8080:443"
+    command: [nginx-debug, '-g', 'daemon off;']
+    environment:
+      - NGINX_HOST=localhost
+      - NGINX_PORT=443
+
+
+volumes:
+  pgdataProd:

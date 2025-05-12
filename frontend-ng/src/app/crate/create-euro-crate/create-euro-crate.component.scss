@@ -3,3 +3,13 @@
 	flex-direction: column;
 	row-gap: 10px;
 }
+.row {
+	display: flex;
+	flex-direction: row;
+	gap: 10px;
+	flex-wrap: wrap;
+	width: fit-content;
+}
+.row > mat-form-field {
+	flex-grow: 1;
+}
