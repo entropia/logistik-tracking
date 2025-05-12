@@ -1,16 +1,17 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 import {ApiService} from '../../api/services/api.service';
-import {MatInputModule} from '@angular/material/input';
-import {MatFormFieldModule} from '@angular/material/form-field';
-import {MatButtonModule} from '@angular/material/button';
+import {MatFormField, MatInput, MatLabel} from '@angular/material/input';
+import {MatButton} from '@angular/material/button';
 import {ActivatedRoute} from '@angular/router';
 
 @Component({
   selector: 'app-login-form',
 	imports: [
-		MatFormFieldModule,
-		MatInputModule,
-		MatButtonModule
+		MatFormField,
+		MatInput,
+		MatButton,
+		MatLabel
+
 	],
   templateUrl: './login-form.component.html',
   styleUrl: './login-form.component.scss'

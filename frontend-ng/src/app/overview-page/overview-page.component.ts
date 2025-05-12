@@ -5,12 +5,24 @@ import {handleDefaultError} from '../util/auth';
 import {EuroPalletDto} from '../api/models/euro-pallet-dto';
 import {LocationTypeDto} from '../api/models/location-type-dto';
 import {LogisticsLocationDto} from '../api/models/logistics-location-dto';
-import {MatTableDataSource, MatTableModule} from '@angular/material/table';
-import {MatPaginator, MatPaginatorModule} from '@angular/material/paginator';
-import {MatSort, MatSortModule} from '@angular/material/sort';
+import {
+	MatCell,
+	MatCellDef,
+	MatColumnDef,
+	MatHeaderCell,
+	MatHeaderCellDef,
+	MatHeaderRow,
+	MatHeaderRowDef,
+	MatRow,
+	MatRowDef,
+	MatTable,
+	MatTableDataSource
+} from '@angular/material/table';
+import {MatPaginator} from '@angular/material/paginator';
+import {MatSort, MatSortHeader} from '@angular/material/sort';
 import {formatLocationString, LocationComponent} from '../location/location/location.component';
 import {RouterLink} from '@angular/router';
-import {MatButtonToggleModule} from '@angular/material/button-toggle';
+import {MatButtonToggle, MatButtonToggleGroup} from '@angular/material/button-toggle';
 import {FormsModule} from '@angular/forms';
 import {DeliveryStateEnumDto} from '../api/models/delivery-state-enum-dto';
 import {BasicPackingListDto} from '../api/models/basic-packing-list-dto';
@@ -39,13 +51,24 @@ function getDataForSortEP(original: (d: EuroPalletDto, a: string) => number | st
 @Component({
   selector: 'app-overview-page',
 	imports: [
-		MatTableModule,
-		MatPaginatorModule,
-		MatSortModule,
 		LocationComponent,
 		RouterLink,
-		MatButtonToggleModule,
-		FormsModule
+		FormsModule,
+		MatButtonToggleGroup,
+		MatButtonToggle,
+		MatTable,
+		MatSort,
+		MatColumnDef,
+		MatHeaderCell,
+		MatCell,
+		MatHeaderCellDef,
+		MatCellDef,
+		MatSortHeader,
+		MatHeaderRow,
+		MatRow,
+		MatRowDef,
+		MatHeaderRowDef,
+		MatPaginator
 	],
   templateUrl: './overview-page.component.html',
   styleUrl: './overview-page.component.scss'

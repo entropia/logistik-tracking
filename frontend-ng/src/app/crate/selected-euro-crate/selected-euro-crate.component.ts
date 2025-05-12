@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import { ApiService } from '../../api/services';
+import {ApiService} from '../../api/services';
 import {EuroCrateDto} from '../../api/models/euro-crate-dto';
 import {FormsModule, NgForm, NgModel} from '@angular/forms';
 import {LocationEditorComponent} from '../../location/location-editor/location-editor.component';
@@ -9,7 +9,7 @@ import {MatError, MatFormField, MatInput, MatLabel} from '@angular/material/inpu
 import {MatOption, MatSelect} from '@angular/material/select';
 import {MatButton} from '@angular/material/button';
 import {handleDefaultError} from '../../util/auth';
-import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import {MatProgressSpinner} from '@angular/material/progress-spinner';
 
 @Component({
 	selector: 'app-selected-euro-crate',
@@ -24,7 +24,7 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 		MatOption,
 		MatInput,
 		MatButton,
-		MatProgressSpinnerModule
+		MatProgressSpinner
 	],
 	templateUrl: './selected-euro-crate.component.html',
 	styleUrl: './selected-euro-crate.component.scss'

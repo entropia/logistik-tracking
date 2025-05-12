@@ -3,13 +3,25 @@ import {ApiService} from '../../api/services/api.service';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {QrScannerService} from '../../qr-scanner.service';
 import {handleDefaultError} from '../../util/auth';
-import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import {MatProgressSpinner} from '@angular/material/progress-spinner';
 import {PackingListDto} from '../../api/models/packing-list-dto';
-import {MatTableDataSource, MatTableModule} from '@angular/material/table';
-import {MatPaginator, MatPaginatorModule} from '@angular/material/paginator';
-import {MatFormFieldModule} from '@angular/material/form-field';
-import {MatInputModule} from '@angular/material/input';
-import {MatSort, MatSortModule} from '@angular/material/sort';
+import {
+	MatCell,
+	MatCellDef,
+	MatColumnDef,
+	MatHeaderCell,
+	MatHeaderCellDef,
+	MatHeaderRow,
+	MatHeaderRowDef,
+	MatNoDataRow,
+	MatRow,
+	MatRowDef,
+	MatTable,
+	MatTableDataSource
+} from '@angular/material/table';
+import {MatPaginator} from '@angular/material/paginator';
+import {MatFormField, MatInput, MatLabel} from '@angular/material/input';
+import {MatSort, MatSortHeader} from '@angular/material/sort';
 import {EuroCrateDto} from '../../api/models/euro-crate-dto';
 import {LocationTypeDto} from '../../api/models/location-type-dto';
 import {LocationDto} from '../../api/models/location-dto';
@@ -17,9 +29,9 @@ import {MatBottomSheet} from '@angular/material/bottom-sheet';
 import {Action, CrateSettingsSheetComponent} from '../crate-settings-sheet/crate-settings-sheet.component';
 import {DeliveryStateEnumDto} from '../../api/models/delivery-state-enum-dto';
 import {LogisticsLocationDto} from '../../api/models/logistics-location-dto';
-import {MatButtonModule} from '@angular/material/button';
+import {MatButton, MatMiniFabButton} from '@angular/material/button';
 import {parseCrateId} from '../../util/qr-id-parser';
-import {MatIconModule} from '@angular/material/icon';
+import {MatIcon} from '@angular/material/icon';
 import {LocationComponent} from '../../location/location/location.component';
 
 function stringifyLocation(location: LocationDto) {
@@ -54,15 +66,10 @@ function customFilterPredicate(data: EuroCrateDto, filter: string): boolean {
 @Component({
   selector: 'app-packliste-auslieferung',
 	imports: [
-		MatProgressSpinnerModule,
-		MatTableModule,
-		MatPaginatorModule,
-		MatFormFieldModule,
-		MatInputModule,
-		MatSortModule,
 		LocationComponent,
-		MatButtonModule,
-		MatIconModule
+		MatButton, MatMiniFabButton, MatFormField, MatIcon, MatInput, MatTable, MatSort, MatColumnDef, MatHeaderCell, MatCell, MatHeaderCellDef, MatCellDef,
+		MatSortHeader, MatHeaderRow, MatRow, MatNoDataRow, MatRowDef, MatHeaderRowDef, MatPaginator, MatProgressSpinner,
+		MatLabel
 	],
   templateUrl: './packliste-auslieferung.component.html',
   styleUrl: './packliste-auslieferung.component.scss'

@@ -1,9 +1,7 @@
 import {Component} from '@angular/core';
-import {MatButtonModule} from '@angular/material/button';
 import {MatDialogActions, MatDialogContent, MatDialogRef, MatDialogTitle} from '@angular/material/dialog';
 import {MatFormField, MatInput, MatLabel} from '@angular/material/input';
 import {FormControl, FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {MatSelectModule} from '@angular/material/select';
 import {DeliveryStateEnumDto} from '../../api/models/delivery-state-enum-dto';
 import {OperationCenterDto} from '../../api/models/operation-center-dto';
 import {LocationDto} from '../../api/models/location-dto';
@@ -12,6 +10,8 @@ import {DatePipe, NgForOf} from '@angular/common';
 import {LocationEditorComponent} from '../../location/location-editor/location-editor.component';
 import {ValidateLocationDirective} from '../../location/location-editor/location-validator';
 import {LocationTypeDto} from '../../api/models/location-type-dto';
+import {MatOption, MatSelect} from '@angular/material/select';
+import {MatButton} from '@angular/material/button';
 
 
 @Component({
@@ -20,17 +20,18 @@ import {LocationTypeDto} from '../../api/models/location-type-dto';
 		MatDialogTitle,
 		MatDialogContent,
 		MatDialogActions,
-		MatButtonModule,
 		MatFormField,
 		MatInput,
 		FormsModule,
 		ReactiveFormsModule,
 		MatLabel,
-		MatSelectModule,
 		DatePipe,
 		NgForOf,
 		LocationEditorComponent,
-		ValidateLocationDirective
+		ValidateLocationDirective,
+		MatSelect,
+		MatOption,
+		MatButton
 	],
   templateUrl: './create-euro-crate.component.html',
   styleUrl: './create-euro-crate.component.scss'

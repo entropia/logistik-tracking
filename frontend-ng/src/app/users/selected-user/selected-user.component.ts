@@ -3,26 +3,29 @@ import {ApiService} from '../../api/services/api.service';
 import {UserDto} from '../../api/models/user-dto';
 import {handleDefaultError} from '../../util/auth';
 import {FormsModule, NgForm, NgModel} from '@angular/forms';
-import {MatInputModule} from '@angular/material/input';
-import {MatSelectModule} from '@angular/material/select';
+import {MatFormField, MatInput, MatLabel} from '@angular/material/input';
+import {MatOption, MatSelect} from '@angular/material/select';
 import {AuthorityEnumDto} from '../../api/models';
-import {MatButtonModule} from '@angular/material/button';
+import {MatButton} from '@angular/material/button';
 import {MatCheckbox} from '@angular/material/checkbox';
 import {ModifyUser$Params} from '../../api/fn/operations/modify-user';
 import bcrypt from "bcryptjs";
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {Router} from '@angular/router';
-import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import {MatProgressSpinner} from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-selected-user',
 	imports: [
 		FormsModule,
-		MatInputModule,
-		MatSelectModule,
-		MatButtonModule,
 		MatCheckbox,
-		MatProgressSpinnerModule
+		MatProgressSpinner,
+		MatFormField,
+		MatSelect,
+		MatOption,
+		MatInput,
+		MatButton,
+		MatLabel
 	],
   templateUrl: './selected-user.component.html',
   styleUrl: './selected-user.component.scss'

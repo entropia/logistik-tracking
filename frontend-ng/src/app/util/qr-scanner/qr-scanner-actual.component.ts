@@ -1,6 +1,6 @@
 import {Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {MatSnackBar} from '@angular/material/snack-bar';
-import {MatButtonModule} from '@angular/material/button';
+import {MatButton} from '@angular/material/button';
 import {QrScanRef} from '../../qr-scanner.service';
 import QrScanner from 'qr-scanner';
 import ScanResult = QrScanner.ScanResult;
@@ -8,7 +8,8 @@ import ScanResult = QrScanner.ScanResult;
 @Component({
   selector: 'app-qr-scanner-actual',
 	imports: [
-		MatButtonModule
+		MatButton
+
 	],
   templateUrl: './qr-scanner-actual.component.html',
   styleUrl: './qr-scanner-actual.component.scss'

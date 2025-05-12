@@ -9,13 +9,25 @@ import {MatButton} from '@angular/material/button';
 import {handleDefaultError} from '../../util/auth';
 import {RequiresAuthorityDirective} from '../../util/requires-permission.directive';
 import {AuthorityEnumDto} from '../../api/models/authority-enum-dto';
-import {MatTableDataSource, MatTableModule} from '@angular/material/table';
-import {MatFormFieldModule} from '@angular/material/form-field';
-import {MatInputModule} from '@angular/material/input';
-import {MatSort, MatSortModule} from '@angular/material/sort';
-import {MatPaginator, MatPaginatorModule} from '@angular/material/paginator';
+import {
+	MatCell,
+	MatCellDef,
+	MatColumnDef,
+	MatHeaderCell,
+	MatHeaderCellDef,
+	MatHeaderRow,
+	MatHeaderRowDef,
+	MatNoDataRow,
+	MatRow,
+	MatRowDef,
+	MatTable,
+	MatTableDataSource
+} from '@angular/material/table';
+import {MatSort, MatSortHeader} from '@angular/material/sort';
+import {MatPaginator} from '@angular/material/paginator';
 import {applyFiltersTo} from '../../util/tables';
 import {MatIcon} from '@angular/material/icon';
+import {MatFormField, MatInput, MatLabel} from '@angular/material/input';
 
 @Component({
 	selector: 'app-euro-crate',
@@ -24,12 +36,24 @@ import {MatIcon} from '@angular/material/icon';
 		RouterLink,
 		MatButton,
 		RequiresAuthorityDirective,
-		MatTableModule,
-		MatFormFieldModule,
-		MatInputModule,
-		MatSortModule,
-		MatPaginatorModule,
-		MatIcon
+		MatIcon,
+		MatFormField,
+		MatInput,
+		MatTable,
+		MatSort,
+		MatColumnDef,
+		MatHeaderCell,
+		MatHeaderCellDef,
+		MatCell,
+		MatCellDef,
+		MatHeaderRow,
+		MatRow,
+		MatHeaderRowDef,
+		MatRowDef,
+		MatNoDataRow,
+		MatPaginator,
+		MatSortHeader,
+		MatLabel
 	],
 	templateUrl: './euro-crate.component.html',
 	styleUrl: './euro-crate.component.scss'

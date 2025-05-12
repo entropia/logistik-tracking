@@ -2,26 +2,45 @@ import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
 import {ApiService} from '../../api/services/api.service';
 import {handleDefaultError} from '../../util/auth';
 import {UserDto} from '../../api/models/user-dto';
-import {MatTableDataSource, MatTableModule} from '@angular/material/table';
-import {MatSort, MatSortModule} from '@angular/material/sort';
-import {MatFormFieldModule} from '@angular/material/form-field';
-import {MatSelectModule} from '@angular/material/select';
+import {
+	MatCell,
+	MatCellDef,
+	MatColumnDef,
+	MatHeaderCell,
+	MatHeaderCellDef,
+	MatHeaderRow,
+	MatHeaderRowDef,
+	MatRow,
+	MatRowDef,
+	MatTable,
+	MatTableDataSource
+} from '@angular/material/table';
+import {MatSort, MatSortHeader} from '@angular/material/sort';
 import {FormsModule} from '@angular/forms';
 import {AuthorityEnumDto} from '../../api/models';
-import {MatButtonModule} from '@angular/material/button';
+import {MatButton} from '@angular/material/button';
 import {Router, RouterLink} from '@angular/router';
 import {MatDialog} from '@angular/material/dialog';
 
 @Component({
   selector: 'app-user-list',
 	imports: [
-		MatTableModule,
-		MatSortModule,
-		MatFormFieldModule,
-		MatSelectModule,
 		FormsModule,
-		MatButtonModule,
-		RouterLink
+		RouterLink,
+		MatButton,
+		MatTable,
+		MatSort,
+		MatColumnDef,
+		MatHeaderCell,
+		MatHeaderCellDef,
+		MatSortHeader,
+		MatCell,
+		MatCellDef,
+		MatHeaderRow,
+		MatRow,
+		MatRowDef,
+		MatHeaderRowDef
+
 	],
   templateUrl: './user-list.component.html',
   styleUrl: './user-list.component.scss'

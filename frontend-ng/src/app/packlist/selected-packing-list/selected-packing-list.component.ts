@@ -3,21 +3,26 @@ import {ApiService} from '../../api/services/api.service';
 import {PackingListDto} from '../../api/models/packing-list-dto';
 import {RouterLink} from '@angular/router';
 import {FormsModule, NgForm, NgModel} from '@angular/forms';
-import {
-	AuthorityEnumDto,
-	DeliveryStateEnumDto,
-	EuroCrateDto,
-	LocationDto,
-	LocationTypeDto,
-	LogisticsLocationDto,
-	PackingListPatchDto
-} from '../../api/models';
+import {AuthorityEnumDto, DeliveryStateEnumDto, EuroCrateDto, LocationDto, LocationTypeDto, LogisticsLocationDto, PackingListPatchDto} from '../../api/models';
 import {MatFormField, MatLabel} from '@angular/material/input';
 import {MatOption, MatSelect} from '@angular/material/select';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {MatButton, MatMiniFabButton} from '@angular/material/button';
-import {MatTableDataSource, MatTableModule} from '@angular/material/table';
-import {MatSort, MatSortModule} from '@angular/material/sort';
+import {
+	MatCell,
+	MatCellDef,
+	MatColumnDef,
+	MatHeaderCell,
+	MatHeaderCellDef,
+	MatHeaderRow,
+	MatHeaderRowDef,
+	MatNoDataRow,
+	MatRow,
+	MatRowDef,
+	MatTable,
+	MatTableDataSource
+} from '@angular/material/table';
+import {MatSort, MatSortHeader} from '@angular/material/sort';
 import {CrateAddWidgetComponent} from '../../util/crate-add-widget/crate-add-widget.component';
 import {MatIcon} from '@angular/material/icon';
 import {MatTooltip} from '@angular/material/tooltip';
@@ -25,13 +30,13 @@ import {HttpErrorResponse} from '@angular/common/http';
 import {QrScannerService} from '../../qr-scanner.service';
 import {parseCrateId} from '../../util/qr-id-parser';
 import {handleDefaultError} from '../../util/auth';
-import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {LocationEditorComponent} from '../../location/location-editor/location-editor.component';
 import {ValidateLocationDirective} from '../../location/location-editor/location-validator';
 import {forkJoin} from 'rxjs';
 import {AuthorityStatus, UserService} from '../../util/user.service';
 import {LocationComponent} from '../../location/location/location.component';
 import {MatTab, MatTabGroup} from '@angular/material/tabs';
+import {MatProgressSpinner} from '@angular/material/progress-spinner';
 
 enum ItemStatus {
 	KEEP,
@@ -54,19 +59,30 @@ type TheItem = {
 		MatSelect,
 		MatOption,
 		MatButton,
-		MatTableModule,
-		MatSortModule,
 		CrateAddWidgetComponent,
 		MatMiniFabButton,
 		MatIcon,
 		MatTooltip,
-		MatProgressSpinnerModule,
 		MatLabel,
 		LocationEditorComponent,
 		ValidateLocationDirective,
 		LocationComponent,
 		MatTabGroup,
-		MatTab
+		MatTab,
+		MatProgressSpinner,
+		MatTable,
+		MatSort,
+		MatColumnDef,
+		MatHeaderCell,
+		MatHeaderCellDef,
+		MatSortHeader,
+		MatCell,
+		MatCellDef,
+		MatHeaderRow,
+		MatRow,
+		MatHeaderRowDef,
+		MatRowDef,
+		MatNoDataRow
 	],
 	templateUrl: './selected-packing-list.component.html',
 	styleUrl: './selected-packing-list.component.scss'

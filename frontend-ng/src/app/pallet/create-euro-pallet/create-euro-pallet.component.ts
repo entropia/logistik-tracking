@@ -1,6 +1,6 @@
 import {Component} from '@angular/core';
 import {MatDialogActions, MatDialogContent, MatDialogRef, MatDialogTitle} from '@angular/material/dialog';
-import {MatButtonModule} from '@angular/material/button';
+import {MatButton} from '@angular/material/button';
 import {MatFormField, MatInput, MatLabel} from '@angular/material/input';
 import {FormControl, FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {NewEuroPalletDto} from '../../api/models/new-euro-pallet-dto';
@@ -17,14 +17,15 @@ import {LogisticsLocationDto} from '../../api/models/logistics-location-dto';
 		MatDialogTitle,
 		MatDialogContent,
 		MatDialogActions,
-		MatButtonModule,
+
 		MatFormField,
 		MatInput,
 		FormsModule,
 		ReactiveFormsModule,
 		MatLabel,
 		LocationEditorComponent,
-		ValidateLocationDirective
+		ValidateLocationDirective,
+		MatButton
 	],
 	templateUrl: './create-euro-pallet.component.html',
 	styleUrl: './create-euro-pallet.component.scss'

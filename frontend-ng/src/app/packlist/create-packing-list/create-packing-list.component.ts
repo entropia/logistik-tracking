@@ -1,6 +1,6 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {MatDialogActions, MatDialogContent, MatDialogRef, MatDialogTitle} from '@angular/material/dialog';
-import {MatButtonModule} from '@angular/material/button';
+import {MatButton} from '@angular/material/button';
 import {MatFormField, MatInput, MatLabel} from '@angular/material/input';
 import {FormControl, FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {NewPackingListDto} from '../../api/models/new-packing-list-dto';
@@ -15,7 +15,7 @@ import {MatOption, MatSelect} from '@angular/material/select';
 		MatDialogTitle,
 		MatDialogContent,
 		MatDialogActions,
-		MatButtonModule,
+
 		MatFormField,
 		MatInput,
 		FormsModule,
@@ -25,6 +25,7 @@ import {MatOption, MatSelect} from '@angular/material/select';
 		MatSelect,
 		NgForOf,
 		NgIf,
+		MatButton,
 	],
 	templateUrl: './create-packing-list.component.html',
 	styleUrl: './create-packing-list.component.scss'

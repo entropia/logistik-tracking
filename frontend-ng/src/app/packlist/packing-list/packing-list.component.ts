@@ -7,26 +7,35 @@ import {MatDialog} from '@angular/material/dialog';
 import {NewPackingListDto} from '../../api/models/new-packing-list-dto';
 import {RequiresAuthorityDirective} from '../../util/requires-permission.directive';
 import {AuthorityEnumDto} from '../../api/models/authority-enum-dto';
-import {MatFormFieldModule} from '@angular/material/form-field';
-import {MatTableDataSource, MatTableModule} from '@angular/material/table';
-import {MatInputModule} from '@angular/material/input';
-import {MatSort, MatSortModule} from '@angular/material/sort';
-import {MatPaginator, MatPaginatorModule} from '@angular/material/paginator';
-import {MatIconModule} from '@angular/material/icon';
+import {MatFormField} from '@angular/material/form-field';
+import {
+	MatCell,
+	MatCellDef,
+	MatColumnDef,
+	MatHeaderCell,
+	MatHeaderCellDef,
+	MatHeaderRow,
+	MatHeaderRowDef,
+	MatNoDataRow,
+	MatRow,
+	MatRowDef,
+	MatTable,
+	MatTableDataSource
+} from '@angular/material/table';
+import {MatInput, MatLabel} from '@angular/material/input';
+import {MatSort, MatSortHeader} from '@angular/material/sort';
+import {MatPaginator} from '@angular/material/paginator';
+import {MatIcon} from '@angular/material/icon';
 import {AuthorityStatus, UserService} from '../../util/user.service';
 import {handleDefaultError} from '../../util/auth';
 
 @Component({
 	selector: 'app-packing-list', imports: [
 		MatButton, RequiresAuthorityDirective,
-		MatFormFieldModule,
-		MatTableModule,
-		MatInputModule,
-		MatSortModule,
-		MatPaginatorModule,
-		MatIconModule,
-		MatMiniFabButton, RouterLink,
 
+		MatMiniFabButton, RouterLink, MatFormField, MatIcon, MatInput, MatTable, MatSort, MatColumnDef, MatHeaderCell, MatCell, MatHeaderCellDef, MatCellDef,
+		MatSortHeader, MatHeaderRow, MatRow, MatNoDataRow, MatRowDef, MatHeaderRowDef, MatPaginator,
+		MatLabel
 	], templateUrl: './packing-list.component.html', styleUrl: './packing-list.component.scss'
 })
 export class PackingListComponent implements OnInit {

@@ -9,13 +9,25 @@ import {NewEuroPalletDto} from '../../api/models/new-euro-pallet-dto';
 import {handleDefaultError} from '../../util/auth';
 import {AuthorityEnumDto} from '../../api/models/authority-enum-dto';
 import {RequiresAuthorityDirective} from '../../util/requires-permission.directive';
-import {MatTableDataSource, MatTableModule} from '@angular/material/table';
-import {MatFormFieldModule} from '@angular/material/form-field';
-import {MatInputModule} from '@angular/material/input';
-import {MatSort, MatSortModule} from '@angular/material/sort';
-import {MatPaginator, MatPaginatorModule} from '@angular/material/paginator';
+import {
+	MatCell,
+	MatCellDef,
+	MatColumnDef,
+	MatHeaderCell,
+	MatHeaderCellDef,
+	MatHeaderRow,
+	MatHeaderRowDef,
+	MatNoDataRow,
+	MatRow,
+	MatRowDef,
+	MatTable,
+	MatTableDataSource
+} from '@angular/material/table';
+import {MatFormField, MatInput, MatLabel} from '@angular/material/input';
+import {MatSort, MatSortHeader} from '@angular/material/sort';
+import {MatPaginator} from '@angular/material/paginator';
 import {AuthorityStatus, UserService} from '../../util/user.service';
-import {MatIconModule} from '@angular/material/icon';
+import {MatIcon} from '@angular/material/icon';
 
 @Component({
 	selector: 'app-euro-pallet',
@@ -24,13 +36,12 @@ import {MatIconModule} from '@angular/material/icon';
 		RouterLink,
 		MatButton,
 		RequiresAuthorityDirective,
-		MatTableModule,
-		MatFormFieldModule,
-		MatInputModule,
-		MatSortModule,
-		MatPaginatorModule,
-		MatIconModule,
-		MatMiniFabButton
+		RequiresAuthorityDirective,
+
+		MatMiniFabButton, RouterLink, MatFormField, MatIcon, MatInput, MatTable, MatSort, MatColumnDef, MatHeaderCell, MatCell, MatHeaderCellDef, MatCellDef,
+		MatSortHeader, MatHeaderRow, MatRow, MatNoDataRow, MatRowDef, MatHeaderRowDef, MatPaginator,
+		MatMiniFabButton,
+		MatLabel
 	],
 	templateUrl: './euro-pallet.component.html',
 	styleUrl: './euro-pallet.component.scss'

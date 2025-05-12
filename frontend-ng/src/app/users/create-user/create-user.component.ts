@@ -1,25 +1,22 @@
-import { Component } from '@angular/core';
-import {MatDialogModule, MatDialogRef} from '@angular/material/dialog';
-import {MatFormFieldModule} from '@angular/material/form-field';
-import {MatInputModule} from '@angular/material/input';
-import {MatButtonModule} from '@angular/material/button';
+import {Component} from '@angular/core';
+import {MatDialogActions, MatDialogContent, MatDialogRef, MatDialogTitle} from '@angular/material/dialog';
+import {MatFormField, MatInput, MatLabel} from '@angular/material/input';
+import {MatButton} from '@angular/material/button';
 import {FormsModule} from '@angular/forms';
 import {UserDto} from '../../api/models/user-dto';
-import {MatCheckboxModule} from '@angular/material/checkbox';
+import {MatCheckbox} from '@angular/material/checkbox';
 import bcrypt from 'bcryptjs';
-import {MatSelectModule} from '@angular/material/select';
+import {MatOption, MatSelect} from '@angular/material/select';
 import {AuthorityEnumDto} from '../../api/models';
 
 @Component({
   selector: 'app-create-user',
 	imports: [
-		MatDialogModule,
-		MatFormFieldModule,
-		MatInputModule,
-		MatButtonModule,
 		FormsModule,
-		MatCheckboxModule,
-		MatSelectModule
+		MatButton, MatFormField, MatInput, MatSelect, MatOption, MatCheckbox, MatDialogActions,
+		MatDialogContent,
+		MatDialogTitle,
+		MatLabel
 	],
   templateUrl: './create-user.component.html',
   styleUrl: './create-user.component.scss'

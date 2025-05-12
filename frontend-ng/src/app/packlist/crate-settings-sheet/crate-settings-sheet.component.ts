@@ -1,7 +1,7 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 import {MatBottomSheetRef} from '@angular/material/bottom-sheet';
-import {MatListModule} from '@angular/material/list';
-import {MatLineModule} from '@angular/material/core';
+import {MatListItem, MatNavList} from '@angular/material/list';
+import {MatLine} from '@angular/material/core';
 
 export enum Action {
 	Delivered,
@@ -12,8 +12,10 @@ export enum Action {
 @Component({
   selector: 'app-crate-settings-sheet',
 	imports: [
-		MatListModule,
-		MatLineModule
+		MatNavList,
+		MatListItem,
+		MatLine
+
 	],
   templateUrl: './crate-settings-sheet.component.html',
   styleUrl: './crate-settings-sheet.component.scss'

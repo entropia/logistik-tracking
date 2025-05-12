@@ -12,7 +12,7 @@ import {handleDefaultError} from '../../util/auth';
 import {NewPackingListDto} from '../../api/models/new-packing-list-dto';
 import {Router} from '@angular/router';
 import {MatDialog} from '@angular/material/dialog';
-import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import {MatProgressSpinner} from '@angular/material/progress-spinner';
 import {RequiresAuthorityDirective} from '../../util/requires-permission.directive';
 import {AuthorityEnumDto} from '../../api/models/authority-enum-dto';
 
@@ -24,8 +24,9 @@ import {AuthorityEnumDto} from '../../api/models/authority-enum-dto';
 		ValidateLocationDirective,
 		MatError,
 		MatButton,
-		MatProgressSpinnerModule,
-		RequiresAuthorityDirective
+
+		RequiresAuthorityDirective,
+		MatProgressSpinner
 	],
 	templateUrl: './selected-euro-pallet.component.html',
 	styleUrl: './selected-euro-pallet.component.scss'
