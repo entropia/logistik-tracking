@@ -27,5 +27,6 @@ pushd "$HOME_DIR" || exit 9
 "$JAVA_CMD" --enable-native-access=ALL-UNNAMED $JAVA_OPTS -jar "$JAR_PATH" "$@" &
 PID="$!"
 echo "$PID" > "$HOME_DIR/pid"
+wait "$PID"
 
 popd || exit 9
