@@ -29,8 +29,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: latest
-          cache: yarn
-          cache-dependency-path: frontend-ng/yarn.lock
 
       - run: npm i -g corepack
       - run: yarn install
