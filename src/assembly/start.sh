@@ -21,6 +21,9 @@ fi
 
 pushd "$HOME_DIR" || exit 9
 
+# shellcheck disable=SC2046
+[ ! -f env ] || export $(grep -v '^#' env | xargs)
+
 # lets go
 # shellcheck disable=SC2086
 #           V fuck you ron pressler
