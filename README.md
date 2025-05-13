@@ -1,3 +1,9 @@
+## a funny
+some people looking at the commit history might've seen that at some point, the db password for prod was stored in plain text.
+this was for testing.
+
+do not fret, for we have already changed the password and moved to a better alternative for storing it.
+
 ## Prerequisites
 
 - docker
