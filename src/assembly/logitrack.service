@@ -5,9 +5,9 @@ Requires=network.target nginx.service
 
 [Service]
 Type=forking
-PIDFile=/opt/@artifactId@-@version@/pid
-ExecStart=/opt/@artifactId@-@version@/bin/service_main.sh
-ExecStop=/opt/@artifactId@-@version@/bin/stop.sh
+PIDFile=/opt/logitrack/pid
+ExecStart=/opt/logitrack/bin/service_main.sh
+ExecStop=/opt/logitrack/bin/stop.sh
 Restart=no
 # 143 = 128 + 15; 128 + SIGTERM. we killed it, we expect it to return this one
 SuccessExitStatus=0 143
