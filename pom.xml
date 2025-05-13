@@ -34,14 +34,6 @@
         <url>https://github.com/0x3C50/logistik-tracking</url>
     </scm>
 
-    <distributionManagement>
-        <repository>
-            <id>github</id>
-            <name>GitHub Packages</name>
-            <url>https://maven.pkg.github.com/entropia/logistik-tracking</url>
-        </repository>
-    </distributionManagement>
-
     <properties>
         <java.version>23</java.version>
 

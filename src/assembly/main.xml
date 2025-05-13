@@ -11,13 +11,25 @@
             <outputDirectory>frontend</outputDirectory>
             <directory>frontend-ng/dist/frontend-ng/browser</directory>
         </fileSet>
+        <fileSet>
+            <includes>
+                <include>start.sh</include>
+                <include>stop.sh</include>
+                <include>service_main.sh</include>
+            </includes>
+            <directory>src/assembly</directory>
+            <outputDirectory>bin</outputDirectory>
+            <!--            rwxr__r__ -->
+            <fileMode>0744</fileMode>
+            <filtered>true</filtered>
+        </fileSet>
     </fileSets>
     <files>
         <file>
-            <source>src/assembly/start.sh</source>
+            <source>src/assembly/logitrack.service</source>
             <outputDirectory>bin</outputDirectory>
-<!--            rwxr__r__ -->
-            <fileMode>0744</fileMode>
+            <!--            rw_r__r__ -->
+            <fileMode>0644</fileMode>
             <filtered>true</filtered>
         </file>
     </files>

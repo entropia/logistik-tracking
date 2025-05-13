@@ -1,0 +1,16 @@
+[Unit]
+Description=Tracking system for GPN LOC
+Documentation=https://github.com/entropia/logistik-tracking
+Requires=network.target nginx.service
+
+[Service]
+Type=forking
+PIDFile=/opt/@artifactId@-@version@/pid
+ExecStart=/opt/@artifactId@-@version@/bin/service_main.sh
+ExecStop=/opt/@artifactId@-@version@/bin/stop.sh
+Restart=no
+# 143 = 128 + 15; 128 + SIGTERM. we killed it, we expect it to return this one
+SuccessExitStatus=0 143
+
+[Install]
+WantedBy=multi-user.target

@@ -9,6 +9,7 @@
 
 
 BIN_DIR=$(dirname "$0")
+HOME_DIR="$BIN_DIR/.."
 JAR_PATH=$(realpath "$BIN_DIR/@artifactId@-@version@.jar")
 
 # use JAVA_HOME if set, otherwise use java from PATH
@@ -18,11 +19,13 @@ else
   JAVA_CMD="java"
 fi
 
-pushd "$BIN_DIR/.." || exit 9
+pushd "$HOME_DIR" || exit 9
 
 # lets go
 # shellcheck disable=SC2086
 #           V fuck you ron pressler
-"$JAVA_CMD" --enable-native-access=ALL-UNNAMED $JAVA_OPTS -jar "$JAR_PATH" "$@"
+"$JAVA_CMD" --enable-native-access=ALL-UNNAMED $JAVA_OPTS -jar "$JAR_PATH" "$@" &
+PID="$!"
+echo "$PID" > "$HOME_DIR/pid"
 
 popd || exit 9
