@@ -35,3 +35,8 @@ see also https://yarnpkg.com/getting-started/install
 requires frontend to be built
 
 packages all relevant files (main fatjar, frontend, launcher script) into target/logistik-tracking-(version)-main
+
+## running architecture
+the built bundle contains a systemd unit, along with some scripts for making it work. if you just want this thing to work, put it in `/opt/logitrack` such that `/opt/logitrack/bin` exists and is a folder, add an `env` file containing `DB_PASSWORD=(password)` to the logitrack folder, link the service, and start it.
+
+the only requirement for running it is a running postgres db at port 5432, with a user logitrack with matching password in the env file, that has access to a db called logitrack. all else will be handled by the app.
