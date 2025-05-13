@@ -40,3 +40,10 @@ packages all relevant files (main fatjar, frontend, launcher script) into target
 the built bundle contains a systemd unit, along with some scripts for making it work. if you just want this thing to work, put it in `/opt/logitrack` such that `/opt/logitrack/bin` exists and is a folder, add an `env` file containing `DB_PASSWORD=(password)` to the logitrack folder, link the service, and start it.
 
 the only requirement for running it is a running postgres db at port 5432, with a user logitrack with matching password in the env file, that has access to a db called logitrack. all else will be handled by the app.
+
+by default, the app in prod assumes the following (via profiles):
+- production environment
+- systemd notify should be done on startup
+- a proxy is serving the public; only listen to loopback (127.0.0.1)
+
+if you want to change any of these things, edit the service_entry.sh file in src/assembly
