@@ -36,26 +36,38 @@
 							"@angular/material/prebuilt-themes/cyan-orange.css",
 							"src/styles.scss"
 						],
-						"scripts": []
+						"scripts": [],
+						"budgets": [
+							{
+								"type": "initial",
+								"maximumWarning": "500kB",
+								"maximumError": "5MB"
+							},
+							{
+								"type": "anyComponentStyle",
+								"maximumWarning": "4kB",
+								"maximumError": "8kB"
+							}
+						]
 					},
 					"configurations": {
-						"production": {
-							"budgets": [
-								{
-									"type": "initial",
-									"maximumWarning": "500kB",
-									"maximumError": "5MB"
-								},
-								{
-									"type": "anyComponentStyle",
-									"maximumWarning": "4kB",
-									"maximumError": "8kB"
-								}
-							],
+						"prodtest": {
 							"outputHashing": "all",
 							"sourceMap": false,
 							"namedChunks": false,
 							"extractLicenses": true
+						},
+						"production": {
+							"outputHashing": "all",
+							"sourceMap": false,
+							"namedChunks": false,
+							"extractLicenses": true,
+							"fileReplacements": [
+								{
+									"replace": "src/app/environments/environment.ts",
+									"with": "src/app/environments/environment.prod.ts"
+								}
+							]
 						},
 						"development": {
 							"optimization": false,
@@ -63,7 +75,7 @@
 							"sourceMap": true
 						}
 					},
-					"defaultConfiguration": "production"
+					"defaultConfiguration": "prodtest"
 				},
 				"serve": {
 					"builder": "@angular-devkit/build-angular:dev-server",
