@@ -8,8 +8,7 @@
 		"build_localtest": "yarn run ng-openapi-gen && ng build --configuration prodtest",
 		"build": "yarn run ng-openapi-gen && ng build --configuration production",
 		"watch": "yarn run ng-openapi-gen && ng build --watch --configuration development",
-		"test": "yarn run ng-openapi-gen && ng test",
-		"build-install-spring": "yarn run build_localtest && rsync -vrh --delete dist/frontend-ng/browser/ ../src/main/resources/static/"
+		"test": "yarn run ng-openapi-gen && ng test"
 	},
 	"private": true,
 	"dependencies": {

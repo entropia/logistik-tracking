@@ -10,7 +10,7 @@ countryName = XX
 stateOrProvinceName = N/A
 localityName = N/A
 organizationName = Self-signed certificate
-commonName = 10.214.227.88: Self-signed certificate
+commonName = Self-signed certificate
 
 [req_ext]
 subjectAltName = @alt_names

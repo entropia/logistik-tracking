@@ -36,6 +36,25 @@ requires frontend to be built
 
 packages all relevant files (main fatjar, frontend, launcher script) into target/logistik-tracking-(version)-main
 
+## build types
+### `entw`
+Local development. Uses locally set up database. Use docker compose `db/` and the base `LogistikTrackingApplication` run conf.
+
+### `testprod`
+Production environment on local machine. Uses mostly the same configuration as prod, still relies on local database. Use docker compose and the `LogistikTrackingApplication testprod`.
+1. build frontend: `yarn build_localtest`
+2. start application
+
+This configuration uses a self signed ssl cert to allow camera usage on ios safari. The certificate configuration for openssl is located at `testprod/self_signed_cert.cnf`.
+
+The certificate can be generated with: `openssl req -x509 -nodes -days 730 -newkey rsa:2048 -keyout self_signed_pk.pem -out self_signed_cert.pem -config self_signed_cert.cnf`
+
+### `prod`
+Production environment. Relies on db on 127.0.0.1:5432. 
+1. build frontend: `yarn build`
+2. generate bundle: `mvn clean package`
+3. deploy bundle as described below
+
 ## running architecture
 the built bundle contains a systemd unit, along with some scripts for making it work. if you just want this thing to work, put it in `/opt/logitrack` such that `/opt/logitrack/bin` exists and is a folder, add an `env` file containing `DB_PASSWORD=(password)` to the logitrack folder, link the service, and start it.
 

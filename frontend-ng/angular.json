@@ -55,7 +55,13 @@
 							"outputHashing": "all",
 							"sourceMap": false,
 							"namedChunks": false,
-							"extractLicenses": true
+							"extractLicenses": true,
+							"fileReplacements": [
+								{
+									"replace": "src/app/environments/environment.ts",
+									"with": "src/app/environments/environment.prodtest.ts"
+								}
+							]
 						},
 						"production": {
 							"outputHashing": "all",
