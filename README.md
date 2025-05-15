@@ -38,10 +38,10 @@ packages all relevant files (main fatjar, frontend, launcher script) into target
 
 ## build types
 ### `entw`
-Local development. Uses locally set up database. Use docker compose `db/` and the base `LogistikTrackingApplication` run conf.
+Local development. Uses locally set up database. Use the `LogistikTrackingApplication` run conf.
 
 ### `testprod`
-Production environment on local machine. Uses mostly the same configuration as prod, still relies on local database. Use docker compose and the `LogistikTrackingApplication testprod`.
+Production environment on local machine. Uses mostly the same configuration as prod, still relies on local database. Use the `LogistikTrackingApplication testprod` conf.
 1. build frontend: `yarn build_localtest`
 2. start application
 
@@ -66,3 +66,79 @@ by default, the app in prod assumes the following (via profiles):
 - a proxy is serving the public; only listen to loopback (127.0.0.1)
 
 if you want to change any of these things, edit the service_entry.sh file in src/assembly
+
+### Example Ansible deploy script
+Used by us in prod. Changes will have to be made. The same host this will run on already has a properly configured nginx. See our config below.
+```yaml
+- name: Get latest release
+  ansible.builtin.uri:
+    url: https://api.github.com/repos/entropia/logistik-tracking/releases/latest
+    return_content: true
+  register: latest_release
+
+- name: Parse release & get url
+  set_fact:
+    lr_url: "{{ latest_release.json | json_query(\"assets[?ends_with(name, '.tar.gz')].url | [0]\") }}"
+
+- name: Download release
+  ansible.builtin.get_url:
+    url: "{{ lr_url }}"
+    headers:
+      Accept: application/octet-stream
+    dest: /tmp/logitrack_latest.tar.gz
+
+- name: Remove old release
+  ansible.builtin.file:
+    path: /opt/logitrack
+    state: absent
+
+- name: Install release 1/2
+  ansible.builtin.file:
+    path: /opt/logitrack
+    state: directory
+    mode: '0755'
+
+- name: Install release 2/2
+  ansible.builtin.unarchive:
+    src: /tmp/logitrack_latest.tar.gz
+    dest: /opt/logitrack
+    remote_src: yes
+    extra_opts:
+      - --strip-components
+      - 1
+
+- name: Populate env
+  ansible.builtin.copy:
+    content: |
+      DB_PASSWORD={{ logitrack_postgres_pw }}
+    dest: /opt/logitrack/env
+
+- name: Install service
+  ansible.builtin.file:
+    src: /opt/logitrack/bin/logitrack.service
+    dest: /lib/systemd/system/logitrack.service
+    state: link
+
+- name: Reload systemd, restart service
+  ansible.builtin.systemd_service:
+    name: "logitrack"
+    state: "restarted"
+    daemon_reload: true
+```
+
+### Example nginx config
+```nginx configuration
+server {
+    listen 80;
+    listen [::]:80;
+
+    server_name example.de;
+    
+    location / {
+      proxy_pass http://localhost:8080;
+      proxy_connect_timeout 20s;
+      proxy_send_timeout 10s;
+      proxy_read_timeout 20s;  
+    }
+}
+```

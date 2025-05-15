@@ -6,6 +6,7 @@
     <option name="VM_PARAMETERS" value="-Dxr.util-logging.loggingEnabled=true" />
     <method v="2">
       <option name="Make" enabled="true" />
+      <option name="RunConfigurationTask" enabled="true" run_configuration_name="Start Local DB" run_configuration_type="docker-deploy" />
     </method>
   </configuration>
 </component>
