@@ -17,12 +17,14 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
 import java.util.Optional;
 
-@Controller("/euroPallet")
+@Controller
 @AllArgsConstructor
+@RequestMapping("/api")
 public class EuroPalletRoute implements EuroPalletApi {
 	private final EuroPalletUseCase createEuroPalletUseCase;
 	private final PackingListDatabaseService packingListDatabaseService;

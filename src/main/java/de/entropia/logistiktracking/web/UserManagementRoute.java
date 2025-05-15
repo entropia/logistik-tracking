@@ -23,13 +23,15 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
 import java.util.Optional;
 
 @Slf4j
-@Controller("/users")
+@Controller
 @AllArgsConstructor
+@RequestMapping("/api")
 public class UserManagementRoute implements UsersApi {
 	private final UserDatabaseService userDatabaseService;
 	private final SessionManagement sessionManagement;

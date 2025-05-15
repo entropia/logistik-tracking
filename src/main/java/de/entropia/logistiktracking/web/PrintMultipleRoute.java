@@ -16,6 +16,7 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -24,6 +25,7 @@ import java.util.concurrent.CompletableFuture;
 
 @Controller
 @AllArgsConstructor
+@RequestMapping("/api")
 public class PrintMultipleRoute implements PrintMultipleApi {
 	private final EuroCrateUseCase euroCrateUseCase;
 	private final EuroPalletUseCase euroPalletUseCase;

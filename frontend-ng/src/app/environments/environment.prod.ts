@@ -1,3 +1,3 @@
 export const environment = {
-	backendUrl: "https://lager.entropia.de"
+	backendUrl: "https://lager.entropia.de/api"
 };
