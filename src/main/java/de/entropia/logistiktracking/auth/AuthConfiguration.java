@@ -39,7 +39,7 @@ public class AuthConfiguration {
 						.anyRequest().permitAll() // per default allow everything, secure routes individually
 				)
 				.formLogin(fl -> {
-					fl.loginProcessingUrl("/login"); // POST /login to log in
+					fl.loginProcessingUrl("/api/login"); // POST /login to log in
 					SimpleUrlAuthenticationSuccessHandler handler = new SimpleUrlAuthenticationSuccessHandler();
 					handler.setDefaultTargetUrl(frontendBaseUrl+"/"); // default: no idea where to go
 					handler.setAlwaysUseDefaultTargetUrl(false);
