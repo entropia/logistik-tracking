@@ -37,14 +37,7 @@ public class EuroCrateUseCase {
 	private final EuroCratePdfGenerator euroCratePdfGenerator;
 
 	public Result<EuroCrateDto, CreateEuroCrateError> createEuroCrate(NewEuroCrateDto euroCrateDto) {
-		EuroCrate euroCrate;
-		try {
-			euroCrate = euroCrateConverter.from(euroCrateDto);
-		} catch (IllegalArgumentException e) {
-			return new Result.Error<>(CreateEuroCrateError.BadArguments);
-		}
-
-		Optional<EuroCrate> newEuroCrate = euroCrateRepository.createNewEuroCrate(euroCrate);
+		Optional<EuroCrate> newEuroCrate = euroCrateRepository.createNewEuroCrate(euroCrateConverter.from(euroCrateDto));
 		if (newEuroCrate.isEmpty()) {
 			return new Result.Error<>(CreateEuroCrateError.EuroCrateWithIdAlreadyExists);
 		}

@@ -12,9 +12,30 @@ public class TestHelper {
 
     @Transactional
     public void cleanDatabase() {
+        em.createQuery("delete from UserDatabaseElement ").executeUpdate();
+        em.createQuery("DELETE FROM EuroCrateDatabaseElement").executeUpdate();
         em.createQuery("DELETE FROM PackingListDatabaseElement").executeUpdate();
         em.createQuery("DELETE FROM EuroPalletDatabaseElement").executeUpdate();
-        em.createQuery("DELETE FROM EuroCrateDatabaseElement").executeUpdate();
-        em.createQuery("delete from UserDatabaseElement ").executeUpdate();
+    }
+
+    public <T> T saveNew(T t) {
+        T v = em.merge(t);
+        em.persist(v);
+        return v;
+    }
+
+    public void update(Object t) {
+        em.persist(t);
+    }
+
+    @SuppressWarnings("unchecked")
+	public <T> T find(Object id, T... typeProbe) {
+        T t = (T) em.find(typeProbe.getClass().componentType(), id);
+        em.refresh(t);
+        return t;
+    }
+
+    public void flush() {
+        em.flush();
     }
 }

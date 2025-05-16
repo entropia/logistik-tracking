@@ -15,6 +15,7 @@ import jakarta.persistence.criteria.Root;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -59,6 +60,7 @@ public class EuroCrateRepository {
 		return euroCrateDatabaseService.findById(id);
 	}
 
+	@Transactional
 	public int executeUpdate(long id, EuroCratePatchDto euroCratePatchDto) {
 		// mega cursed aber glaub der beste weg um eine halbwegs dynamische query zu machen
 		// alternativ halt drei mal separate updates aufrufen was wieder extra zeit kostet :agony:
