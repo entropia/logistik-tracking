@@ -14,7 +14,7 @@ public class TestHelper {
     public void cleanDatabase() {
         em.createQuery("DELETE FROM PackingListDatabaseElement").executeUpdate();
         em.createQuery("DELETE FROM EuroPalletDatabaseElement").executeUpdate();
-        em.createQuery("DELETE FROM EuroCrateDatabaseElement ").executeUpdate();
-        em.createQuery("DELETE FROM LocationDatabaseElement ").executeUpdate();
+        em.createQuery("DELETE FROM EuroCrateDatabaseElement").executeUpdate();
+        em.createQuery("delete from UserDatabaseElement ").executeUpdate();
     }
 }

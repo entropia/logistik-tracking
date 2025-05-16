@@ -38,7 +38,7 @@ class CreateEuroPalletUseCaseTest {
         assertThat(result).isInstanceOf(Result.Ok.class);
         EuroPalletDto euroPallet = result.result();
 
-        assertThat(euroPalletDatabaseService.findAll()).anyMatch(element -> euroPallet.getEuroPalletId().longValue() == element.getPalletId());
+        assertThat(euroPalletDatabaseService.findAll()).anyMatch(element -> euroPallet.getEuroPalletId() == element.getPalletId());
     }
 
     @Test

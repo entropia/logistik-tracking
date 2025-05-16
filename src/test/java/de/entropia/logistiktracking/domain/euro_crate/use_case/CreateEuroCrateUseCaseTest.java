@@ -35,6 +35,6 @@ class CreateEuroCrateUseCaseTest {
 
         EuroCrateDto createdEuroCrate = createEuroCrateUseCase.createEuroCrate(newEuroCrate).result();
 
-        assertThat(createdEuroCrate).usingRecursiveComparison().isEqualTo(newEuroCrate.information(""));
+        assertThat(createdEuroCrate).usingRecursiveComparison().ignoringFields("internalId").isEqualTo(newEuroCrate.information(""));
     }
 }

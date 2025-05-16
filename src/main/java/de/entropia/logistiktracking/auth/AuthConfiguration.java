@@ -50,6 +50,7 @@ public class AuthConfiguration {
 				})
 				.logout(it -> {
 					it.logoutSuccessUrl(frontendBaseUrl+"/");
+					it.logoutUrl("/api/logout");
 				})
 				.cors((cors) -> cors.configurationSource(apiConfigurationSource()))
 				.csrf(AbstractHttpConfigurer::disable)

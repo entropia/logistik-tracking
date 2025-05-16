@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.test.context.support.WithUserDetails;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -28,6 +29,7 @@ class PackingListRouteTest {
     }
 
     @Test
+    @WithUserDetails
     public void canCreateNewPackingList() {
 		long euroPalletId = createEuroPalletUseCase.createEuroPallet(
 				new NewEuroPalletDto().location(new LocationDto().locationType(LocationTypeDto.SOMEWHERE_ELSE).somewhereElse("123"))).result().getEuroPalletId();
@@ -43,6 +45,7 @@ class PackingListRouteTest {
     }
 
     @Test
+    @WithUserDetails
     public void cannotCreateNewPackingListWithMissingEuroPalletId() {
         ResponseEntity<PackingListDto> response = route.createPackingList(new NewPackingListDto().name("finanzen").packedOnPallet(15L));
 

@@ -2,12 +2,14 @@ package de.entropia.logistiktracking.web;
 
 import de.entropia.logistiktracking.TestHelper;
 import de.entropia.logistiktracking.openapi.model.*;
+import jakarta.validation.ConstraintViolationException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.test.context.support.WithUserDetails;
 
 import java.util.Optional;
 
@@ -27,6 +29,7 @@ class EuroPalletRouteTest {
     }
 
     @Test
+    @WithUserDetails
     public void canCreateEuroPallet() {
         String information = "some info";
         LocationDto locationDto = new LocationDto()
@@ -47,11 +50,12 @@ class EuroPalletRouteTest {
     }
 
     @Test
+    @WithUserDetails
     public void cannotCreateEuroPalletWithMissingLocation() {
         String information = "some info";
 
-        ResponseEntity<EuroPalletDto> response = euroPalletRoute.createEuroPallet(new NewEuroPalletDto().information(information));
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThrows(ConstraintViolationException.class, () -> {
+            euroPalletRoute.createEuroPallet(new NewEuroPalletDto().information(information));
+        });
     }
 }
