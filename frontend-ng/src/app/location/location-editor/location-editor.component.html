@@ -23,7 +23,7 @@
 			<mat-form-field>
 				<mat-label>OC-Ort</mat-label>
 				<mat-select [(value)]="location.operationCenter" (valueChange)="update()" required>
-					@for (v of Object.values(OperationCenterDto); track v) {
+					@for (v of Object.values(OperationCenterDto).sort(); track v) {
 						<mat-option [value]="v">{{ v }}</mat-option>
 					}
 				</mat-select>

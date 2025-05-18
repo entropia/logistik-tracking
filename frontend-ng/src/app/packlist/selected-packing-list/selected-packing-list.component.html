@@ -61,7 +61,7 @@
 		</mat-tab>
 		<mat-tab label="Kisten">
 			<form (ngSubmit)="saveCrates(theForm2);" #theForm2="ngForm" class="content">
-				<div>
+				<div style="overflow: scroll hidden">
 					<table mat-table [dataSource]="source" matSort>
 
 						<ng-container matColumnDef="status">

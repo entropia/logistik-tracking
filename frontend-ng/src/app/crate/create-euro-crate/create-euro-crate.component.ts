@@ -39,7 +39,7 @@ import {LogisticsLocationDto} from '../../api/models/logistics-location-dto';
 })
 export class CreateEuroCrateComponent {
 	readonly form;
-	operationCenters = Object.values(OperationCenterDto);
+	operationCenters = Object.values(OperationCenterDto).sort();
 	deliveryStates = Object.values(DeliveryStateEnumDto);
 	readonly returnDates = this.generateDateRange('2025-06-18', '2025-06-23');
 
