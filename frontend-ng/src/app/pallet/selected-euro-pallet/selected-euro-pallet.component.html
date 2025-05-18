@@ -5,12 +5,13 @@
 		<h1>Palette {{ pallet.euroPalletId }}</h1>
 		<button
 			(click)="createPackingList()"
-			mat-raised-button
+			mat-flat-button
 			*requireAuthority="AuthorityEnumDto.ManageResources"
+			style="margin-bottom: 15px"
 		>
 			Zugehörige Packliste erstellen
 		</button>
-		<form (ngSubmit)="saveIt(); theForm.control.markAsPristine()" #theForm="ngForm">
+		<form (ngSubmit)="saveIt(theForm)" #theForm="ngForm">
 			<div class="content">
 				<app-location-editor appValidateLocation [(ngModel)]="editingLocation" name="location"
 									 #name="ngModel"></app-location-editor>

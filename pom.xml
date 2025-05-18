@@ -10,7 +10,7 @@
     </parent>
     <groupId>de.entropia</groupId>
     <artifactId>logistik-tracking</artifactId>
-    <version>0.0.6</version>
+    <version>0.0.9</version>
     <name>logistikTracking</name>
     <description>logistikTracking</description>
     <url>https://github.com/entropia/logistik-tracking</url>

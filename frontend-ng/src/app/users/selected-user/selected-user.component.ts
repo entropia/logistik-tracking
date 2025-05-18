@@ -4,7 +4,6 @@ import {UserDto} from '../../api/models/user-dto';
 import {handleDefaultError} from '../../util/auth';
 import {FormsModule, NgForm, NgModel} from '@angular/forms';
 import {MatFormField, MatInput, MatLabel} from '@angular/material/input';
-import {MatOption, MatSelect} from '@angular/material/select';
 import {AuthorityEnumDto} from '../../api/models';
 import {MatButton} from '@angular/material/button';
 import {MatCheckbox} from '@angular/material/checkbox';
@@ -13,6 +12,16 @@ import bcrypt from "bcryptjs";
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {Router} from '@angular/router';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
+import {MatListOption, MatSelectionList} from '@angular/material/list';
+import {MatIcon} from '@angular/material/icon';
+import {MatDialog} from '@angular/material/dialog';
+import {AreYouSureComponent, Choice} from '../../are-you-sure/are-you-sure.component';
+
+const mapAuthToReadable = {
+	MANAGE_USERS: "Nutzer Verwalten",
+	MANAGE_RESOURCES: "Ressourcen Erstellen & Ändern",
+	PRINT: "Drucken"
+}
 
 @Component({
   selector: 'app-selected-user',
@@ -21,11 +30,12 @@ import {MatProgressSpinner} from '@angular/material/progress-spinner';
 		MatCheckbox,
 		MatProgressSpinner,
 		MatFormField,
-		MatSelect,
-		MatOption,
 		MatInput,
 		MatButton,
-		MatLabel
+		MatLabel,
+		MatSelectionList,
+		MatListOption,
+		MatIcon
 	],
   templateUrl: './selected-user.component.html',
   styleUrl: './selected-user.component.scss'
@@ -43,7 +53,8 @@ export class SelectedUserComponent implements OnInit {
 	constructor(
 		private api: ApiService,
 		private modal: MatSnackBar,
-		private router: Router
+		private router: Router,
+		private diag: MatDialog
 	) {
 	}
 
@@ -87,17 +98,29 @@ export class SelectedUserComponent implements OnInit {
 
 	protected readonly Object = Object;
 	protected readonly AuthorityEnumDto = AuthorityEnumDto;
+	protected readonly mapAuthToReadable = mapAuthToReadable;
 
 	delete() {
-		this.api.deleteUser({
-			username: this.id
-		}).subscribe({
-			next: _ => {
-				this.modal.open("Deleted!", undefined, {
-					duration: 4000
+		this.diag.open<AreYouSureComponent, Choice[], Choice>(AreYouSureComponent, {
+			data: [{
+				title: "Abbrechen"
+			}, {
+				title: "Löschen",
+				style: "color: #ea680b"
+			}]
+		}).afterClosed().subscribe(result => {
+			if (result && result.title == "Löschen") {
+				this.api.deleteUser({
+					username: this.id
+				}).subscribe({
+					next: _ => {
+						this.modal.open("Deleted!", undefined, {
+							duration: 4000
+						})
+						this.router.navigate(["/users"])
+					}, error: handleDefaultError
 				})
-				this.router.navigate(["/users"])
-			}, error: handleDefaultError
+			}
 		})
 	}
 }

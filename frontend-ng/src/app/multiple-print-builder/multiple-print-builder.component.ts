@@ -10,8 +10,13 @@ import {PrintMultipleDto} from '../api/models/print-multiple-dto';
 import {handleDefaultError} from '../util/auth';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
 
+enum ResType {
+	Crate = "Crate",
+	Pallet = "Pallet"
+}
+
 interface Resource {
-	type: string;
+	type: ResType;
 	icon: string;
 	id: number;
 	label: string;
@@ -124,4 +129,39 @@ export class MultiplePrintBuilderComponent implements OnInit {
 			}
 		})
 	}
+
+	// ich bin glaub ich behindert. qr code scanner BEIM QR CODE GENERIEREN ist ein wenig sinnfrei, oder??
+	// scan() {
+	// 	let qrScanRef = this.qr.startScanning();
+	// 	qrScanRef.onScanned.subscribe(v => {
+	// 		try {
+	// 			let id = parseId(v)
+	// 			switch (id.kind) {
+	// 				case IdKind.Crate:
+	// 					let found = this.availableRes.find(it => it.type == ResType.Crate && it.id == id.id)
+	// 					if (found) {
+	// 						this.addItem(found)
+	// 					}
+	// 					break
+	// 				case IdKind.Pallet:
+	// 					let foundp = this.availableRes.find(it => it.type == ResType.Pallet && it.id == id.id)
+	// 					if (foundp) {
+	// 						this.addItem(foundp)
+	// 					}
+	// 					break
+	// 				case IdKind.List:
+	// 					this.snack.open("Listen können nicht hierdurch gedruckt werden", undefined, {
+	// 						duration: 4000
+	// 					})
+	// 					break
+	// 			}
+	// 		} catch (e) {
+	// 			if (e instanceof Error) {
+	// 				this.snack.open(`Wahrscheinlich keine box: ${e.message}`, undefined, {
+	// 					duration: 2000
+	// 				})
+	// 			}
+	// 		}
+	// 	})
+	// }
 }

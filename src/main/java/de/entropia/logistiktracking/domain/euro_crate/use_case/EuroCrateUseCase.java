@@ -16,19 +16,9 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Optional;
 
-// TODO: Let's get rid of all the duplication.
 @Component
 @AllArgsConstructor
 @Transactional
-// fixme die ganzen methoden hier sind synchronized weil ne menge leute gleichzeitig methoden aufrufen können
-//    normalerweise macht hibernate das ab, allerdings mappen wir von objekt zu objekt und deshalb verliert hibernate
-//    den plot.
-//    Thread A:  Get DB Obj (A)  Map DB Obj (A)   Map to DB Obj (A)   Save DB (A)
-//    Thread B:                  Get DB Obj (A)   Map DB Obj (B)      Map to DB Obj (B)   Save DB (B)
-//    Sollte sein:
-//    A:  Get DB Obj (A)   Update DB Obj (A)
-//    B:                   Get DB Obj (A)    Update DB Obj (A)
-//    ^ das auch falsch aber iwie auch richtig, das ganze ist ein riesiger schrotthaufen
 public class EuroCrateUseCase {
 	private final EuroCrateConverter euroCrateConverter;
 	private final EuroCrateRepository euroCrateRepository;

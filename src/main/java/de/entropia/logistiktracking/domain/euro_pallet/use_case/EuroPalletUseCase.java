@@ -118,7 +118,6 @@ public class EuroPalletUseCase {
 	}
 
 	public enum PrintEuroPalletError {
-		BadArguments,
 		PalletNotFound,
 		FailedToGeneratePdf
 	}

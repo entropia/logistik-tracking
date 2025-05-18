@@ -4,25 +4,25 @@
 	<h1>Nutzer {{user.username}}</h1>
 
 	<form #theForm="ngForm" (ngSubmit)="saveUser(authorities, enabled, newPwA)">
-		<mat-form-field>
-			<mat-label>Berechtigungen</mat-label>
-			<mat-select multiple [(ngModel)]="user.authorities" name="authorities" #authorities="ngModel">
-				@for (auth of Object.values(AuthorityEnumDto); track auth) {
-					<mat-option [value]="auth">{{auth}}</mat-option>
-				}
-			</mat-select>
-		</mat-form-field>
-
-		<mat-checkbox [(ngModel)]="user.enabled" name="enabled" #enabled="ngModel">Aktiv</mat-checkbox>
-
+		<mat-checkbox [(ngModel)]="user.enabled" name="enabled" #enabled="ngModel">Account Aktiv</mat-checkbox>
+		<h2>Passwort</h2>
 		<mat-form-field>
 			<mat-label>Neues passwort</mat-label>
 			<input matInput type="password" name="passwd" [(ngModel)]="newPw" #newPwA="ngModel">
 		</mat-form-field>
-
-		<div>
-			<button mat-flat-button class="danger" type="button" (click)="delete()">Löschen</button>
-			<button mat-flat-button [disabled]="!theForm.dirty" type="submit">
+		<h2>Berechtigungen</h2>
+		<mat-selection-list #authorities="ngModel" [(ngModel)]="user.authorities" name="authorities">
+			@for (auth of Object.values(AuthorityEnumDto); track auth) {
+				<mat-list-option [value]="auth">{{mapAuthToReadable[auth]}}</mat-list-option>
+			}
+		</mat-selection-list>
+		<div class="bgroup fg">
+			<button mat-flat-button class="danger" type="button" (click)="delete()" style="flex-grow: 1">
+				<mat-icon>delete</mat-icon>
+				Löschen
+			</button>
+			<button mat-flat-button [disabled]="!theForm.dirty" type="submit" style="flex-grow: 1">
+				<mat-icon>save</mat-icon>
 				Speichern
 			</button>
 		</div>

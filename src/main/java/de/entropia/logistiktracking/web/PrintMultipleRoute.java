@@ -41,8 +41,17 @@ public class PrintMultipleRoute implements PrintMultipleApi {
 			CompletableFuture<Result<byte[], ?>> resultCompletableFuture = theFunny.get(i);
 			Result<byte[], ?> join = resultCompletableFuture.join();
 			if (join instanceof Result.Error<byte[],?>) {
-				// FIXME 18 Apr. 2025 00:22:
-				return ResponseEntity.internalServerError().build();
+				return switch (join.error()) {
+					case EuroCrateUseCase.PrintEuroCrateError pe -> switch (pe) {
+						case CrateNotFound -> ResponseEntity.notFound().build();
+						case FailedToGeneratePdf -> ResponseEntity.internalServerError().build();
+					};
+					case EuroPalletUseCase.PrintEuroPalletError pe -> switch (pe) {
+						case PalletNotFound -> ResponseEntity.notFound().build();
+						case FailedToGeneratePdf -> ResponseEntity.internalServerError().build();
+					};
+					default -> ResponseEntity.notFound().build();
+				};
 			}
 			reader[i] = new PdfReader(new ByteArrayInputStream(join.result()));
 		}

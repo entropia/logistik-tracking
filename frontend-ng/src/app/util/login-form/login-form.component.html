@@ -5,7 +5,6 @@
 	@if (hadError) {
 		<p class="error">Nutzername oder Passwort ist falsch</p>
 	}
-	<!-- fixme url dynamisch rausfinden (window host?) -->
 	<form [action]="apiUrl()+'/login'+getFromPart()" method="post" class="theForm">
 		<mat-form-field>
 			<mat-label>Nutzername</mat-label>

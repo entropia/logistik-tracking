@@ -1,0 +1,9 @@
+<h2 mat-dialog-title>Aktion Bestätigen</h2>
+<mat-dialog-content>
+	<img ngSrc="/are_you_sure.gif" width="498" height="374" alt="Are you sure? Omni man clip">
+</mat-dialog-content>
+<mat-dialog-actions>
+	@for(a of data; track a.title) {
+		<button mat-button (click)="sendAction(a)" [style]="a.style">{{a.title}}</button>
+	}
+</mat-dialog-actions>

@@ -15,16 +15,14 @@
 		</button>
 	}
 	<br style="margin-bottom: 50px">
-	<button mat-mini-fab type="button" (click)="doTheScan()">
-		<mat-icon fontIcon="qr_code_scanner"></mat-icon>
-	</button>
 
-	<mat-form-field>
+	<mat-form-field style="margin-right: 15px;">
 		<mat-label>Suchen</mat-label>
 		<input matInput (keyup)="applyFilter($event)" placeholder="Ex. Finanzen, bargeld-1" #input>
 	</mat-form-field>
-
-
+	<button mat-fab type="button" (click)="doTheScan()">
+		<mat-icon fontIcon="qr_code_scanner"></mat-icon>
+	</button>
 
 	<div>
 		<table mat-table [dataSource]="dataSource" matSort>

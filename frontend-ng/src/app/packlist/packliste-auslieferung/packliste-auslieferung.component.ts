@@ -29,7 +29,7 @@ import {MatBottomSheet} from '@angular/material/bottom-sheet';
 import {Action, CrateSettingsSheetComponent} from '../crate-settings-sheet/crate-settings-sheet.component';
 import {DeliveryStateEnumDto} from '../../api/models/delivery-state-enum-dto';
 import {LogisticsLocationDto} from '../../api/models/logistics-location-dto';
-import {MatButton, MatMiniFabButton} from '@angular/material/button';
+import {MatButton, MatFabButton} from '@angular/material/button';
 import {parseCrateId} from '../../util/qr-id-parser';
 import {MatIcon} from '@angular/material/icon';
 import {LocationComponent} from '../../location/location/location.component';
@@ -67,9 +67,9 @@ function customFilterPredicate(data: EuroCrateDto, filter: string): boolean {
   selector: 'app-packliste-auslieferung',
 	imports: [
 		LocationComponent,
-		MatButton, MatMiniFabButton, MatFormField, MatIcon, MatInput, MatTable, MatSort, MatColumnDef, MatHeaderCell, MatCell, MatHeaderCellDef, MatCellDef,
+		MatButton, MatFormField, MatIcon, MatInput, MatTable, MatSort, MatColumnDef, MatHeaderCell, MatCell, MatHeaderCellDef, MatCellDef,
 		MatSortHeader, MatHeaderRow, MatRow, MatNoDataRow, MatRowDef, MatHeaderRowDef, MatPaginator, MatProgressSpinner,
-		MatLabel
+		MatLabel, MatFabButton
 	],
   templateUrl: './packliste-auslieferung.component.html',
   styleUrl: './packliste-auslieferung.component.scss'
@@ -117,6 +117,7 @@ export class PacklisteAuslieferungComponent implements OnInit {
 		}).subscribe({
 			next: _ => {
 				this.list!.deliveryState = DeliveryStateEnumDto.Delivered
+				this.list!.packedCrates!.forEach(it => it.deliveryState = DeliveryStateEnumDto.Delivered)
 				this.snackbar.open("Fertig!", undefined, {
 					duration: 4000
 				})
@@ -157,7 +158,9 @@ export class PacklisteAuslieferungComponent implements OnInit {
 	}
 
 	view(row: EuroCrateDto) {
-		this.bs.open(CrateSettingsSheetComponent).afterDismissed().subscribe((v?: Action) => {
+		this.bs.open(CrateSettingsSheetComponent, {
+			data: row
+		}).afterDismissed().subscribe((v?: Action) => {
 			if (v == Action.Delivered) {
 				let nl = {
 					locationType: LocationTypeDto.AtOperationCenter,

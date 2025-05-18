@@ -31,6 +31,9 @@
 .search {
 	width: 100%;
 	margin-bottom: 10px;
+	display: flex;
+	flex-direction: row;
+	column-gap: 10px;
 }
 
 .placeholderAlign {

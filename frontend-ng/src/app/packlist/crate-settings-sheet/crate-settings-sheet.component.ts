@@ -1,7 +1,8 @@
-import {Component} from '@angular/core';
-import {MatBottomSheetRef} from '@angular/material/bottom-sheet';
-import {MatListItem, MatNavList} from '@angular/material/list';
+import {Component, Inject} from '@angular/core';
+import {MAT_BOTTOM_SHEET_DATA, MatBottomSheetRef} from '@angular/material/bottom-sheet';
+import {MatListItem, MatListItemTitle, MatNavList} from '@angular/material/list';
 import {MatLine} from '@angular/material/core';
+import {EuroCrateDto} from '../../api/models/euro-crate-dto';
 
 export enum Action {
 	Delivered,
@@ -14,6 +15,7 @@ export enum Action {
 	imports: [
 		MatNavList,
 		MatListItem,
+		MatListItemTitle,
 		MatLine
 
 	],
@@ -22,7 +24,8 @@ export enum Action {
 })
 export class CrateSettingsSheetComponent {
 	constructor(
-		private ref: MatBottomSheetRef<CrateSettingsSheetComponent>
+		private ref: MatBottomSheetRef<CrateSettingsSheetComponent>,
+		@Inject(MAT_BOTTOM_SHEET_DATA) public data: EuroCrateDto
 	) {
 	}
 	doAction(a?: Action) {

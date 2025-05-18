@@ -83,7 +83,6 @@ public class EuroPalletRoute implements EuroPalletApi {
 			case Result.Ok<byte[], EuroPalletUseCase.PrintEuroPalletError> ok ->
 					ResponseEntity.ok(new ByteArrayResource(ok.result()));
 			case Result.Error<byte[], EuroPalletUseCase.PrintEuroPalletError> error -> switch (error.error()) {
-				case BadArguments -> ResponseEntity.badRequest().build();
 				case PalletNotFound -> ResponseEntity.notFound().build();
 				case FailedToGeneratePdf -> ResponseEntity.internalServerError().build();
 			};

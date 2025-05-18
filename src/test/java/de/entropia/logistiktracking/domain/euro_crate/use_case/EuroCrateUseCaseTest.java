@@ -19,6 +19,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.Month;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -101,8 +102,9 @@ class EuroCrateUseCaseTest {
     @Test
     @Transactional
     void testPrint() {
+        LocalDate ld = LocalDate.of(2025, Month.MAY, 16);
         EuroCrateDatabaseElement ecde
-                = testHelper.saveNew(new EuroCrateDatabaseElement(null, OperationCenter.Finanzen, "test1", LocalDate.now(), "info", DeliveryState.InDelivery,
+                = testHelper.saveNew(new EuroCrateDatabaseElement(null, OperationCenter.Finanzen, "test1", ld, "info", DeliveryState.InDelivery,
                 new LocationDatabaseElement(LogisticsLocationType.Entropia, null, null)));
 
         Result<byte[], EuroCrateUseCase.PrintEuroCrateError> printEuroCrateErrorResult = createEuroCrateUseCase.printEuroCrate(ecde.getId());
