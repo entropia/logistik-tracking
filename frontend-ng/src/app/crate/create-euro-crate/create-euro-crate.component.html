@@ -2,8 +2,6 @@
 <form [formGroup]="form" (ngSubmit)="handleSubmit()">
 	<mat-dialog-content>
 		<div class="content">
-			<app-location-editor appValidateLocation formControlName="location"></app-location-editor>
-
 			<div class="row">
 				<mat-form-field>
 					<mat-label>Operation Center</mat-label>
@@ -20,7 +18,7 @@
 				</mat-form-field>
 			</div>
 
-
+			<app-location-editor appValidateLocation formControlName="location"></app-location-editor>
 
 			<mat-form-field>
 				<mat-label>Lieferstatus</mat-label>

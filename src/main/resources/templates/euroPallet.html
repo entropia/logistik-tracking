@@ -62,8 +62,8 @@
 
     <img class="theQr" alt="QR-Code für Eurobox" th:src="@{'data:image/jpeg;base64,'+${image}}"/>
 
-    <h1>€palette /<span class="sub" data-th-utext="${pallet.getPalletId()}"></span></h1>
-    <div data-th-utext="${pallet.getInformation()}" style="white-space: pre-wrap; word-break: break-all; font-size: large">AAAA</div>
+    <h1>€palette /<span class="sub" th:text="${pallet.getPalletId()}"></span></h1>
+    <div th:text="${pallet.getInformation()}" style="white-space: pre-wrap; word-break: break-all; font-size: large">AAAA</div>
 
     <div class="postfix"></div>
 </div>

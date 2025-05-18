@@ -69,8 +69,8 @@
         <img style="float: right; clear: right; margin-top: 40px;" alt="Logo des Entropia e.V." th:src="@{classpath:Entropia.png}" height="128"></img>
         <img style="float: right; margin-top: 40px;" alt="Logo des Entropia e.V. Logistik Team" th:src="@{classpath:LOC.png}" height="128"></img>
 
-        <h1>Packliste /<span class="sub" data-th-utext="${list.getPackingListId()}"></span></h1>
-        <p data-th-utext="${list.getName()}"></p>
+        <h1>Packliste /<span class="sub" th:text="${list.getPackingListId()}"></span></h1>
+        <p th:text="${list.getName()}"></p>
 
         <div th:each="group : ${groupedCrates}">
             <h2 th:text="${group.key}"></h2>

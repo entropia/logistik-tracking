@@ -49,7 +49,7 @@ export class CreateEuroCrateComponent {
 			location: new FormControl<LocationDto>({locationType: LocationTypeDto.Logistics, logisticsLocation: LogisticsLocationDto.Entropia}, {nonNullable: true}),
 			operationCenter: new FormControl<OperationCenterDto>(this.operationCenters[0], { nonNullable: true }),
 			deliveryState: new FormControl<DeliveryStateEnumDto>(this.deliveryStates[0], { nonNullable: true }),
-			returnBy: new FormControl<string>(this.returnDates[0], { nonNullable: true }),
+			returnBy: new FormControl<string>(this.returnDates[this.returnDates.length-1], { nonNullable: true }),
 			infos: new FormControl<string>('')
 		});
 	}

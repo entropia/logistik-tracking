@@ -731,6 +731,7 @@ components:
               description: "A short distinct name describing the contents and/or target location of the euro crate. Has to be unique in combination with the OC."
               type: string
               minLength: 1
+              pattern: ^[^<>"'&;/]*$
             returnBy:
               description: "At which date should the euro crate be returned to the logistics operation center."
               type: string
@@ -784,6 +785,7 @@ components:
           description: "Will be combined with a numeric value to create the ID of the pallet."
           type: string
           minLength: 1
+          pattern: ^[^<>"'&;]*$
         packedOnPallet:
           description: Identifier for Euro pallet.
           type: integer
@@ -802,6 +804,7 @@ components:
               type: string
               minLength: 1
               example: "Lieferung Finanzen"
+              pattern: ^[^<>"'&;]*$
             packingListId:
               description: "Internal ID for this packing list"
               type: integer
@@ -845,6 +848,7 @@ components:
         information:
           description: "Free-form text describing the contents of the entity."
           type: string
+          pattern: ^[^<>"'&;]*$
 
     DeliveryStateEnumDto:
       type: string
@@ -946,6 +950,7 @@ components:
           type: string
           minLength: 3
           maxLength: 255
+          pattern: ^[^/]+$
         authorities:
           type: array
           items:
