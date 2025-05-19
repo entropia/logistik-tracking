@@ -8,9 +8,9 @@ import com.google.zxing.qrcode.QRCodeWriter;
 import com.lowagie.text.DocumentException;
 import de.entropia.logistiktracking.domain.euro_pallet.EuroPallet;
 import de.entropia.logistiktracking.utility.Result;
-import lombok.AllArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
@@ -20,20 +20,21 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.util.Base64;
 import java.util.Locale;
 import java.util.Map;
 
 @Component
-@AllArgsConstructor
+@RequiredArgsConstructor
+@Log4j2
 public class EuroPalletPdfGenerator {
-	private static final Logger logger = LoggerFactory.getLogger(EuroPalletPdfGenerator.class);
 	private final TemplateEngine templateEngine;
 
+	@Value("${logitrack.frontendBaseUrl}")
+	private String frontendBaseUrl;
+
 	private String encodeData(EuroPallet ep) {
-		return "P"+ep.getPalletId();
+		return frontendBaseUrl+"/#/qr/P"+ep.getPalletId();
 	}
 
 	public Result<byte[], Void> generate(EuroPallet euroPallet) {
@@ -45,7 +46,7 @@ public class EuroPalletPdfGenerator {
 					EncodeHintType.MARGIN, 0
 			));
 		} catch (WriterException e) {
-			logger.error("Failed to generate QR Code", e);
+			log.error("Failed to generate QR Code", e);
 			return new Result.Error<>(null);
 		}
 		int bmWidth = bitMatrix.getWidth();
@@ -63,13 +64,14 @@ public class EuroPalletPdfGenerator {
 			ImageIO.write(image, "png", imageOs);
 			base64Image = Base64.getEncoder().encodeToString(imageOs.toByteArray());
 		} catch (IOException e) {
-			logger.error("Failed to convert QR code to base-64 png", e);
+			log.error("Failed to convert QR code to base-64 png", e);
 			return new Result.Error<>(null);
 		}
 
 		Context context = new Context(Locale.GERMANY);
 		context.setVariable("pallet", euroPallet);
 		context.setVariable("image", base64Image);
+		context.setVariable("theUrl", url);
 		String html = templateEngine.process("euroPallet", context);
 
 		try (ByteArrayOutputStream htmlOs = new ByteArrayOutputStream()) {
@@ -79,7 +81,7 @@ public class EuroPalletPdfGenerator {
 			renderer.createPDF(htmlOs);
 			return new Result.Ok<>(htmlOs.toByteArray());
 		} catch (DocumentException | IOException e) {
-			logger.error("Failed to generate EuroPallet PDF", e);
+			log.error("Failed to generate EuroPallet PDF", e);
 			return new Result.Error<>(null);
 		}
 	}

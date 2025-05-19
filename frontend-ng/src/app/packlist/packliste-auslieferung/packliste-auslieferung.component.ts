@@ -30,7 +30,7 @@ import {Action, CrateSettingsSheetComponent} from '../crate-settings-sheet/crate
 import {DeliveryStateEnumDto} from '../../api/models/delivery-state-enum-dto';
 import {LogisticsLocationDto} from '../../api/models/logistics-location-dto';
 import {MatButton, MatFabButton} from '@angular/material/button';
-import {parseCrateId} from '../../util/qr-id-parser';
+import {extractIdFromUrl, parseCrateId} from '../../util/qr-id-parser';
 import {MatIcon} from '@angular/material/icon';
 import {LocationComponent} from '../../location/location/location.component';
 
@@ -214,7 +214,7 @@ export class PacklisteAuslieferungComponent implements OnInit {
 		let rbr = this.qr.startScanning();
 		rbr.onScanned.subscribe(v => {
 			try {
-				let id = parseCrateId(v)
+				let id = parseCrateId(extractIdFromUrl(v))
 				let the = this.list!.packedCrates!.find(it => it.internalId == id)
 				if (the) {
 					this.view(the)

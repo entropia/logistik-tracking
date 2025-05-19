@@ -9,7 +9,7 @@ import {MatInput, MatLabel} from '@angular/material/input';
 import {MatFabButton} from '@angular/material/button';
 import {MatIcon} from '@angular/material/icon';
 import {MatSnackBar} from '@angular/material/snack-bar';
-import {parseCrateId} from '../qr-id-parser';
+import {extractIdFromUrl, parseCrateId} from '../qr-id-parser';
 import {QrScannerService, QrScanRef} from '../../qr-scanner.service';
 import {handleDefaultError} from '../auth';
 import {Observable, startWith, Subject} from 'rxjs';
@@ -96,7 +96,7 @@ export class CrateAddWidgetComponent {
 
 	scanSuccess(qsc: QrScanRef, $event: string) {
 		try {
-			let crateId = parseCrateId($event);
+			let crateId = parseCrateId(extractIdFromUrl($event));
 			let the = this.allCrates.find(it => it.internalId == crateId)
 			if (the) {
 				this.input.setValue(the.operationCenter+"/"+the.name)

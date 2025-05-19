@@ -46,5 +46,8 @@ export const routes: Routes = [
 	}, {
 		path: "departures",
 		loadComponent: () => import("./departures/departures.component").then(it => it.DeparturesComponent)
-	},
+	}, {
+		path: "qr/:id",
+		loadComponent: () => import("./util/qr-resolver/qr-resolver.component").then(it => it.QrResolverComponent)
+	}
 ];

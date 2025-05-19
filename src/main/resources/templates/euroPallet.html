@@ -10,7 +10,7 @@
         }
 
         body {
-            font-family: 'Source Code Pro',Monospaced,serif;
+            font-family: 'Source Code Pro','Noto Sans Mono',monospace,serif;
             margin: 1cm;
         }
 
@@ -23,25 +23,21 @@
             padding-top: 0;
         }
 
-        .theQr {
-            width: 6cm;
-            height: 6cm;
-        }
-
-        .sup {
-            vertical-align: super;
-        }
-
-        .sub {
-            vertical-align: sub;
-        }
-
         h1 > span {
             font-size: smaller;
         }
 
         .theQr {
+            width: 6cm;
+            height: 6cm;
+        }
+
+        .floatRight {
             float: right;
+        }
+
+        .sub {
+            vertical-align: sub;
         }
 
         .bottom {
@@ -60,12 +56,16 @@
 
 <div class="main">
 
-    <img class="theQr" alt="QR-Code für Eurobox" th:src="@{'data:image/jpeg;base64,'+${image}}"/>
+    <div class="floatRight">
+        <img class="theQr" alt="QR-Code für Eurobox" th:src="@{'data:image/jpeg;base64,'+${image}}"/>
+    </div>
 
     <h1>€palette /<span class="sub" th:text="${pallet.getPalletId()}"></span></h1>
     <div th:text="${pallet.getInformation()}" style="white-space: pre-wrap; word-break: break-all; font-size: large">AAAA</div>
 
-    <div class="postfix"></div>
+    <p>Url (QR code): <span th:text="${theUrl}"></span></p>
+
+    <div style="font-size: small" class="postfix"></div>
 </div>
 
 <div class="bottom">

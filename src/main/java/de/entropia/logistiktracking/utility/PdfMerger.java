@@ -32,7 +32,7 @@ public class PdfMerger {
 
 						PdfFormXObject doc = thePage.copyAsFormXObject(result);
 						PdfDictionary the = doc.getResources().getResource(PdfName.XObject);
-						for (PdfName pdfName : the.keySet()) {
+						if (the != null) for (PdfName pdfName : the.keySet()) {
 							PdfObject pdfObject = the.get(pdfName);
 							if (pdfObject instanceof PdfStream stream1 && stream1.getAsName(PdfName.Subtype).equals(PdfName.Image)) {
 								String hashed = computeSha1(stream1.getBytes());

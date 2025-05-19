@@ -1,7 +1,7 @@
 import {Component} from '@angular/core';
 import {MatMiniFabButton} from '@angular/material/button';
 import {QrScannerService} from '../../qr-scanner.service';
-import {IdKind, parseId} from '../qr-id-parser';
+import {extractIdFromUrl, IdKind, parseId} from '../qr-id-parser';
 import {Router} from '@angular/router';
 import {MatIcon} from '@angular/material/icon';
 
@@ -26,9 +26,8 @@ export class ScanEverythingButtonComponent {
 		scanner.onScanned.subscribe({
 			next: v => {
 				try {
-					let id = parseId(v)
+					let id = parseId(extractIdFromUrl(v))
 					scanner.close()
-					console.log(id)
 					switch (id.kind) {
 						case IdKind.Crate:
 							this.router.navigateByUrl(`/euroCrate/${id.id}`)

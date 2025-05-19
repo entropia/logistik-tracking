@@ -40,7 +40,7 @@
                 font-size: smaller;
             }
 
-            .theQr {
+            .floatLeft {
                 float: left;
             }
 
@@ -57,7 +57,9 @@
     <body>
 
     <div class="header">
-        <img class="theQr" alt="QR-Code für Eurobox" th:src="@{'data:image/jpeg;base64,'+${image}}"/>
+        <div class="floatLeft">
+            <img class="theQr" alt="QR-Code für Eurobox" th:src="@{'data:image/jpeg;base64,'+${image}}"/>
+        </div>
 
         <img style="float: right" alt="Logo des Entropia e.V." th:src="@{classpath:Entropia.png}" height="128"></img>
         <img style="float: right" alt="Logo des Entropia e.V. Logistik Team" th:src="@{classpath:LOC.png}" height="128"></img>
@@ -69,6 +71,8 @@
         <h1><span th:text="${crate.getOperationCenter().getName()}" class="sup"></span>/<span class="sub" th:text="${crate.getName()}"></span></h1>
         <div th:text="${crate.getInformation()}" style="white-space: pre-wrap; word-break: break-all">AAAA</div>
         <p style="font-size: large; margin-bottom: 0">ZUM LOC ZURÜCKGEBEN AM: <b><span th:text="${crate.getReturnBy()}"></span></b></p>
+
+        <p style="font-size: small">Url (QR code): <span th:text="${theUrl}"></span></p>
     </div>
 
 

@@ -28,7 +28,7 @@ import {MatIcon} from '@angular/material/icon';
 import {MatTooltip} from '@angular/material/tooltip';
 import {HttpErrorResponse} from '@angular/common/http';
 import {QrScannerService} from '../../qr-scanner.service';
-import {parseCrateId} from '../../util/qr-id-parser';
+import {extractIdFromUrl, parseCrateId} from '../../util/qr-id-parser';
 import {handleDefaultError} from '../../util/auth';
 import {LocationEditorComponent} from '../../location/location-editor/location-editor.component';
 import {ValidateLocationDirective} from '../../location/location-editor/location-validator';
@@ -285,7 +285,7 @@ export class SelectedPackingListComponent implements OnInit {
 		ref.onScanned.subscribe({
 			next: v => {
 				try {
-					let id = parseCrateId(v)
+					let id = parseCrateId(extractIdFromUrl(v))
 					this.apiService.getEuroCrate({
 						id
 					}).subscribe({

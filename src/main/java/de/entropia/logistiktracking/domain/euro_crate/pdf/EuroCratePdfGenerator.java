@@ -12,8 +12,9 @@ import com.itextpdf.kernel.pdf.PdfWriter;
 import com.lowagie.text.DocumentException;
 import de.entropia.logistiktracking.domain.euro_crate.EuroCrate;
 import de.entropia.logistiktracking.utility.Result;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
@@ -30,13 +31,17 @@ import java.util.Map;
 
 @Slf4j
 @Component
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class EuroCratePdfGenerator {
 
 	private final TemplateEngine templateEngine;
 
+	@Value("${logitrack.frontendBaseUrl}")
+	private String frontendBaseUrl;
+
+
 	private String encodeData(EuroCrate ep) {
-		return "C"+ep.getId();
+		return frontendBaseUrl+"/#/qr/C"+ep.getId();
 	}
 
 	public Result<byte[], Void> generatePdf(EuroCrate crate) {
@@ -73,6 +78,7 @@ public class EuroCratePdfGenerator {
 		Context context = new Context(Locale.GERMANY);
 		context.setVariable("crate", crate);
 		context.setVariable("image", base64Image);
+		context.setVariable("theUrl", url);
 		String html = templateEngine.process("euroCrate", context);
 
 		try (ByteArrayOutputStream htmlOs = new ByteArrayOutputStream()) {

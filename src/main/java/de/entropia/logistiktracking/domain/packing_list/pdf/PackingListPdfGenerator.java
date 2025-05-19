@@ -10,8 +10,9 @@ import de.entropia.logistiktracking.domain.euro_crate.EuroCrate;
 import de.entropia.logistiktracking.domain.operation_center.OperationCenter;
 import de.entropia.logistiktracking.domain.packing_list.PackingList;
 import de.entropia.logistiktracking.utility.Result;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
@@ -22,20 +23,21 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Service
 @Slf4j
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class PackingListPdfGenerator {
 	private final TemplateEngine templateEngine;
 
+	@Value("${logitrack.frontendBaseUrl}")
+	private String frontendBaseUrl;
+
 	private String encodeData(PackingList pl) {
-		return "L"+ pl.getPackingListId();
+		return frontendBaseUrl+"/#/qr/L"+ pl.getPackingListId();
 	}
 
 	public Result<byte[], Void> generatePdf(PackingList crate) {
@@ -81,6 +83,7 @@ public class PackingListPdfGenerator {
 		});
 		context.setVariable("groupedCrates", mapped);
 		context.setVariable("image", base64Image);
+		context.setVariable("theUrl", url);
 		String html = templateEngine.process("packingList", context);
 
 		try (ByteArrayOutputStream htmlOs = new ByteArrayOutputStream()) {
