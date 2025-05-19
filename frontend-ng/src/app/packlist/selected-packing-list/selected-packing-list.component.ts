@@ -281,7 +281,7 @@ export class SelectedPackingListComponent implements OnInit {
 	protected readonly ItemStatus = ItemStatus;
 
 	scanMultiple() {
-		let ref = this.qr.startScanning();
+		let ref = this.qr.startScanning("Fertig");
 		ref.onScanned.subscribe({
 			next: v => {
 				try {

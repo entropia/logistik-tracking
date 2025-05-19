@@ -10,7 +10,7 @@ import {Subject} from 'rxjs';
 export class QrScanRef {
 	public onScanned = new Subject<string>()
 	public onClosed = new Subject<void>()
-	constructor(private ovRef: OverlayRef) {
+	constructor(private ovRef: OverlayRef, public doneLabel: string = "Abbrechen") {
 	}
 
 	public close() {
@@ -31,7 +31,7 @@ export class QrScannerService {
 		private ps: OverlayPositionBuilder
 	) {
 	}
-	public startScanning() {
+	public startScanning(closeLabel: string = "Abbrechen") {
 		let ovRef = this.overlay.create({
 			disposeOnNavigation: true,
 			hasBackdrop: false,
@@ -41,7 +41,7 @@ export class QrScannerService {
 			height: "100vh"
 		})
 
-		let ref = new QrScanRef(ovRef)
+		let ref = new QrScanRef(ovRef, closeLabel)
 
 		let inj = Injector.create({
 			parent: this.inj,

@@ -23,17 +23,20 @@
 						</mat-form-field>
 
 						@switch (selected!.deliveryState) {
+							<!-- FIXME this is ass -->
 							@case (DeliveryStateEnumDto.TravelingToGpn) {
-								<button mat-button type="button" (click)="suggestLocation(LogisticsLocationDto.InTransport)">Inhalte auf Ort InTransport setzen?</button>
+								<button mat-button type="button" (click)="suggestLocation(LogisticsLocationDto.InTransport)">
+									Inhalte + Palette auf Ort <i>InTransport</i> setzen?
+								</button>
 							}
 							@case (DeliveryStateEnumDto.WaitingAtGpn) {
-								<button mat-button type="button" (click)="suggestLocation(LogisticsLocationDto.Loc)">Inhalte auf Ort LOC setzen?</button>
+								<button mat-button type="button" (click)="suggestLocation(LogisticsLocationDto.Loc)">Inhalte + Palette auf Ort <i>LOC</i> setzen?</button>
 							}
 							@case (DeliveryStateEnumDto.Packing) {
-								<button mat-button type="button" (click)="suggestLocation(LogisticsLocationDto.Entropia)">Inhalte auf Ort Entropia setzen?</button>
+								<button mat-button type="button" (click)="suggestLocation(LogisticsLocationDto.Entropia)">Inhalte + Palette auf Ort <i>Entropia</i> setzen?</button>
 							}
 							@case (DeliveryStateEnumDto.WaitingForDelivery) {
-								<button mat-button type="button" (click)="suggestLocation(LogisticsLocationDto.Entropia)">Inhalte auf Ort Entropia setzen?</button>
+								<button mat-button type="button" (click)="suggestLocation(LogisticsLocationDto.Entropia)">Inhalte + Palette auf Ort <i>Entropia</i> setzen?</button>
 							}
 						}
 					</div>

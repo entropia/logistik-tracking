@@ -21,7 +21,7 @@ export class QrScannerActualComponent implements OnInit, OnDestroy {
 
 	theScanner!: QrScanner;
 
-	constructor(private snack: MatSnackBar, private ref: QrScanRef) {
+	constructor(private snack: MatSnackBar, protected ref: QrScanRef) {
 	}
 
 	async ngOnInit() {

@@ -19,9 +19,9 @@
 					}
 				}
 			</p>
-			<h2>Delivery status</h2>
+			<h2>Status</h2>
 			<mat-form-field>
-				<mat-label>Delivery Status</mat-label>
+				<mat-label>Status</mat-label>
 				<mat-select [(ngModel)]="crate.deliveryState" required name="deliverState" #delStatus="ngModel">
 					@for (v of Object.values(DeliveryStateEnumDto); track v) {
 						<mat-option [value]="v">{{ v }}</mat-option>
