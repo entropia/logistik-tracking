@@ -1,4 +1,4 @@
-import {Component, Input, OnInit, ViewChild} from '@angular/core';
+import {Component, Input, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {ApiService} from '../../api/services/api.service';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {QrScannerService} from '../../qr-scanner.service';
@@ -33,6 +33,8 @@ import {MatButton, MatFabButton} from '@angular/material/button';
 import {extractIdFromUrl, parseCrateId} from '../../util/qr-id-parser';
 import {MatIcon} from '@angular/material/icon';
 import {LocationComponent} from '../../location/location/location.component';
+import {MatDialog} from '@angular/material/dialog';
+import {AreYouSureComponent, Choice, ConfirmScreenConfig} from '../../are-you-sure/are-you-sure.component';
 
 function stringifyLocation(location: LocationDto) {
 	switch (location.locationType) {
@@ -75,6 +77,10 @@ function customFilterPredicate(data: EuroCrateDto, filter: string): boolean {
   styleUrl: './packliste-auslieferung.component.scss'
 })
 export class PacklisteAuslieferungComponent implements OnInit {
+
+	@ViewChild("errorMessage")
+	errMsg!: TemplateRef<any>;
+
 	@ViewChild(MatPaginator, {static: false})
 	set paginator(paginator: MatPaginator) {
 	    this.dataSource.paginator = paginator
@@ -109,28 +115,42 @@ export class PacklisteAuslieferungComponent implements OnInit {
 	}
 
 	endDelivery() {
-		this.apiService.modifyPackingList({
-			packingListId: this.id,
-			body: {
-				deliveryState: DeliveryStateEnumDto.Delivered
-			}
-		}).subscribe({
-			next: _ => {
-				this.list!.deliveryState = DeliveryStateEnumDto.Delivered
-				this.list!.packedCrates!.forEach(it => it.deliveryState = DeliveryStateEnumDto.Delivered)
-				this.snackbar.open("Fertig!", undefined, {
-					duration: 4000
-				})
-			},
-			error: handleDefaultError
-		})
+		if (this.list!.packedCrates!.some(it => it.deliveryState != DeliveryStateEnumDto.Delivered)) {
+			this.diag.open<AreYouSureComponent, ConfirmScreenConfig, Choice>(AreYouSureComponent, {
+				data: {
+					body: this.errMsg,
+					choices: [{
+						title: "OK"
+					}],
+					title: "Fehler"
+				}
+			})
+		}
+		else {
+			this.apiService.modifyPackingList({
+				packingListId: this.id,
+				body: {
+					deliveryState: DeliveryStateEnumDto.Delivered
+				}
+			}).subscribe({
+				next: _ => {
+					this.list!.deliveryState = DeliveryStateEnumDto.Delivered
+					this.list!.packedCrates!.forEach(it => it.deliveryState = DeliveryStateEnumDto.Delivered)
+					this.snackbar.open("Fertig!", undefined, {
+						duration: 4000
+					})
+				},
+				error: handleDefaultError
+			})
+		}
 	}
 
 	constructor(
 		private apiService: ApiService,
 		private snackbar: MatSnackBar,
 		private qr: QrScannerService,
-		private bs: MatBottomSheet
+		private bs: MatBottomSheet,
+		private diag: MatDialog
 	) {
 		this.dataSource.sortingDataAccessor = getDataForSort.bind(getDataForSort, this.dataSource.sortingDataAccessor.bind(this.dataSource))
 		this.dataSource.filterPredicate = customFilterPredicate.bind(customFilterPredicate)

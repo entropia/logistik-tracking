@@ -1,7 +1,13 @@
-import {Component, Inject} from '@angular/core';
+import {Component, Inject, TemplateRef} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogActions, MatDialogContent, MatDialogRef, MatDialogTitle} from '@angular/material/dialog';
-import {NgOptimizedImage} from '@angular/common';
+import {NgTemplateOutlet} from '@angular/common';
 import {MatButton} from '@angular/material/button';
+
+export interface ConfirmScreenConfig {
+	title: string;
+	body: TemplateRef<unknown>;
+	choices: Choice[];
+}
 
 export interface Choice {
 	title: string;
@@ -13,15 +19,15 @@ export interface Choice {
 	imports: [
 		MatDialogTitle,
 		MatDialogContent,
-		NgOptimizedImage,
 		MatDialogActions,
-		MatButton
+		MatButton,
+		NgTemplateOutlet
 	],
   templateUrl: './are-you-sure.component.html',
   styleUrl: './are-you-sure.component.scss'
 })
 export class AreYouSureComponent {
-	constructor(private diag: MatDialogRef<AreYouSureComponent>, @Inject(MAT_DIALOG_DATA) protected data: Choice[]) {}
+	constructor(private diag: MatDialogRef<AreYouSureComponent>, @Inject(MAT_DIALOG_DATA) protected data: ConfirmScreenConfig) {}
 
 	sendAction(a: Choice) {
 		this.diag.close(a)

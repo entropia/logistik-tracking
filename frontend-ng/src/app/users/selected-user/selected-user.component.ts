@@ -1,4 +1,4 @@
-import {Component, Input, OnInit, ViewChild} from '@angular/core';
+import {Component, Input, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {ApiService} from '../../api/services/api.service';
 import {UserDto} from '../../api/models/user-dto';
 import {handleDefaultError} from '../../util/auth';
@@ -15,7 +15,8 @@ import {MatProgressSpinner} from '@angular/material/progress-spinner';
 import {MatListOption, MatSelectionList} from '@angular/material/list';
 import {MatIcon} from '@angular/material/icon';
 import {MatDialog} from '@angular/material/dialog';
-import {AreYouSureComponent, Choice} from '../../are-you-sure/are-you-sure.component';
+import {AreYouSureComponent, Choice, ConfirmScreenConfig} from '../../are-you-sure/are-you-sure.component';
+import {NgOptimizedImage} from '@angular/common';
 
 const mapAuthToReadable = {
 	MANAGE_USERS: "Nutzer Verwalten",
@@ -35,7 +36,8 @@ const mapAuthToReadable = {
 		MatLabel,
 		MatSelectionList,
 		MatListOption,
-		MatIcon
+		MatIcon,
+		NgOptimizedImage
 	],
   templateUrl: './selected-user.component.html',
   styleUrl: './selected-user.component.scss'
@@ -43,6 +45,9 @@ const mapAuthToReadable = {
 export class SelectedUserComponent implements OnInit {
 	@Input()
 	id!: string;
+
+	@ViewChild("confirmTemplate")
+	template!: TemplateRef<unknown>;
 
 	user?: UserDto;
 
@@ -101,13 +106,17 @@ export class SelectedUserComponent implements OnInit {
 	protected readonly mapAuthToReadable = mapAuthToReadable;
 
 	delete() {
-		this.diag.open<AreYouSureComponent, Choice[], Choice>(AreYouSureComponent, {
-			data: [{
-				title: "Abbrechen"
-			}, {
-				title: "Löschen",
-				style: "color: #ea680b"
-			}]
+		this.diag.open<AreYouSureComponent, ConfirmScreenConfig, Choice>(AreYouSureComponent, {
+			data: {
+				body: this.template,
+				choices: [{
+					title: "Abbrechen"
+				}, {
+					title: "Löschen",
+					style: "color: #ea680b"
+				}],
+				title: "Nutzer löschen?"
+			}
 		}).afterClosed().subscribe(result => {
 			if (result && result.title == "Löschen") {
 				this.api.deleteUser({
