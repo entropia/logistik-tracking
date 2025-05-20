@@ -3,14 +3,17 @@
 		<div class="centerLoading"><mat-spinner mode="indeterminate"></mat-spinner></div>
 	} @else {
 		<h1>Palette {{ pallet.euroPalletId }}</h1>
-		<button
-			(click)="createPackingList()"
-			mat-flat-button
-			*requireAuthority="AuthorityEnumDto.ManageResources"
-			style="margin-bottom: 15px"
-		>
-			Zugehörige Packliste erstellen
-		</button>
+		<div style="margin-bottom: 15px">
+			<button
+				(click)="createPackingList()"
+				mat-flat-button
+				*requireAuthority="AuthorityEnumDto.ManageResources"
+
+			>
+				Zugehörige Packliste erstellen
+			</button>
+			<app-print-button *requireAuthority="AuthorityEnumDto.Print" [thing]="{id: id, type: 'pallet'}"></app-print-button>
+		</div>
 		<form (ngSubmit)="saveIt(theForm)" #theForm="ngForm">
 			<div class="content">
 				<app-location-editor appValidateLocation [(ngModel)]="editingLocation" name="location"

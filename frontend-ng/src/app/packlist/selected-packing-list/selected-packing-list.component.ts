@@ -37,6 +37,8 @@ import {AuthorityStatus, UserService} from '../../util/user.service';
 import {LocationComponent} from '../../location/location/location.component';
 import {MatTab, MatTabGroup} from '@angular/material/tabs';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
+import {PrintButtonComponent} from '../../util/print-button/print-button.component';
+import {RequiresAuthorityDirective} from '../../util/requires-permission.directive';
 
 enum ItemStatus {
 	KEEP,
@@ -82,7 +84,9 @@ type TheItem = {
 		MatRow,
 		MatHeaderRowDef,
 		MatRowDef,
-		MatNoDataRow
+		MatNoDataRow,
+		PrintButtonComponent,
+		RequiresAuthorityDirective
 	],
 	templateUrl: './selected-packing-list.component.html',
 	styleUrl: './selected-packing-list.component.scss'
@@ -337,4 +341,6 @@ export class SelectedPackingListComponent implements OnInit {
 			logisticsLocation: param
 		}
 	}
+
+	protected readonly AuthorityEnumDto = AuthorityEnumDto;
 }

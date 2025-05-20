@@ -5,6 +5,8 @@
 } @else {
 	<h1>Packliste {{ selected.packingListId }} / {{ selected.packingListName }}</h1>
 
+	<app-print-button *requireAuthority="AuthorityEnumDto.Print" [thing]="{id: id, type: 'list'}"></app-print-button>
+
 	<mat-tab-group dynamicHeight>
 		<mat-tab label="Infos">
 			<p>Auf Palette: <a [routerLink]="'/euroPallet/' + selected.packedOn.euroPalletId">Pallette {{ selected.packedOn.euroPalletId }}</a></p>

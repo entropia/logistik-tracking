@@ -4,12 +4,14 @@ import {EuroCrateDto} from '../../api/models/euro-crate-dto';
 import {FormsModule, NgForm, NgModel} from '@angular/forms';
 import {LocationEditorComponent} from '../../location/location-editor/location-editor.component';
 import {ValidateLocationDirective} from '../../location/location-editor/location-validator';
-import {DeliveryStateEnumDto, EuroCratePatchDto, LogisticsLocationDto} from '../../api/models';
+import {AuthorityEnumDto, DeliveryStateEnumDto, EuroCratePatchDto, LogisticsLocationDto} from '../../api/models';
 import {MatError, MatFormField, MatInput, MatLabel} from '@angular/material/input';
 import {MatOption, MatSelect} from '@angular/material/select';
 import {MatButton} from '@angular/material/button';
 import {handleDefaultError} from '../../util/auth';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
+import {PrintButtonComponent} from '../../util/print-button/print-button.component';
+import {RequiresAuthorityDirective} from '../../util/requires-permission.directive';
 
 @Component({
 	selector: 'app-selected-euro-crate',
@@ -24,7 +26,9 @@ import {MatProgressSpinner} from '@angular/material/progress-spinner';
 		MatOption,
 		MatInput,
 		MatButton,
-		MatProgressSpinner
+		MatProgressSpinner,
+		PrintButtonComponent,
+		RequiresAuthorityDirective
 	],
 	templateUrl: './selected-euro-crate.component.html',
 	styleUrl: './selected-euro-crate.component.scss'
@@ -74,4 +78,5 @@ export class SelectedEuroCrateComponent implements OnInit {
 	protected readonly LogisticsLocationDto = LogisticsLocationDto;
 	protected readonly Object = Object;
 	protected readonly DeliveryStateEnumDto = DeliveryStateEnumDto;
+	protected readonly AuthorityEnumDto = AuthorityEnumDto;
 }

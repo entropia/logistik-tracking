@@ -15,6 +15,7 @@ import {MatDialog} from '@angular/material/dialog';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
 import {RequiresAuthorityDirective} from '../../util/requires-permission.directive';
 import {AuthorityEnumDto} from '../../api/models/authority-enum-dto';
+import {PrintButtonComponent} from '../../util/print-button/print-button.component';
 
 @Component({
 	selector: 'app-selected-euro-pallet',
@@ -26,7 +27,8 @@ import {AuthorityEnumDto} from '../../api/models/authority-enum-dto';
 		MatButton,
 
 		RequiresAuthorityDirective,
-		MatProgressSpinner
+		MatProgressSpinner,
+		PrintButtonComponent
 	],
 	templateUrl: './selected-euro-pallet.component.html',
 	styleUrl: './selected-euro-pallet.component.scss'

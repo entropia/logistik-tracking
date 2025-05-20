@@ -128,7 +128,7 @@ export class EuroPalletComponent implements OnInit {
 				URL.revokeObjectURL(ou)
 			},
 			error: handleDefaultError
-	})
+		})
 	}
 
 	protected readonly AuthorityEnumDto = AuthorityEnumDto;

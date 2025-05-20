@@ -2,6 +2,7 @@
 	<div class="centerLoading"><mat-spinner mode="indeterminate"></mat-spinner></div>
 } @else {
 	<h1>Box {{crate.operationCenter}} / {{crate.name}}</h1>
+	<app-print-button *requireAuthority="AuthorityEnumDto.Print" [thing]="{id: crate.internalId, type: 'crate'}"></app-print-button>
 	<form (ngSubmit)="saveIt(theForm, location, delStatus, ftInfo);" #theForm="ngForm">
 		<div class="content">
 			<h2>Ort</h2>
