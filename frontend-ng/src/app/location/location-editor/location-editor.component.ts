@@ -30,7 +30,7 @@ export class LocationEditorComponent implements ControlValueAccessor {
 
 	private _onChange: any = (_: any) => {};
 	private _onTouch: any = (_: any) => {};
-	private _isDisabled: boolean = false;
+	_isDisabled: boolean = false;
 
 
 	writeValue(obj: any): void {

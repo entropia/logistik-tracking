@@ -12,6 +12,7 @@ import {handleDefaultError} from '../../util/auth';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
 import {PrintButtonComponent} from '../../util/print-button/print-button.component';
 import {RequiresAuthorityDirective} from '../../util/requires-permission.directive';
+import {AuthorityStatus, UserService} from '../../util/user.service';
 
 @Component({
 	selector: 'app-selected-euro-crate',
@@ -35,10 +36,16 @@ import {RequiresAuthorityDirective} from '../../util/requires-permission.directi
 })
 export class SelectedEuroCrateComponent implements OnInit {
     crate?: EuroCrateDto;
+	canEdit: boolean = false;
 
 	constructor(
-		private apiService: ApiService
+		private apiService: ApiService,
+		private userService: UserService,
+
 	) {
+		userService.hasAuthority(AuthorityEnumDto.ManageResources).then(does => {
+			this.canEdit = does == AuthorityStatus.HasIt
+		});
 	}
 
 	@Input()

@@ -17,6 +17,7 @@
 		<form (ngSubmit)="saveIt(theForm)" #theForm="ngForm">
 			<div class="content">
 				<app-location-editor appValidateLocation [(ngModel)]="editingLocation" name="location"
+									 [disabled]="!canEdit"
 									 #name="ngModel"></app-location-editor>
 				@if (name.invalid && (name.dirty || name.touched)) {
 					@if (name.hasError("ocRequired")) {
@@ -31,7 +32,7 @@
 				}
 				<p>Information:</p>
 				<pre><code>{{ getInfos() }}</code></pre>
-				<button mat-flat-button type="submit" [disabled]="!theForm.form.valid || !theForm.dirty">Änderungen
+				<button *requireAuthority="AuthorityEnumDto.ManageResources" mat-flat-button type="submit" [disabled]="!theForm.form.valid || !theForm.dirty">Änderungen
 					Speichern
 				</button>
 			</div>

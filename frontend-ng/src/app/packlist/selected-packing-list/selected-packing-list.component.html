@@ -10,7 +10,9 @@
 	<mat-tab-group dynamicHeight>
 		<mat-tab label="Infos">
 			<p>Auf Palette: <a [routerLink]="'/euroPallet/' + selected.packedOn.euroPalletId">Pallette {{ selected.packedOn.euroPalletId }}</a></p>
-			<p><a [routerLink]="'/packingList/'+selected.packingListId+'/delivery'">Ausliefern</a></p>
+			<p *requireAuthority="AuthorityEnumDto.ManageResources">
+				<a [routerLink]="'/packingList/'+selected.packingListId+'/delivery'">Ausliefern</a>
+			</p>
 
 			@if (canEdit) {
 				<form (ngSubmit)="saveInfo(theForm);" #theForm="ngForm">
@@ -115,7 +117,7 @@
 						</ng-container>
 
 						<tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-						<tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+						<tr mat-row *matRowDef="let row; columns: displayedColumns;" [routerLink]="'/euroCrate/'+row.internalId" class="clickable"></tr>
 						<tr class="mat-row" *matNoDataRow>
 							<td class="mat-cell" colspan="4">Keine Kisten</td>
 						</tr>

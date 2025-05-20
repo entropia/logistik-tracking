@@ -6,7 +6,7 @@
 		*requireAuthority="AuthorityEnumDto.ManageResources"
 		style="margin-bottom: 10px"
 	>
-	<mat-icon fontIcon="add"></mat-icon>
+		<mat-icon fontIcon="add"></mat-icon>
 		Pallette erstellen
 	</button>
 	<div>
@@ -20,17 +20,15 @@
 
 				<!-- ID Column -->
 				<ng-container matColumnDef="euroPalletId">
-					<th mat-header-cell *matHeaderCellDef mat-sort-header> ID </th>
-					<td mat-cell *matCellDef="let row"> {{row.euroPalletId}} </td>
+					<th mat-header-cell *matHeaderCellDef mat-sort-header> ID</th>
+					<td mat-cell *matCellDef="let row"> {{ row.euroPalletId }}</td>
 				</ng-container>
 
 				<!-- Fruit Column -->
 				<ng-container matColumnDef="location">
-					<th mat-header-cell *matHeaderCellDef mat-sort-header> Ort </th>
+					<th mat-header-cell *matHeaderCellDef mat-sort-header> Ort</th>
 					<td mat-cell *matCellDef="let row">
-						<a [routerLink]="'/euroPallet/'+row.euroPalletId">
-							<app-location [location]="row.location"></app-location>
-						</a>
+						<app-location [location]="row.location"></app-location>
 					</td>
 				</ng-container>
 
@@ -44,11 +42,11 @@
 				</ng-container>
 
 				<tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-				<tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+				<tr mat-row *matRowDef="let row; columns: displayedColumns;" [routerLink]="'/euroPallet/'+row.euroPalletId" class="clickable"></tr>
 
 				<!-- Row shown when there is no matching data. -->
 				<tr class="mat-row" *matNoDataRow>
-					<td class="mat-cell" colspan="4">No data matching the filter "{{input.value}}"</td>
+					<td class="mat-cell" colspan="4">No data matching the filter "{{ input.value }}"</td>
 				</tr>
 			</table>
 

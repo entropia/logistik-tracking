@@ -1,7 +1,7 @@
 <div class="editor">
 	<mat-form-field>
 		<mat-label>Ort-Typ</mat-label>
-		<mat-select [(value)]="location.locationType" (valueChange)="update()" required>
+		<mat-select [disabled]="_isDisabled" [(value)]="location.locationType" (valueChange)="update()" required>
 			@for (v of Object.values(LocationTypeDto); track v) {
 				<mat-option [value]="v">{{ v }}</mat-option>
 			}
@@ -12,7 +12,7 @@
 		@case (LocationTypeDto.Logistics) {
 			<mat-form-field>
 				<mat-label>Ort</mat-label>
-				<mat-select [(value)]="location.logisticsLocation" (valueChange)="update()" required>
+				<mat-select [disabled]="_isDisabled" [(value)]="location.logisticsLocation" (valueChange)="update()" required>
 					@for (v of Object.values(LogisticsLocationDto); track v) {
 						<mat-option [value]="v">{{ v }}</mat-option>
 					}
@@ -22,7 +22,7 @@
 		@case (LocationTypeDto.AtOperationCenter) {
 			<mat-form-field>
 				<mat-label>Ort</mat-label>
-				<mat-select [(value)]="location.operationCenter" (valueChange)="update()" required>
+				<mat-select [disabled]="_isDisabled" [(value)]="location.operationCenter" (valueChange)="update()" required>
 					@for (v of Object.values(OperationCenterDto).sort(); track v) {
 						<mat-option [value]="v">{{ v }}</mat-option>
 					}
@@ -32,7 +32,7 @@
 		@case (LocationTypeDto.SomewhereElse) {
 			<mat-form-field>
 				<mat-label>Ort</mat-label>
-				<input matInput [(ngModel)]="location.somewhereElse" placeholder="Location" (ngModelChange)="update()" required>
+				<input matInput [disabled]="_isDisabled" [(ngModel)]="location.somewhereElse" placeholder="Location" (ngModelChange)="update()" required>
 			</mat-form-field>
 		}
 	}

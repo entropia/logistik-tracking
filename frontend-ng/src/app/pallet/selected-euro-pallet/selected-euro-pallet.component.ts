@@ -15,6 +15,7 @@ import {MatDialog} from '@angular/material/dialog';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
 import {RequiresAuthorityDirective} from '../../util/requires-permission.directive';
 import {AuthorityEnumDto} from '../../api/models/authority-enum-dto';
+import {AuthorityStatus, UserService} from '../../util/user.service';
 import {PrintButtonComponent} from '../../util/print-button/print-button.component';
 
 @Component({
@@ -40,12 +41,18 @@ export class SelectedEuroPalletComponent implements OnInit {
 	pallet?: EuroPalletDto;
 	editingLocation?: LocationDto;
 
+	canEdit: boolean = false;
+
 	constructor(
 		private apiService: ApiService,
 		private snackbar: MatSnackBar,
 		private router: Router,
-		private diag: MatDialog
+		private diag: MatDialog,
+		private userService: UserService
 	) {
+		userService.hasAuthority(AuthorityEnumDto.ManageResources).then(does => {
+			this.canEdit = does == AuthorityStatus.HasIt
+		});
 	}
 
 	getInfos(): string {
