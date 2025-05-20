@@ -14,6 +14,11 @@ import {MatOption, MatSelect} from '@angular/material/select';
 import {MatButton} from '@angular/material/button';
 import {LogisticsLocationDto} from '../../api/models/logistics-location-dto';
 
+interface ReturnDate {
+	date: string;
+	offsetGpnDay0: number;
+}
+
 
 @Component({
   selector: 'app-create-euro-crate',
@@ -38,10 +43,16 @@ import {LogisticsLocationDto} from '../../api/models/logistics-location-dto';
   styleUrl: './create-euro-crate.component.scss'
 })
 export class CreateEuroCrateComponent {
+	rdOwithSign(e: ReturnDate) {
+		let s = Math.sign(e.offsetGpnDay0)
+		if (s > 0 || s == 0) return "+"+e.offsetGpnDay0;
+		return ""+e.offsetGpnDay0;
+	}
+
 	readonly form;
 	operationCenters = Object.values(OperationCenterDto).sort();
 	deliveryStates = Object.values(DeliveryStateEnumDto);
-	readonly returnDates = this.generateDateRange('2025-06-18', '2025-06-23');
+	readonly returnDates = this.generateDateRange('2025-06-16', '2025-06-23', "2025-06-18");
 
 	constructor(private dialogRef: MatDialogRef<CreateEuroCrateComponent>) {
 		this.form = new FormGroup({
@@ -49,18 +60,25 @@ export class CreateEuroCrateComponent {
 			location: new FormControl<LocationDto>({locationType: LocationTypeDto.Logistics, logisticsLocation: LogisticsLocationDto.Entropia}, {nonNullable: true}),
 			operationCenter: new FormControl<OperationCenterDto>(this.operationCenters[0], { nonNullable: true }),
 			deliveryState: new FormControl<DeliveryStateEnumDto>(this.deliveryStates[0], { nonNullable: true }),
-			returnBy: new FormControl<string>(this.returnDates[this.returnDates.length-1], { nonNullable: true }),
+			returnBy: new FormControl<string>(this.returnDates[this.returnDates.length-1].date, { nonNullable: true }),
 			infos: new FormControl<string>('')
 		});
 	}
 
-	private generateDateRange(start: string, end: string): string[] {
-		const dates: string[] = [];
+	private generateDateRange(start: string, end: string, gpn: string): ReturnDate[] {
+		const dates: ReturnDate[] = [];
 		let current = new Date(start);
 		const endDate = new Date(end);
+		const gpnDate = new Date(gpn);
 
 		while (current <= endDate) {
-			dates.push(current.toISOString().split('T')[0]);
+			let isoDay = current.toISOString().split('T')[0]
+			let diffMs = current.getTime() - gpnDate.getTime()
+			let diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+			dates.push({
+				date: isoDay,
+				offsetGpnDay0: diffDays
+			});
 			current.setDate(current.getDate() + 1);
 		}
 

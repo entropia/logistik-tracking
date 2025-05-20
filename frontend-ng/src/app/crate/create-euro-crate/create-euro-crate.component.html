@@ -32,8 +32,8 @@
 			<mat-form-field>
 				<mat-label>Rückgabe an LOC bis</mat-label>
 				<mat-select formControlName="returnBy" required>
-					<mat-option *ngFor="let date of returnDates" [value]="date">
-						{{ date | date:'dd.MM.yyyy' }}
+					<mat-option *ngFor="let date of returnDates" [value]="date.date">
+						{{ date.date | date:'dd.MM.yyyy' }} - GPN{{rdOwithSign(date)}}
 					</mat-option>
 				</mat-select>
 			</mat-form-field>
