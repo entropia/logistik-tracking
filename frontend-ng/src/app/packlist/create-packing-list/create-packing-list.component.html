@@ -4,11 +4,11 @@
 		<div class="content">
 			<mat-form-field>
 				<mat-label>Name</mat-label>
-				<input type="text" matInput placeholder="Name" formControlName="name" />
+				<input type="text" matInput placeholder="Name" formControlName="name" required />
 			</mat-form-field>
 			<mat-form-field>
 				<mat-label>Auf Palette</mat-label>
-				<mat-select formControlName="packedOnPallet">
+				<mat-select formControlName="packedOnPallet" required>
 					<mat-option *ngFor="let pallet of euroPallets" [value]="pallet.palletId">
 						{{pallet.palletId}}
 						<span *ngIf="pallet.information != undefined && pallet.information.length > 0">- {{ pallet.information }}</span>
