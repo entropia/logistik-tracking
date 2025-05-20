@@ -64,7 +64,8 @@ public class UserManagementRoute implements UsersApi {
 	@Override
 	@HasAuthority(AuthorityEnumDto.MANAGE_USERS)
 	@Transactional
-	public ResponseEntity<Void> modifyUser(String username, ModifyUserRequest modifyUserRequest) {
+	public ResponseEntity<Void> modifyUser(ModifyUserRequest modifyUserRequest) {
+		String username = modifyUserRequest.getUsername();
 		Optional<UserDatabaseElement> byId = userDatabaseService.findById(username);
 		if (byId.isEmpty()) return ResponseEntity.notFound().build();
 		UserDatabaseElement theUser = byId.get();

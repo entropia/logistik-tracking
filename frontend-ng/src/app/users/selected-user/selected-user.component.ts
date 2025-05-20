@@ -76,8 +76,9 @@ export class SelectedUserComponent implements OnInit {
 
 	saveUser(authorities: NgModel, enabled: NgModel, newpw: NgModel) {
 		let patch: ModifyUser$Params = {
-			username: this.id,
-			body: {}
+			body: {
+				username: this.id
+			}
 		}
 		if (authorities.dirty) {
 			patch.body.authorities = this.user!.authorities;

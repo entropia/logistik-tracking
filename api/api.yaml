@@ -527,11 +527,10 @@ paths:
         403:
           description: Missing permission
 
-
   /users/{username}:
-    post:
-      operationId: modifyUser
-      summary: Modify a user
+    delete:
+      operationId: deleteUser
+      summary: Delete a user
       security:
         - springCookieAuth: [ ]
       parameters:
@@ -541,7 +540,26 @@ paths:
           description: Username
           schema:
             type: string
-            minLength: 3
+#            intentionally removed to prevent validation errors. shouldn't find any users to delete anyway if they're violated
+#            minLength: 3
+#            maxLength: 255
+#            pattern: ^[a-zA-Z0-9_\-]+$
+      responses:
+        200:
+          description: User deleted
+        404:
+          description: User not found
+        401:
+          description: Not logged in
+        403:
+          description: Missing permission
+
+  /users:
+    put:
+      operationId: modifyUser
+      summary: Modify a user
+      security:
+        - springCookieAuth: [ ]
       requestBody:
         required: true
         content:
@@ -562,6 +580,14 @@ paths:
                 active:
                   description: New active status
                   type: boolean
+                username:
+                  type: string
+                  minLength: 3
+                  maxLength: 255
+                  pattern: ^[a-zA-Z0-9_\-]+$
+                  description: Username to modify
+              required:
+                - username
       responses:
         200:
           description: User modified
@@ -569,31 +595,7 @@ paths:
           description: Not logged in
         403:
           description: Missing permission
-    delete:
-      operationId: deleteUser
-      summary: Delete a user
-      security:
-        - springCookieAuth: [ ]
-      parameters:
-        - name: username
-          in: path
-          required: true
-          description: Username
-          schema:
-            type: string
-            minLength: 3
-      responses:
-        200:
-          description: User deleted
-        404:
-          description: User not found
-        401:
-          description: Not logged in
-        403:
-          description: Missing permission
-
-  /users:
-    put:
+    post:
       operationId: createUser
       summary: Create a user
       security:
@@ -937,6 +939,7 @@ components:
           type: string
           minLength: 3
           maxLength: 255
+          pattern: ^[a-zA-Z0-9_\-]+$
         password:
           type: string
       required:
@@ -950,7 +953,7 @@ components:
           type: string
           minLength: 3
           maxLength: 255
-          pattern: ^[^/]+$
+          pattern: ^[a-zA-Z0-9_\-]+$
         authorities:
           type: array
           items:
