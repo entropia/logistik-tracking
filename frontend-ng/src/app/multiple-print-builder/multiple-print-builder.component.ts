@@ -20,6 +20,7 @@ interface Resource {
 	icon: string;
 	id: number;
 	label: string;
+	extra?: string;
 }
 
 @Component({
@@ -70,7 +71,8 @@ export class MultiplePrintBuilderComponent implements OnInit {
 						type: "Pallet",
 						id: it.euroPalletId,
 						label: it.euroPalletId+"",
-						icon: "pallet"
+						icon: "pallet",
+						extra: it.information
 					} as Resource
 				})
 				this.allRes.push(...bruh)

@@ -17,7 +17,12 @@
 			@for(a of availableRes.filter(theFilter); track a.label) {
 				<div class="the">
 					<mat-icon [fontIcon]="a.icon"></mat-icon>
-					{{a.label}}
+					<div>
+						{{a.label}}
+						@if (a.extra) {
+							-- <i>{{a.extra}}</i>
+						}
+					</div>
 					<button mat-mini-fab class="right" type="button" (click)="addItem(a)">
 						<mat-icon>arrow_right_alt</mat-icon>
 					</button>
