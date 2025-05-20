@@ -850,6 +850,7 @@ components:
         information:
           description: "Free-form text describing the contents of the entity."
           type: string
+          maxLength: 255
           pattern: ^[^<>"'&;]*$
 
     DeliveryStateEnumDto:

@@ -37,7 +37,7 @@
 			<h2>Sonstiges</h2>
 			<p>Soll wieder bei LOC sein: {{crate.returnBy}}</p>
 			<p>Information:</p>
-			<textarea matInput [(ngModel)]="crate.information" name="ftInfo" class="ftInfo" rows="5" #ftInfo="ngModel"></textarea>
+			<textarea maxlength="255" matInput [(ngModel)]="crate.information" name="ftInfo" class="ftInfo" rows="5" #ftInfo="ngModel"></textarea>
 
 			<button mat-flat-button type="submit" [disabled]="!theForm.form.valid || !theForm.dirty">Änderungen Speichern</button>
 		</div>
