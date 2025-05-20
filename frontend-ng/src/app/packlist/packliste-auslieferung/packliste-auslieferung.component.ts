@@ -239,6 +239,10 @@ export class PacklisteAuslieferungComponent implements OnInit {
 				if (the) {
 					this.view(the)
 					rbr.close()
+				} else {
+					this.snackbar.open(`Diese Kiste (${id}) ist nicht teil der Packliste!`, "OK", {
+						duration: 5000
+					})
 				}
 			} catch (e) {
 				if (e instanceof Error) {
