@@ -21,7 +21,7 @@
 	flex-direction: row;
 	column-gap: 10px;
 	align-items: center;
-	background-color: rgb(50, 50, 50);
+	background-color: var(--mat-sys-surface-variant);
 	border-radius: 10px;
 }
 .draggable:hover {
@@ -53,7 +53,7 @@
 	flex-direction: column;
 	row-gap: 5px;
 	min-height: 100px;
-	border: 1px dashed white;
+	border: 2px dashed var(--mat-sys-outline);
 }
 .right {
 	margin-left: auto;
