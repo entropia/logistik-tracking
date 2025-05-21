@@ -33,7 +33,7 @@
 							}
 						],
 						"styles": [
-							"@angular/material/prebuilt-themes/cyan-orange.css",
+							"@idotj/mastodon-embed-timeline/dist/mastodon-timeline.min.css",
 							"src/styles.scss"
 						],
 						"scripts": [],
