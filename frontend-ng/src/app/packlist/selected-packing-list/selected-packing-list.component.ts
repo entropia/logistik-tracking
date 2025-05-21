@@ -1,4 +1,4 @@
-import {Component, Input, OnInit, ViewChild} from '@angular/core';
+import {Component, Input, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {ApiService} from '../../api/services/api.service';
 import {PackingListDto} from '../../api/models/packing-list-dto';
 import {RouterLink} from '@angular/router';
@@ -39,6 +39,8 @@ import {MatTab, MatTabGroup} from '@angular/material/tabs';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
 import {PrintButtonComponent} from '../../util/print-button/print-button.component';
 import {RequiresAuthorityDirective} from '../../util/requires-permission.directive';
+import {AreYouSureComponent, Choice, ConfirmScreenConfig} from '../../are-you-sure/are-you-sure.component';
+import {MatDialog} from '@angular/material/dialog';
 
 enum ItemStatus {
 	KEEP,
@@ -135,7 +137,8 @@ export class SelectedPackingListComponent implements OnInit {
 		private apiService: ApiService,
 		private snackbar: MatSnackBar,
 		private qr: QrScannerService,
-		userService: UserService
+		userService: UserService,
+		private diag: MatDialog
 	) {
 		userService.hasAuthority(AuthorityEnumDto.ManageResources).then(does => {
 			this.canEdit = does == AuthorityStatus.HasIt
@@ -171,7 +174,30 @@ export class SelectedPackingListComponent implements OnInit {
 		})
 	}
 
-	saveCrates(f: NgForm) {
+	@ViewChild("redirectError")
+	redirectErrorTmpl!: TemplateRef<any>;
+
+	saveCrates(f: NgForm, passedCheck = false) {
+		if (!passedCheck && this.items.some(it => it.status == ItemStatus.TRANSFERRED)) {
+			this.diag.open<AreYouSureComponent, ConfirmScreenConfig, Choice>(AreYouSureComponent, {
+				data: {
+					body: this.redirectErrorTmpl,
+					choices: [{
+						title: "Abbrechen",
+						style: "color: #ea680b"
+					}, {
+						title: "Speichern"
+					}],
+					title: "Kisten werden Bewegt"
+				}
+			}).afterClosed().subscribe(it => {
+				if (it?.title == "Speichern") {
+					// redo it but we're sure this time
+					this.saveCrates(f, true)
+				}
+			})
+			return;
+		}
 		let thePatch: PackingListPatchDto = {
 			addCrates: [],
 			removeCrates: []
