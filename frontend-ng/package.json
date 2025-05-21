@@ -21,6 +21,7 @@
     "@angular/platform-browser": "^19.2.0",
     "@angular/platform-browser-dynamic": "^19.2.0",
     "@angular/router": "^19.2.0",
+    "@idotj/mastodon-embed-timeline": "^4.7.0",
     "bcryptjs": "^3.0.2",
     "qr-scanner": "^1.4.2",
     "rxjs": "~7.8.0",

@@ -1827,6 +1827,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@idotj/mastodon-embed-timeline@npm:^4.7.0":
+  version: 4.7.0
+  resolution: "@idotj/mastodon-embed-timeline@npm:4.7.0"
+  checksum: 10c0/09d2d6350bdca860b0eddf5b09e15cca4ca0547808d15f3ec21464dab628041419506b6eb5618d38766347c5d0ecbf6672e81aabafc24c9ddc1754fce70206a0
+  languageName: node
+  linkType: hard
+
 "@inquirer/checkbox@npm:^4.1.2":
   version: 4.1.5
   resolution: "@inquirer/checkbox@npm:4.1.5"
@@ -5141,6 +5148,7 @@ __metadata:
     "@angular/platform-browser": "npm:^19.2.0"
     "@angular/platform-browser-dynamic": "npm:^19.2.0"
     "@angular/router": "npm:^19.2.0"
+    "@idotj/mastodon-embed-timeline": "npm:^4.7.0"
     "@types/jasmine": "npm:~5.1.0"
     bcryptjs: "npm:^3.0.2"
     jasmine-core: "npm:~5.6.0"
