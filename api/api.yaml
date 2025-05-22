@@ -702,6 +702,8 @@ components:
               $ref: "#/components/schemas/DeliveryStateEnumDto"
             location:
               $ref: "#/components/schemas/LocationDto"
+            operationCenter:
+              $ref: "#/components/schemas/OperationCenterDto"
 
     PrintMultipleDto:
       type: array

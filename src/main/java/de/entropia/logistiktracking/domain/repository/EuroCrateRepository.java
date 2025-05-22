@@ -3,6 +3,7 @@ package de.entropia.logistiktracking.domain.repository;
 import de.entropia.logistiktracking.domain.converter.DeliveryStateConverter;
 import de.entropia.logistiktracking.domain.converter.EuroCrateConverter;
 import de.entropia.logistiktracking.domain.converter.LocationConverter;
+import de.entropia.logistiktracking.domain.converter.OperationCenterConverter;
 import de.entropia.logistiktracking.domain.euro_crate.EuroCrate;
 import de.entropia.logistiktracking.jpa.EuroCrateDatabaseElement;
 import de.entropia.logistiktracking.jpa.EuroCrateDatabaseElement_;
@@ -29,6 +30,7 @@ public class EuroCrateRepository {
 	private final EntityManager em;
 	private final DeliveryStateConverter deliveryStateConverter;
 	private final LocationConverter locationConverter;
+	private final OperationCenterConverter operationCenterConverter;
 
 	public Optional<EuroCrate> createNewEuroCrate(EuroCrate euroCrate) {
 		if (euroCrateDatabaseService.existsByOperationCenterAndName(
@@ -77,6 +79,8 @@ public class EuroCrateRepository {
 		);
 
 		// individuelle sets für die spalten die wir ändern wollen
+		euroCratePatchDto.getOperationCenter().map(operationCenterConverter::from)
+				.ifPresent(it -> update.set(EuroCrateDatabaseElement_.operationCenter, it));
 		euroCratePatchDto.getDeliveryState().map(deliveryStateConverter::from)
 				.ifPresent(it -> update.set(EuroCrateDatabaseElement_.deliveryState, it));
 		euroCratePatchDto.getInformation()

@@ -4,7 +4,7 @@ import {EuroCrateDto} from '../../api/models/euro-crate-dto';
 import {FormsModule, NgForm, NgModel} from '@angular/forms';
 import {LocationEditorComponent} from '../../location/location-editor/location-editor.component';
 import {ValidateLocationDirective} from '../../location/location-editor/location-validator';
-import {AuthorityEnumDto, DeliveryStateEnumDto, EuroCratePatchDto, LogisticsLocationDto} from '../../api/models';
+import {AuthorityEnumDto, DeliveryStateEnumDto, EuroCratePatchDto, LogisticsLocationDto, OperationCenterDto} from '../../api/models';
 import {MatError, MatFormField, MatInput, MatLabel} from '@angular/material/input';
 import {MatOption, MatSelect} from '@angular/material/select';
 import {MatButton} from '@angular/material/button';
@@ -40,7 +40,7 @@ export class SelectedEuroCrateComponent implements OnInit {
 
 	constructor(
 		private apiService: ApiService,
-		private userService: UserService,
+		userService: UserService,
 
 	) {
 		userService.hasAuthority(AuthorityEnumDto.ManageResources).then(does => {
@@ -59,9 +59,11 @@ export class SelectedEuroCrateComponent implements OnInit {
 		})
 	}
 
-	saveIt(form: NgForm, locationMod: NgModel, deliStatusMod: NgModel, ftInfoMod: NgModel) {
-
+	saveIt(form: NgForm, oc: NgModel, locationMod: NgModel, deliStatusMod: NgModel, ftInfoMod: NgModel) {
 		let patch: EuroCratePatchDto = {}
+		if (oc.dirty) {
+			patch.operationCenter = this.crate!.operationCenter
+		}
 		if (locationMod.dirty) {
 			patch.location = this.crate!.location
 		}
@@ -86,4 +88,5 @@ export class SelectedEuroCrateComponent implements OnInit {
 	protected readonly Object = Object;
 	protected readonly DeliveryStateEnumDto = DeliveryStateEnumDto;
 	protected readonly AuthorityEnumDto = AuthorityEnumDto;
+	protected readonly OperationCenterDto = OperationCenterDto;
 }

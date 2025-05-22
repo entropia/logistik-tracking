@@ -3,8 +3,17 @@
 } @else {
 	<h1>Box {{crate.operationCenter}} / {{crate.name}}</h1>
 	<app-print-button *requireAuthority="AuthorityEnumDto.Print" [thing]="{id: crate.internalId, type: 'crate'}"></app-print-button>
-	<form (ngSubmit)="saveIt(theForm, location, delStatus, ftInfo);" #theForm="ngForm">
+	<form (ngSubmit)="saveIt(theForm, oc, location, delStatus, ftInfo);" #theForm="ngForm">
 		<div class="content">
+			<h2>Meta</h2>
+			<mat-form-field>
+				<mat-label>Verantwortlich</mat-label>
+				<mat-select [disabled]="!canEdit" [(ngModel)]="crate.operationCenter" required name="operationCenter" #oc="ngModel">
+					@for (v of Object.values(OperationCenterDto).sort(); track v) {
+						<mat-option [value]="v">{{ v }}</mat-option>
+					}
+				</mat-select>
+			</mat-form-field>
 			<h2>Ort</h2>
 			<p>
 				<app-location-editor [disabled]="!canEdit" [(ngModel)]="crate.location" appValidateLocation name="location" #location="ngModel"></app-location-editor>
