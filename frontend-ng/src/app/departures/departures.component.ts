@@ -54,7 +54,9 @@ function stringify(p: EuroCrateDto) {
 
 @Component({
   selector: 'app-departures',
-  imports: [],
+	imports: [
+
+	],
   templateUrl: './departures.component.html',
   styleUrl: './departures.component.scss'
 })

@@ -1,6 +1,22 @@
-<h1>Homepage under construction</h1>
-<div id="mt-container" class="mt-container" style="width: 500px">
-	<div class="mt-body" role="feed">
-		<div class="mt-loading-spinner"></div>
+<div class="container">
+	<div class="quicklinks">
+		@for(ql of theRoutes; track ql.name) {
+			@if (ql.auth) {
+				<div class="quicklink" [routerLink]="ql.target" *requireAuthority="ql.auth">
+					<mat-icon>{{ql.icon}}</mat-icon>
+					<h2>{{ql.name}}</h2>
+				</div>
+			} @else {
+				<div class="quicklink" [routerLink]="ql.target">
+					<mat-icon>{{ql.icon}}</mat-icon>
+					<h2>{{ql.name}}</h2>
+				</div>
+			}
+		}
+	</div>
+	<div id="mt-container" class="mt-container mastodon">
+		<div class="mt-body" role="feed">
+			<div class="mt-loading-spinner"></div>
+		</div>
 	</div>
 </div>
