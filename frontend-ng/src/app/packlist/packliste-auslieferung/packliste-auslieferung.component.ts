@@ -34,7 +34,7 @@ import {extractIdFromUrl, parseCrateId} from '../../util/qr-id-parser';
 import {MatIcon} from '@angular/material/icon';
 import {LocationComponent} from '../../location/location/location.component';
 import {MatDialog} from '@angular/material/dialog';
-import {AreYouSureComponent, Choice, ConfirmScreenConfig} from '../../are-you-sure/are-you-sure.component';
+import {openAreYouSureOverlay} from '../../are-you-sure/are-you-sure.component';
 
 function stringifyLocation(location: LocationDto) {
 	switch (location.locationType) {
@@ -116,14 +116,13 @@ export class PacklisteAuslieferungComponent implements OnInit {
 
 	endDelivery() {
 		if (this.list!.packedCrates!.some(it => it.deliveryState != DeliveryStateEnumDto.Delivered)) {
-			this.diag.open<AreYouSureComponent, ConfirmScreenConfig, Choice>(AreYouSureComponent, {
-				data: {
-					body: this.errMsg,
-					choices: [{
-						title: "OK"
-					}],
-					title: "Fehler"
-				}
+			openAreYouSureOverlay(this.diag, {
+				body: this.errMsg,
+				choices: [{
+					title: "OK",
+					token: undefined
+				}],
+				title: "Fehler"
 			})
 		}
 		else {

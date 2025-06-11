@@ -39,7 +39,7 @@ import {MatTab, MatTabGroup} from '@angular/material/tabs';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
 import {PrintButtonComponent} from '../../util/print-button/print-button.component';
 import {RequiresAuthorityDirective} from '../../util/requires-permission.directive';
-import {AreYouSureComponent, Choice, ConfirmScreenConfig} from '../../are-you-sure/are-you-sure.component';
+import {openAreYouSureOverlay} from '../../are-you-sure/are-you-sure.component';
 import {MatDialog} from '@angular/material/dialog';
 
 enum ItemStatus {
@@ -179,19 +179,19 @@ export class SelectedPackingListComponent implements OnInit {
 
 	saveCrates(f: NgForm, passedCheck = false) {
 		if (!passedCheck && this.items.some(it => it.status == ItemStatus.TRANSFERRED)) {
-			this.diag.open<AreYouSureComponent, ConfirmScreenConfig, Choice>(AreYouSureComponent, {
-				data: {
-					body: this.redirectErrorTmpl,
-					choices: [{
-						title: "Abbrechen",
-						style: "color: #ea680b"
-					}, {
-						title: "Speichern"
-					}],
-					title: "Kisten werden Bewegt"
-				}
+			openAreYouSureOverlay<"cancel" | "save">(this.diag, {
+				body: this.redirectErrorTmpl,
+				choices: [{
+					title: "Abbrechen",
+					style: "color: #ea680b",
+					token: "cancel"
+				}, {
+					title: "Speichern",
+					token: "save"
+				}],
+				title: "Kisten werden Bewegt"
 			}).afterClosed().subscribe(it => {
-				if (it?.title == "Speichern") {
+				if (it == "save") {
 					// redo it but we're sure this time
 					this.saveCrates(f, true)
 				}

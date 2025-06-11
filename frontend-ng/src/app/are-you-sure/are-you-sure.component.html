@@ -4,6 +4,6 @@
 </mat-dialog-content>
 <mat-dialog-actions>
 	@for(a of data.choices; track a.title) {
-		<button mat-button (click)="sendAction(a)" [style]="a.style">{{a.title}}</button>
+		<button mat-button (click)="sendAction(a.token)" [style]="a.style">{{a.title}}</button>
 	}
 </mat-dialog-actions>
