@@ -1,5 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
-import {EuroPalletDto} from '../../api/models/euro-pallet-dto';
+import {Component, input} from '@angular/core';
 import {ApiService} from '../../api/services/api.service';
 import {LocationEditorComponent} from '../../location/location-editor/location-editor.component';
 import {FormsModule, NgForm} from '@angular/forms';
@@ -17,7 +16,9 @@ import {RequiresAuthorityDirective} from '../../util/requires-permission.directi
 import {AuthorityEnumDto} from '../../api/models/authority-enum-dto';
 import {AuthorityStatus, UserService} from '../../util/user.service';
 import {PrintButtonComponent} from '../../util/print-button/print-button.component';
-import {VeryBasicPackingListDto} from '../../api/models/very-basic-packing-list-dto';
+import {toObservable, toSignal} from '@angular/core/rxjs-interop';
+import {switchMap} from 'rxjs/operators';
+import {forkJoin} from 'rxjs';
 
 @Component({
 	selector: 'app-selected-euro-pallet',
@@ -36,59 +37,35 @@ import {VeryBasicPackingListDto} from '../../api/models/very-basic-packing-list-
 	templateUrl: './selected-euro-pallet.component.html',
 	styleUrl: './selected-euro-pallet.component.scss'
 })
-export class SelectedEuroPalletComponent implements OnInit {
-	@Input()
-	id!: number;
-
-	pallet?: EuroPalletDto;
+export class SelectedEuroPalletComponent {
 	editingLocation?: LocationDto;
 
-	relevantPls: VeryBasicPackingListDto[] = [];
-
 	canEdit: boolean = false;
+
+	id = input.required<number>()
+	selected = toSignal(toObservable(this.id).pipe(
+		switchMap(uid => forkJoin({
+			pallet: this.apiService.getEuroPallet({euroPalletId: uid}),
+			relevantPls: this.apiService.getEuroPalletLists({euroPalletId: uid})
+		}))
+	), {initialValue: null})
 
 	constructor(
 		private apiService: ApiService,
 		private snackbar: MatSnackBar,
 		private router: Router,
 		private diag: MatDialog,
-		private userService: UserService
+		userService: UserService
 	) {
 		userService.hasAuthority(AuthorityEnumDto.ModifyResources).then(does => {
 			this.canEdit = does == AuthorityStatus.HasIt
 		});
 	}
 
-	getInfos(): string {
-		let existing = this.pallet?.name ?? "";
-		existing = existing.trim()
-		if (existing.length == 0) return "Keine Informationen";
-		return existing;
-	}
-
-	ngOnInit(): void {
-		this.apiService.getEuroPallet({
-			euroPalletId: this.id
-		}).subscribe({
-			next: euroPallet => {
-				this.pallet = euroPallet;
-				this.editingLocation = {...this.pallet.location};
-			},
-			error: handleDefaultError
-		});
-		this.apiService.getEuroPalletLists({
-			euroPalletId: this.id
-		}).subscribe({
-			next: r => {
-				this.relevantPls.push(...r)
-			},
-			error: handleDefaultError
-		})
-	}
-
 	saveIt(form: NgForm) {
+		let pallet = this.selected()!.pallet;
 		this.apiService.updateLastLocationOfEuroPallet({
-			euroPalletId: this.pallet!.euroPalletId,
+			euroPalletId: pallet.euroPalletId,
 			body: this.editingLocation!
 		}).subscribe({
 			next: _ => {
@@ -102,10 +79,11 @@ export class SelectedEuroPalletComponent implements OnInit {
 	}
 
 	createPackingList() {
+		let pallet = this.selected()!.pallet;
 		import("../../packlist/create-packing-list/create-packing-list.component").then(it => {
 			this.diag.open<any, any, NewPackingListDto>(it.CreatePackingListComponent, {
 				data: {
-					packedOnPallet: this.pallet?.euroPalletId
+					packedOnPallet: pallet.euroPalletId
 				}
 			}).afterClosed()
 				.subscribe(value => {

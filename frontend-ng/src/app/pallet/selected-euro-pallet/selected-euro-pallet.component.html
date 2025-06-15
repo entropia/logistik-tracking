@@ -1,8 +1,9 @@
 <main>
+	@let pallet = selected()?.pallet;
 	@if (!pallet) {
 		<div class="centerLoading"><mat-spinner mode="indeterminate"></mat-spinner></div>
 	} @else {
-		<h1>Palette {{ pallet.euroPalletId }} / {{getInfos()}}</h1>
+		<h1>Palette {{ pallet.euroPalletId }} / {{pallet.name}}</h1>
 		<div style="margin-bottom: 15px">
 			<button
 				(click)="createPackingList()"
@@ -12,16 +13,21 @@
 			>
 				Zugehörige Packliste erstellen
 			</button>
-			<app-print-button *requireAuthority="AuthorityEnumDto.Print" [thing]="{id: id, type: 'pallet'}"></app-print-button>
+			<app-print-button *requireAuthority="AuthorityEnumDto.Print" [thing]="{id: pallet.euroPalletId, type: 'pallet'}"></app-print-button>
 		</div>
 		<form (ngSubmit)="saveIt(theForm)" #theForm="ngForm">
 			<div class="content">
 				<h2>Packlisten mit dieser Palette</h2>
-				<ul>
-					@for(pl of relevantPls; track pl.packingListId) {
-						<li><a [routerLink]="'/packingList/'+pl.packingListId">{{pl.packingListId}} / {{pl.packingListName}}</a> status {{pl.deliveryState}}</li>
-					}
-				</ul>
+				@let relevantPls = selected()!.relevantPls;
+				@if (relevantPls.length == 0) {
+					<p>Keine</p>
+				} @else {
+					<ul>
+						@for(pl of relevantPls; track pl.packingListId) {
+							<li><a [routerLink]="'/packingList/'+pl.packingListId">{{pl.packingListId}} / {{pl.packingListName}}</a> status {{pl.deliveryState}}</li>
+						}
+					</ul>
+				}
 				<h2>Ort</h2>
 				<app-location-editor appValidateLocation [(ngModel)]="editingLocation" name="location"
 									 [disabled]="!canEdit"

@@ -6,7 +6,7 @@ import {FormControl, FormGroup, FormsModule, ReactiveFormsModule} from '@angular
 import {NewPackingListDto} from '../../api/models/new-packing-list-dto';
 import {ApiService} from '../../api/services/api.service';
 import {DIALOG_DATA} from '@angular/cdk/dialog';
-import {NgForOf, NgIf} from '@angular/common';
+import {NgForOf} from '@angular/common';
 import {MatOption, MatSelect} from '@angular/material/select';
 
 @Component({
@@ -24,7 +24,6 @@ import {MatOption, MatSelect} from '@angular/material/select';
 		MatOption,
 		MatSelect,
 		NgForOf,
-		NgIf,
 		MatButton,
 	],
 	templateUrl: './create-packing-list.component.html',

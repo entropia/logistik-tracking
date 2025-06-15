@@ -1,6 +1,5 @@
-import {Component, Input, OnInit, TemplateRef, ViewChild} from '@angular/core';
+import {Component, effect, input, TemplateRef, ViewChild} from '@angular/core';
 import {ApiService} from '../../api/services/api.service';
-import {PackingListDto} from '../../api/models/packing-list-dto';
 import {RouterLink} from '@angular/router';
 import {FormsModule, NgForm, NgModel} from '@angular/forms';
 import {AuthorityEnumDto, DeliveryStateEnumDto, EuroCrateDto, LocationDto, LocationTypeDto, LogisticsLocationDto, PackingListPatchDto} from '../../api/models';
@@ -41,6 +40,8 @@ import {PrintButtonComponent} from '../../util/print-button/print-button.compone
 import {RequiresAuthorityDirective} from '../../util/requires-permission.directive';
 import {openAreYouSureOverlay} from '../../are-you-sure/are-you-sure.component';
 import {MatDialog} from '@angular/material/dialog';
+import {toObservable, toSignal} from '@angular/core/rxjs-interop';
+import {switchMap} from 'rxjs/operators';
 
 enum ItemStatus {
 	KEEP,
@@ -93,29 +94,11 @@ type TheItem = {
 	templateUrl: './selected-packing-list.component.html',
 	styleUrl: './selected-packing-list.component.scss'
 })
-export class SelectedPackingListComponent implements OnInit {
-	@Input()
-	id!: number;
-
-	ngOnInit() {
-		this.apiService.getPackingList({
-			packingListId: this.id
-		}).subscribe({
-			next: it => {
-				this.selected = it;
-				this.items = it.packedCrates!.map(it => {
-					return {
-						status: ItemStatus.KEEP,
-						originalStatus: ItemStatus.KEEP,
-						...it
-					}
-				})
-				this.source.data = this.items;
-				// this.source.sort = this.sort!;
-			},
-			error: handleDefaultError
-		})
-	}
+export class SelectedPackingListComponent {
+	id = input.required<number>()
+	selected = toSignal(toObservable(this.id).pipe(
+		switchMap(uid => this.apiService.getPackingList({packingListId: uid}))
+	), {initialValue: null})
 
 	@ViewChild("theForm2", {static: false})
 	theForm?: NgForm;
@@ -132,7 +115,7 @@ export class SelectedPackingListComponent implements OnInit {
 
 	canEdit = false
 
-	protected selected?: PackingListDto;
+	// protected selected?: PackingListDto;
 	constructor(
 		private apiService: ApiService,
 		private snackbar: MatSnackBar,
@@ -146,22 +129,35 @@ export class SelectedPackingListComponent implements OnInit {
 				this.displayedColumns.push('actions')
 			}
 		})
+		effect(() => {
+			let c = this.selected()
+			if (!c) return;
+			this.items = c.packedCrates!.map(it => {
+				return {
+					status: ItemStatus.KEEP,
+					originalStatus: ItemStatus.KEEP,
+					...it
+				}
+			})
+			this.source.data = this.items;
+		});
 	}
 
 	saveInfo(f: NgForm) {
+		let current = this.selected()!;
 		let thePatch: PackingListPatchDto = {}
 		if (this.deliveryStateControl!.dirty) {
-			thePatch.deliveryState = this.selected!.deliveryState
+			thePatch.deliveryState = current.deliveryState
 		}
 		this.apiService.modifyPackingList({
-			packingListId: this.selected!.packingListId,
+			packingListId: current.packingListId,
 			body: thePatch
 		}).subscribe({
 			next: _ => {
 				if (this.deliveryStateControl!.dirty) {
 					// we set a new delivery state
 					this.items.forEach(it => {
-						it.deliveryState = this.selected!.deliveryState
+						it.deliveryState = current.deliveryState
 					})
 				}
 				f.control.markAsPristine()
@@ -214,8 +210,9 @@ export class SelectedPackingListComponent implements OnInit {
 					break;
 			}
 		}
+		let current = this.selected()!;
 		this.apiService.modifyPackingList({
-			packingListId: this.selected!.packingListId,
+			packingListId: current.packingListId,
 			body: thePatch
 		}).subscribe({
 			next: _ => {
@@ -333,6 +330,7 @@ export class SelectedPackingListComponent implements OnInit {
 	massOpLocation?: LocationDto;
 
 	doMassOp(form: NgForm) {
+		let current = this.selected()!;
 		let theReal = this.massOpLocation!;
 		forkJoin([
 			this.apiService.modifyMultipleEcLocations({
@@ -343,13 +341,13 @@ export class SelectedPackingListComponent implements OnInit {
 			}),
 			this.apiService.updateLastLocationOfEuroPallet({
 				body: theReal,
-				euroPalletId: this.selected!.packedOn.euroPalletId
+				euroPalletId: current.packedOn.euroPalletId
 			})
 		]).subscribe({
 			next: _ => {
 				this.feedback("Gespeichert!")
 				form.reset()
-				this.selected!.packedOn.location = theReal
+				current.packedOn.location = theReal
 				for (let item of this.items) {
 					item.location = theReal
 				}

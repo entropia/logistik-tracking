@@ -3,20 +3,22 @@
 	<p>Bist du dir sicher, dass du das machen willst?</p>
 </ng-template>
 
-@if (!selected) {
+@let current = selected();
+
+@if (!current) {
 	<div class="centerLoading">
 		<mat-spinner mode="indeterminate"></mat-spinner>
 	</div>
 } @else {
-	<h1>Packliste {{ selected.packingListId }} / {{ selected.packingListName }}</h1>
+	<h1>Packliste {{ current.packingListId }} / {{ current.packingListName }}</h1>
 
-	<app-print-button *requireAuthority="AuthorityEnumDto.Print" [thing]="{id: id, type: 'list'}"></app-print-button>
+	<app-print-button *requireAuthority="AuthorityEnumDto.Print" [thing]="{id: current.packingListId, type: 'list'}"></app-print-button>
 
 	<mat-tab-group dynamicHeight>
 		<mat-tab label="Infos">
-			<p>Auf Palette: <a [routerLink]="'/euroPallet/' + selected.packedOn.euroPalletId">Pallette {{ selected.packedOn.euroPalletId }}</a></p>
+			<p>Auf Palette: <a [routerLink]="'/euroPallet/' + current.packedOn.euroPalletId">Pallette {{ current.packedOn.euroPalletId }}</a></p>
 			<p *requireAuthority="AuthorityEnumDto.ModifyResources">
-				<a [routerLink]="'/packingList/'+selected.packingListId+'/delivery'">Ausliefern</a>
+				<a [routerLink]="'/packingList/'+current.packingListId+'/delivery'">Ausliefern</a>
 			</p>
 
 			@if (canEdit) {
@@ -24,14 +26,14 @@
 					<div class="thRow">
 						<mat-form-field>
 							<mat-label>Status</mat-label>
-							<mat-select [(ngModel)]="selected.deliveryState" name="deliveryState" required #deliveryStateControl="ngModel">
+							<mat-select [(ngModel)]="current.deliveryState" name="deliveryState" required #deliveryStateControl="ngModel">
 								@for (vs of Object.values(DeliveryStateEnumDto); track vs) {
 									<mat-option [value]="vs">{{ vs }}</mat-option>
 								}
 							</mat-select>
 						</mat-form-field>
 
-						@switch (selected!.deliveryState) {
+						@switch (current!.deliveryState) {
 							<!-- FIXME this is ass -->
 							@case (DeliveryStateEnumDto.TravelingToGpn) {
 								<button mat-button type="button" (click)="suggestLocation(LogisticsLocationDto.InTransport)">
@@ -55,7 +57,7 @@
 					</button>
 				</form>
 			} @else {
-				<p>Status: {{ selected.deliveryState }}</p>
+				<p>Status: {{ current.deliveryState }}</p>
 			}
 
 			@if (canEdit) {

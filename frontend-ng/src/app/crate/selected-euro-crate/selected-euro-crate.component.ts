@@ -1,10 +1,10 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, input} from '@angular/core';
 import {ApiService} from '../../api/services';
 import {EuroCrateDto} from '../../api/models/euro-crate-dto';
 import {FormsModule, NgForm, NgModel} from '@angular/forms';
 import {LocationEditorComponent} from '../../location/location-editor/location-editor.component';
 import {ValidateLocationDirective} from '../../location/location-editor/location-validator';
-import {AuthorityEnumDto, DeliveryStateEnumDto, EuroCratePatchDto, LogisticsLocationDto, NewEuroCrateDto, OperationCenterDto} from '../../api/models';
+import {AuthorityEnumDto, DeliveryStateEnumDto, EuroCratePatchDto, LogisticsLocationDto, OperationCenterDto} from '../../api/models';
 import {MatError, MatFormField, MatInput, MatLabel} from '@angular/material/input';
 import {MatOption, MatSelect} from '@angular/material/select';
 import {MatButton} from '@angular/material/button';
@@ -16,6 +16,8 @@ import {AuthorityStatus, UserService} from '../../util/user.service';
 import {MatIcon} from '@angular/material/icon';
 import {MatDialog} from '@angular/material/dialog';
 import {Router} from '@angular/router';
+import {toObservable, toSignal} from '@angular/core/rxjs-interop';
+import {switchMap} from 'rxjs/operators';
 
 @Component({
 	selector: 'app-selected-euro-crate',
@@ -38,8 +40,7 @@ import {Router} from '@angular/router';
 	templateUrl: './selected-euro-crate.component.html',
 	styleUrl: './selected-euro-crate.component.scss'
 })
-export class SelectedEuroCrateComponent implements OnInit {
-    crate?: EuroCrateDto;
+export class SelectedEuroCrateComponent {
 	canEdit: boolean = false;
 
 	constructor(
@@ -47,40 +48,35 @@ export class SelectedEuroCrateComponent implements OnInit {
 		userService: UserService,
 		private diag: MatDialog,
 		private router: Router
-
 	) {
 		userService.hasAuthority(AuthorityEnumDto.ModifyResources).then(does => {
 			this.canEdit = does == AuthorityStatus.HasIt
 		});
 	}
 
-	@Input()
-	id!: number;
+	id = input.required<number>()
+	crate = toSignal(toObservable(this.id).pipe(
+		switchMap(uid => this.apiService.getEuroCrate({id: uid}))
+	), {initialValue: null})
 
-	ngOnInit() {
-		this.apiService.getEuroCrate({
-			id: this.id
-		}).subscribe(value => {
-			this.crate = value;
-		})
-	}
 
 	saveIt(form: NgForm, oc: NgModel, locationMod: NgModel, deliStatusMod: NgModel, ftInfoMod: NgModel) {
+		let theCrate = this.crate()!;
 		let patch: EuroCratePatchDto = {}
 		if (oc.dirty) {
-			patch.operationCenter = this.crate!.operationCenter
+			patch.operationCenter = theCrate.operationCenter
 		}
 		if (locationMod.dirty) {
-			patch.location = this.crate!.location
+			patch.location = theCrate.location
 		}
 		if (deliStatusMod.dirty) {
-			patch.deliveryState = this.crate!.deliveryState
+			patch.deliveryState = theCrate.deliveryState
 		}
 		if (ftInfoMod.dirty) {
-			patch.information = this.crate!.information
+			patch.information = theCrate.information
 		}
 		this.apiService.modifyEuroCrate({
-			id: this.id,
+			id: this.id(),
 			body: patch
 		}).subscribe({
 			next: _ => {

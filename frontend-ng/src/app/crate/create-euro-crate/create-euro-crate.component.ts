@@ -13,7 +13,6 @@ import {LocationTypeDto} from '../../api/models/location-type-dto';
 import {MatOption, MatSelect} from '@angular/material/select';
 import {MatButton} from '@angular/material/button';
 import {LogisticsLocationDto} from '../../api/models/logistics-location-dto';
-import {ConfirmScreenConfig} from '../../are-you-sure/are-you-sure.component';
 import {EuroCrateDto} from '../../api/models/euro-crate-dto';
 
 interface ReturnDate {

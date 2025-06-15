@@ -66,7 +66,7 @@ const theRoutes: RouteEntry[] = [
 })
 export class HomepageComponent implements OnInit {
 	ngOnInit() {
-		const myTimeline = new MastodonTimeline.Init({
+		new MastodonTimeline.Init({
 			instanceUrl: "https://chaos.social",
 			timelineType: "profile",
 			userId: "109819324541414738",
