@@ -38,13 +38,13 @@ class EuroPalletRouteTest {
 
         ResponseEntity<EuroPalletDto> response = euroPalletRoute.createEuroPallet(new NewEuroPalletDto()
                 .location(locationDto)
-                .information(information));
+                .name(information));
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertNotNull(response.getBody());
         EuroPalletDto euroPalletDto = response.getBody();
 
-        assertThat(euroPalletDto.getInformation()).isEqualTo(Optional.of(information));
+        assertThat(euroPalletDto.getName()).isEqualTo(information);
         assertThat(euroPalletDto.getLocation()).usingRecursiveComparison().isEqualTo(locationDto);
         assertThat(euroPalletDto.getEuroPalletId()).isGreaterThan(0L);
     }
@@ -55,7 +55,7 @@ class EuroPalletRouteTest {
         String information = "some info";
 
         assertThrows(ConstraintViolationException.class, () -> {
-            euroPalletRoute.createEuroPallet(new NewEuroPalletDto().information(information));
+            euroPalletRoute.createEuroPallet(new NewEuroPalletDto().name(information));
         });
     }
 }

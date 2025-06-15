@@ -32,7 +32,7 @@ class PackingListRouteTest {
     @WithUserDetails
     public void canCreateNewPackingList() {
 		long euroPalletId = createEuroPalletUseCase.createEuroPallet(
-				new NewEuroPalletDto().location(new LocationDto().locationType(LocationTypeDto.SOMEWHERE_ELSE).somewhereElse("123"))).result().getEuroPalletId();
+				new NewEuroPalletDto().location(new LocationDto().locationType(LocationTypeDto.SOMEWHERE_ELSE).somewhereElse("123")).name("ghjh")).result().getEuroPalletId();
 
         ResponseEntity<PackingListDto> response = route.createPackingList(new NewPackingListDto().name("finanzen").packedOnPallet(euroPalletId));
 

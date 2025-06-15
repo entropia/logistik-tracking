@@ -41,7 +41,7 @@ class CreatePackingListUseCaseTest {
     @Test
     public void failsToCreatePackingListWithEmptyName() {
         long palletId = createEuroPalletUseCase.createEuroPallet(
-                new NewEuroPalletDto().location(new LocationDto().locationType(LocationTypeDto.SOMEWHERE_ELSE).somewhereElse("somewhere"))
+                new NewEuroPalletDto().name("hjkb").location(new LocationDto().locationType(LocationTypeDto.SOMEWHERE_ELSE).somewhereElse("somewhere"))
         ).result().getEuroPalletId();
 
         Result<PackingListDto, ManagePackingListUseCase.CreateNewPackingListError> result = createPackingListUseCase.createNewPackingListUseCase(
@@ -57,7 +57,7 @@ class CreatePackingListUseCaseTest {
     @Test
     public void canCreateNewPackingList() {
         EuroPalletDto euroPallet = createEuroPalletUseCase.createEuroPallet(
-                new NewEuroPalletDto().location(new LocationDto().locationType(LocationTypeDto.SOMEWHERE_ELSE).somewhereElse("somewhere"))
+                new NewEuroPalletDto().name("ghksjs").location(new LocationDto().locationType(LocationTypeDto.SOMEWHERE_ELSE).somewhereElse("somewhere"))
         ).result();
 
         Result<PackingListDto, ManagePackingListUseCase.CreateNewPackingListError> result = createPackingListUseCase.createNewPackingListUseCase(
