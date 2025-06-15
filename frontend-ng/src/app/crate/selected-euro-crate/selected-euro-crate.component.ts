@@ -15,9 +15,10 @@ import {RequiresAuthorityDirective} from '../../util/requires-permission.directi
 import {AuthorityStatus, UserService} from '../../util/user.service';
 import {MatIcon} from '@angular/material/icon';
 import {MatDialog} from '@angular/material/dialog';
-import {Router} from '@angular/router';
+import {Router, RouterLink} from '@angular/router';
 import {toObservable, toSignal} from '@angular/core/rxjs-interop';
-import {switchMap} from 'rxjs/operators';
+import {catchError, switchMap} from 'rxjs/operators';
+import {forkJoin, of} from 'rxjs';
 
 @Component({
 	selector: 'app-selected-euro-crate',
@@ -35,7 +36,8 @@ import {switchMap} from 'rxjs/operators';
 		MatProgressSpinner,
 		PrintButtonComponent,
 		RequiresAuthorityDirective,
-		MatIcon
+		MatIcon,
+		RouterLink
 	],
 	templateUrl: './selected-euro-crate.component.html',
 	styleUrl: './selected-euro-crate.component.scss'
@@ -56,12 +58,19 @@ export class SelectedEuroCrateComponent {
 
 	id = input.required<number>()
 	crate = toSignal(toObservable(this.id).pipe(
-		switchMap(uid => this.apiService.getEuroCrate({id: uid}))
+		switchMap(uid => forkJoin({
+			crate: this.apiService.getEuroCrate({id: uid}),
+			relatedPls: this.apiService.getPackingListsOfCrate({id: uid})
+				.pipe(catchError(err => {
+					console.error("couldnt fetch related packing list", err)
+					return of(null);
+				}))
+		}))
 	), {initialValue: null})
 
 
 	saveIt(form: NgForm, oc: NgModel, locationMod: NgModel, deliStatusMod: NgModel, ftInfoMod: NgModel) {
-		let theCrate = this.crate()!;
+		let theCrate = this.crate()!.crate;
 		let patch: EuroCratePatchDto = {}
 		if (oc.dirty) {
 			patch.operationCenter = theCrate.operationCenter

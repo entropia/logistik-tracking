@@ -1,8 +1,9 @@
-@let currentCrate = crate();
+@let currentSet = crate();
 
-@if (!currentCrate) {
+@if (!currentSet) {
 	<div class="centerLoading"><mat-spinner mode="indeterminate"></mat-spinner></div>
 } @else {
+	@let currentCrate = currentSet.crate;
 	<h1>Box {{currentCrate.operationCenter}} / {{currentCrate.name}}</h1>
 	<app-print-button *requireAuthority="AuthorityEnumDto.Print" [thing]="{id: currentCrate.internalId, type: 'crate'}"></app-print-button>
 	<button
@@ -17,6 +18,13 @@
 	<form (ngSubmit)="saveIt(theForm, oc, location, delStatus, ftInfo);" #theForm="ngForm">
 		<div class="content">
 			<h2>Meta</h2>
+			<h2>Packliste mit dieser Box</h2>
+			@let relevantPls = currentSet.relatedPls;
+			@if (!relevantPls) {
+				<p>Keine</p>
+			} @else {
+				<p><a [routerLink]="'/packingList/'+relevantPls.packingListId">{{relevantPls.packingListId}} / {{relevantPls.packingListName}}</a> status {{relevantPls.deliveryState}}</p>
+			}
 			<mat-form-field>
 				<mat-label>Verantwortlich</mat-label>
 				<mat-select [disabled]="!canEdit" [(ngModel)]="currentCrate.operationCenter" required name="operationCenter" #oc="ngModel">
