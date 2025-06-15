@@ -5,6 +5,7 @@ import de.entropia.logistiktracking.domain.delivery_state.DeliveryState;
 import de.entropia.logistiktracking.domain.packing_list.PackingList;
 import de.entropia.logistiktracking.domain.packing_list.use_case.ManagePackingListUseCase;
 import de.entropia.logistiktracking.jpa.PackingListDatabaseElement;
+import de.entropia.logistiktracking.jpa.PackingListDatabaseElement_;
 import de.entropia.logistiktracking.jpa.repo.EuroCrateDatabaseService;
 import de.entropia.logistiktracking.jpa.repo.PackingListDatabaseService;
 import lombok.AllArgsConstructor;
@@ -28,7 +29,7 @@ public class PackingListRepository {
 	}
 
 	public List<PackingList> findAllPackingLists() {
-		return packingListDatabaseService.findAll(Sort.by("packingListId").ascending()).stream()
+		return packingListDatabaseService.findAll(Sort.by(PackingListDatabaseElement_.PACKING_LIST_ID).ascending()).stream()
 				.map(packingListConverter::from)
 				.toList();
 	}

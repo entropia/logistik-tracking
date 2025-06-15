@@ -17,7 +17,6 @@ import {
 } from '@angular/material/table';
 import {MatSort, MatSortHeader} from '@angular/material/sort';
 import {FormsModule} from '@angular/forms';
-import {AuthorityEnumDto} from '../../api/models';
 import {MatButton} from '@angular/material/button';
 import {Router, RouterLink} from '@angular/router';
 import {MatDialog} from '@angular/material/dialog';
@@ -93,6 +92,5 @@ export class UserListComponent implements OnInit, AfterViewInit {
 		})
 	}
 
-	protected readonly AuthorityEnumDto = AuthorityEnumDto;
 	protected readonly Object = Object;
 }

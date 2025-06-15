@@ -49,7 +49,7 @@ import {MatIcon} from '@angular/material/icon';
 export class EuroPalletComponent implements OnInit {
 	euroPallets?: EuroPalletDto[];
 	protected displayedColumns = [
-		'euroPalletId', 'location'
+		'euroPalletId', 'name', 'location'
 	]
 	protected ds: MatTableDataSource<EuroPalletDto> = new MatTableDataSource<EuroPalletDto>();
 

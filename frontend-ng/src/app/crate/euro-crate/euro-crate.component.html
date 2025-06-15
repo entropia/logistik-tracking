@@ -3,7 +3,7 @@
 	<button
 		mat-flat-button
 		(click)="createCrate()"
-		*requireAuthority="AuthorityEnumDto.ManageResources"
+		*requireAuthority="AuthorityEnumDto.CreateResources"
 		style="margin-bottom: 10px;"
 	>
 		<mat-icon fontIcon="add"></mat-icon>
@@ -46,7 +46,7 @@
 				</tr>
 			</table>
 
-			<mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+			<mat-paginator [pageSizeOptions]="[5, 10, 25, 50, 100]" [pageSize]="50"></mat-paginator>
 		</div>
 	</div>
 

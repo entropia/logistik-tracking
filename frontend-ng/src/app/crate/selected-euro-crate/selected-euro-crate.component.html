@@ -3,6 +3,15 @@
 } @else {
 	<h1>Box {{crate.operationCenter}} / {{crate.name}}</h1>
 	<app-print-button *requireAuthority="AuthorityEnumDto.Print" [thing]="{id: crate.internalId, type: 'crate'}"></app-print-button>
+	<button
+		mat-flat-button
+		(click)="dupeCrate()"
+		*requireAuthority="AuthorityEnumDto.CreateResources"
+		style="margin-bottom: 10px;"
+	>
+		<mat-icon fontIcon="add"></mat-icon>
+		Duplizieren
+	</button>
 	<form (ngSubmit)="saveIt(theForm, oc, location, delStatus, ftInfo);" #theForm="ngForm">
 		<div class="content">
 			<h2>Meta</h2>
@@ -48,7 +57,7 @@
 			<p>Information:</p>
 			<textarea [disabled]="!canEdit" maxlength="255" matInput [(ngModel)]="crate.information" name="ftInfo" class="ftInfo" rows="5" #ftInfo="ngModel"></textarea>
 
-			<button *requireAuthority="AuthorityEnumDto.ManageResources" mat-flat-button type="submit" [disabled]="!theForm.form.valid || !theForm.dirty">Änderungen Speichern</button>
+			<button *requireAuthority="AuthorityEnumDto.ModifyResources" mat-flat-button type="submit" [disabled]="!theForm.form.valid || !theForm.dirty">Änderungen Speichern</button>
 		</div>
 	</form>
 }

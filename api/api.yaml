@@ -762,13 +762,18 @@ components:
 
     NewEuroPalletDto:
       allOf:
-        - $ref: "#/components/schemas/InformationDto"
         - type: object
           properties:
             location:
               $ref: "#/components/schemas/LocationDto"
+            name:
+              description: "Simple name for this pallet"
+              type: string
+              maxLength: 255
+              pattern: ^[^<>"'&;]*$
           required:
             - location
+            - name
 
     EuroPalletDto:
       allOf:
@@ -934,6 +939,7 @@ components:
         - "SafeR"
         - "SilentHacking"
         - "Projektleitung"
+        - "LOC"
 
     LoginDto:
       type: object
@@ -976,5 +982,7 @@ components:
       # -> die namen hier müssen mit den java enum namen übereinstimmen, die caps sind
       enum:
         - 'MANAGE_USERS'
-        - 'MANAGE_RESOURCES'
+        - 'CREATE_RESOURCES'
+        - 'MODIFY_RESOURCES'
+        - 'DELETE_RESOURCES'
         - 'PRINT'

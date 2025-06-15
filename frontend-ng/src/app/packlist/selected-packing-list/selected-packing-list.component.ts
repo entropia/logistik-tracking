@@ -140,7 +140,7 @@ export class SelectedPackingListComponent implements OnInit {
 		userService: UserService,
 		private diag: MatDialog
 	) {
-		userService.hasAuthority(AuthorityEnumDto.ManageResources).then(does => {
+		userService.hasAuthority(AuthorityEnumDto.ModifyResources).then(does => {
 			this.canEdit = does == AuthorityStatus.HasIt
 			if (this.canEdit) {
 				this.displayedColumns.push('actions')

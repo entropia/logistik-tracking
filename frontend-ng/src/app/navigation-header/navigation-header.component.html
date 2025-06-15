@@ -1,7 +1,28 @@
-<a routerLink="/packingList" mat-menu-item>Packlisten</a>
-<a routerLink="/euroPallet"  mat-menu-item>Palleten</a>
-<a routerLink="/euroCrate" mat-menu-item>Euroboxen</a>
-<a routerLink="/overview" mat-menu-item>Übersicht</a>
-<a routerLink="/departures" mat-menu-item>Abfahrten</a>
-<a routerLink="/printMultiple" mat-menu-item *requireAuthority="AuthorityEnumDto.Print">Drucken</a>
-<a routerLink="/users" mat-menu-item *requireAuthority="AuthorityEnumDto.ManageUsers">Admin</a>
+<a routerLink="/packingList" mat-menu-item>
+	<mat-icon>assignment</mat-icon>
+	<span>Packlisten</span>
+</a>
+<a routerLink="/euroPallet"  mat-menu-item>
+	<mat-icon>pallet</mat-icon>
+	<span>Palleten</span>
+</a>
+<a routerLink="/euroCrate" mat-menu-item>
+	<mat-icon>box</mat-icon>
+	<span>Euroboxen</span>
+</a>
+<a routerLink="/overview" mat-menu-item>
+	<mat-icon>dashboard</mat-icon>
+	<span>Übersicht</span>
+</a>
+<a routerLink="/departures" mat-menu-item>
+	<mat-icon>flight_takeoff</mat-icon>
+	<span>Abfahrten</span>
+</a>
+<a routerLink="/printMultiple" mat-menu-item *requireAuthority="AuthorityEnumDto.Print">
+	<mat-icon>printer</mat-icon>
+	<span>Drucken</span>
+</a>
+<a routerLink="/users" mat-menu-item *requireAuthority="AuthorityEnumDto.ManageUsers">
+	<mat-icon>manage_accounts</mat-icon>
+	<span>Admin</span>
+</a>

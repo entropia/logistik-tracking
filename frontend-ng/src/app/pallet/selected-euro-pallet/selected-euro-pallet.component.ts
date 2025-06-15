@@ -10,13 +10,14 @@ import {MatButton} from '@angular/material/button';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {handleDefaultError} from '../../util/auth';
 import {NewPackingListDto} from '../../api/models/new-packing-list-dto';
-import {Router} from '@angular/router';
+import {Router, RouterLink} from '@angular/router';
 import {MatDialog} from '@angular/material/dialog';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
 import {RequiresAuthorityDirective} from '../../util/requires-permission.directive';
 import {AuthorityEnumDto} from '../../api/models/authority-enum-dto';
 import {AuthorityStatus, UserService} from '../../util/user.service';
 import {PrintButtonComponent} from '../../util/print-button/print-button.component';
+import {VeryBasicPackingListDto} from '../../api/models/very-basic-packing-list-dto';
 
 @Component({
 	selector: 'app-selected-euro-pallet',
@@ -29,7 +30,8 @@ import {PrintButtonComponent} from '../../util/print-button/print-button.compone
 
 		RequiresAuthorityDirective,
 		MatProgressSpinner,
-		PrintButtonComponent
+		PrintButtonComponent,
+		RouterLink
 	],
 	templateUrl: './selected-euro-pallet.component.html',
 	styleUrl: './selected-euro-pallet.component.scss'
@@ -41,6 +43,8 @@ export class SelectedEuroPalletComponent implements OnInit {
 	pallet?: EuroPalletDto;
 	editingLocation?: LocationDto;
 
+	relevantPls: VeryBasicPackingListDto[] = [];
+
 	canEdit: boolean = false;
 
 	constructor(
@@ -50,13 +54,13 @@ export class SelectedEuroPalletComponent implements OnInit {
 		private diag: MatDialog,
 		private userService: UserService
 	) {
-		userService.hasAuthority(AuthorityEnumDto.ManageResources).then(does => {
+		userService.hasAuthority(AuthorityEnumDto.ModifyResources).then(does => {
 			this.canEdit = does == AuthorityStatus.HasIt
 		});
 	}
 
 	getInfos(): string {
-		let existing = this.pallet?.information ?? "";
+		let existing = this.pallet?.name ?? "";
 		existing = existing.trim()
 		if (existing.length == 0) return "Keine Informationen";
 		return existing;
@@ -72,6 +76,14 @@ export class SelectedEuroPalletComponent implements OnInit {
 			},
 			error: handleDefaultError
 		});
+		this.apiService.getEuroPalletLists({
+			euroPalletId: this.id
+		}).subscribe({
+			next: r => {
+				this.relevantPls.push(...r)
+			},
+			error: handleDefaultError
+		})
 	}
 
 	saveIt(form: NgForm) {

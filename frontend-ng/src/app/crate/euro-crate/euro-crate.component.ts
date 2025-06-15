@@ -116,7 +116,8 @@ export class EuroCrateComponent implements OnInit {
 								.catch(reason => {
 									console.log("Failed to redirect to newly created crate because: " + reason);
 								});
-						}
+						},
+						error: handleDefaultError
 					});
 				})
 		})

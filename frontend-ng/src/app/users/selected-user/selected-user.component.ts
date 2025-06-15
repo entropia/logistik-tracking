@@ -20,7 +20,9 @@ import {NgOptimizedImage} from '@angular/common';
 
 const mapAuthToReadable = {
 	MANAGE_USERS: "Nutzer Verwalten",
-	MANAGE_RESOURCES: "Ressourcen Erstellen & Ändern",
+	CREATE_RESOURCES: "Ressourcen Erstellen",
+	MODIFY_RESOURCES: "Ressourcen Ändern",
+	DELETE_RESOURCES: "Ressourcen Löschen",
 	PRINT: "Drucken"
 }
 

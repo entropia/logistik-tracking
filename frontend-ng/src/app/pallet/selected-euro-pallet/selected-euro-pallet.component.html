@@ -2,12 +2,12 @@
 	@if (!pallet) {
 		<div class="centerLoading"><mat-spinner mode="indeterminate"></mat-spinner></div>
 	} @else {
-		<h1>Palette {{ pallet.euroPalletId }}</h1>
+		<h1>Palette {{ pallet.euroPalletId }} / {{getInfos()}}</h1>
 		<div style="margin-bottom: 15px">
 			<button
 				(click)="createPackingList()"
 				mat-flat-button
-				*requireAuthority="AuthorityEnumDto.ManageResources"
+				*requireAuthority="AuthorityEnumDto.CreateResources"
 
 			>
 				Zugehörige Packliste erstellen
@@ -16,6 +16,13 @@
 		</div>
 		<form (ngSubmit)="saveIt(theForm)" #theForm="ngForm">
 			<div class="content">
+				<h2>Packlisten mit dieser Palette</h2>
+				<ul>
+					@for(pl of relevantPls; track pl.packingListId) {
+						<li><a [routerLink]="'/packingList/'+pl.packingListId">{{pl.packingListId}} / {{pl.packingListName}}</a> status {{pl.deliveryState}}</li>
+					}
+				</ul>
+				<h2>Ort</h2>
 				<app-location-editor appValidateLocation [(ngModel)]="editingLocation" name="location"
 									 [disabled]="!canEdit"
 									 #name="ngModel"></app-location-editor>
@@ -30,10 +37,8 @@
 						<mat-error>Ort nicht gefüllt!</mat-error>
 					}
 				}
-				<p>Information:</p>
-				<pre><code>{{ getInfos() }}</code></pre>
-				<button *requireAuthority="AuthorityEnumDto.ManageResources" mat-flat-button type="submit" [disabled]="!theForm.form.valid || !theForm.dirty">Änderungen
-					Speichern
+				<button *requireAuthority="AuthorityEnumDto.ModifyResources" mat-flat-button type="submit" [disabled]="!theForm.form.valid || !theForm.dirty" style="margin-top: 20px">
+					Änderungen Speichern
 				</button>
 			</div>
 		</form>

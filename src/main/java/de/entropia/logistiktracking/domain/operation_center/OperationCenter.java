@@ -38,7 +38,8 @@ public enum OperationCenter {
 	Deko("Deko", DEKO),
 	SafeR("SafeR", SAFE_R),
 	SilentHacking("SilentHacking", SILENT_HACKING),
-	Projektleitung("Projektleitung", PROJEKTLEITUNG);
+	Projektleitung("Projektleitung", PROJEKTLEITUNG),
+	LOC("LOC", OperationCenterDto.LOC);
 
 	private final String name;
 	private final OperationCenterDto dtoEquiv;

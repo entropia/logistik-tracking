@@ -3,9 +3,9 @@ package de.entropia.logistiktracking.web;
 import de.entropia.logistiktracking.auth.HasAuthority;
 import de.entropia.logistiktracking.domain.converter.PackingListConverter;
 import de.entropia.logistiktracking.domain.euro_pallet.use_case.EuroPalletUseCase;
-import de.entropia.logistiktracking.domain.repository.PackingListRepository;
 import de.entropia.logistiktracking.jpa.EuroPalletDatabaseElement;
 import de.entropia.logistiktracking.jpa.PackingListDatabaseElement;
+import de.entropia.logistiktracking.jpa.PackingListDatabaseElement_;
 import de.entropia.logistiktracking.jpa.repo.EuroPalletDatabaseService;
 import de.entropia.logistiktracking.jpa.repo.PackingListDatabaseService;
 import de.entropia.logistiktracking.openapi.api.EuroPalletApi;
@@ -14,6 +14,7 @@ import de.entropia.logistiktracking.utility.Result;
 import lombok.AllArgsConstructor;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -32,7 +33,7 @@ public class EuroPalletRoute implements EuroPalletApi {
 	private final PackingListConverter packingListConverter;
 
 	@Override
-	@HasAuthority(AuthorityEnumDto.MANAGE_RESOURCES)
+	@HasAuthority(AuthorityEnumDto.CREATE_RESOURCES)
 	public ResponseEntity<EuroPalletDto> createEuroPallet(NewEuroPalletDto newEuroPalletDto) {
 		Result<EuroPalletDto, EuroPalletUseCase.CreateEuroPalletError> result = createEuroPalletUseCase.createEuroPallet(newEuroPalletDto);
 
@@ -46,7 +47,7 @@ public class EuroPalletRoute implements EuroPalletApi {
 	}
 
 	@Override
-	@HasAuthority(AuthorityEnumDto.MANAGE_RESOURCES)
+	@HasAuthority(AuthorityEnumDto.MODIFY_RESOURCES)
 	public ResponseEntity<Void> updateLastLocationOfEuroPallet(Long euroPalletId, LocationDto locationDto) {
 		Result<Void, EuroPalletUseCase.ModifyPalletError> result = createEuroPalletUseCase.updatePalletLocation(euroPalletId, locationDto);
 		return switch (result) {
@@ -94,7 +95,7 @@ public class EuroPalletRoute implements EuroPalletApi {
 		Optional<EuroPalletDatabaseElement> byId = euroPalletDatabaseService.findById(euroPalletId);
 		if (byId.isEmpty()) return ResponseEntity.notFound().build();
 		EuroPalletDatabaseElement ep = byId.get();
-		List<PackingListDatabaseElement> byPackedOn = packingListDatabaseService.findByPackedOn(ep);
+		List<PackingListDatabaseElement> byPackedOn = packingListDatabaseService.findByPackedOn(ep, Sort.by(PackingListDatabaseElement_.PACKING_LIST_ID).ascending());
 		return ResponseEntity.ok(byPackedOn.stream().map(packingListConverter::from).map(packingListConverter::toVeryBasicDto).toList());
 	}
 }

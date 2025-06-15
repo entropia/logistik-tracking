@@ -48,7 +48,8 @@ public class EuroCrateRepository {
 	}
 
 	public List<EuroCrate> findAllEuroCrates() {
-		return euroCrateDatabaseService.findAll(Sort.by("operationCenter", "name").ascending()).stream()
+		return euroCrateDatabaseService.findAll(Sort.by(EuroCrateDatabaseElement_.ID).ascending())
+				.stream()
 				.map(euroCrateConverter::from)
 				.toList();
 	}

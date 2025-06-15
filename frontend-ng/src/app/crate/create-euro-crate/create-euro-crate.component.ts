@@ -1,5 +1,5 @@
-import {Component} from '@angular/core';
-import {MatDialogActions, MatDialogContent, MatDialogRef, MatDialogTitle} from '@angular/material/dialog';
+import {Component, Inject} from '@angular/core';
+import {MAT_DIALOG_DATA, MatDialogActions, MatDialogContent, MatDialogRef, MatDialogTitle} from '@angular/material/dialog';
 import {MatFormField, MatInput, MatLabel} from '@angular/material/input';
 import {FormControl, FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {DeliveryStateEnumDto} from '../../api/models/delivery-state-enum-dto';
@@ -13,6 +13,8 @@ import {LocationTypeDto} from '../../api/models/location-type-dto';
 import {MatOption, MatSelect} from '@angular/material/select';
 import {MatButton} from '@angular/material/button';
 import {LogisticsLocationDto} from '../../api/models/logistics-location-dto';
+import {ConfirmScreenConfig} from '../../are-you-sure/are-you-sure.component';
+import {EuroCrateDto} from '../../api/models/euro-crate-dto';
 
 interface ReturnDate {
 	date: string;
@@ -54,14 +56,14 @@ export class CreateEuroCrateComponent {
 	deliveryStates = Object.values(DeliveryStateEnumDto);
 	readonly returnDates = this.generateDateRange('2025-06-16', '2025-06-23', "2025-06-18");
 
-	constructor(private dialogRef: MatDialogRef<CreateEuroCrateComponent>) {
+	constructor(private dialogRef: MatDialogRef<CreateEuroCrateComponent>, @Inject(MAT_DIALOG_DATA) protected data: EuroCrateDto | undefined) {
 		this.form = new FormGroup({
-			name: new FormControl<string>('', { nonNullable: true }),
-			location: new FormControl<LocationDto>({locationType: LocationTypeDto.Logistics, logisticsLocation: LogisticsLocationDto.Entropia}, {nonNullable: true}),
-			operationCenter: new FormControl<OperationCenterDto>(this.operationCenters[0], { nonNullable: true }),
-			deliveryState: new FormControl<DeliveryStateEnumDto>(this.deliveryStates[0], { nonNullable: true }),
-			returnBy: new FormControl<string>(this.returnDates[this.returnDates.length-1].date, { nonNullable: true }),
-			infos: new FormControl<string>('')
+			name: new FormControl<string>(data?.name || "", { nonNullable: true }),
+			location: new FormControl<LocationDto>(data?.location || {locationType: LocationTypeDto.Logistics, logisticsLocation: LogisticsLocationDto.Entropia}, {nonNullable: true}),
+			operationCenter: new FormControl<OperationCenterDto>(data?.operationCenter || this.operationCenters[0], { nonNullable: true }),
+			deliveryState: new FormControl<DeliveryStateEnumDto>(data?.deliveryState || this.deliveryStates[0], { nonNullable: true }),
+			returnBy: new FormControl<string>(data?.returnBy || this.returnDates[this.returnDates.length-1].date, { nonNullable: true }),
+			infos: new FormControl<string>(data?.information || "")
 		});
 	}
 

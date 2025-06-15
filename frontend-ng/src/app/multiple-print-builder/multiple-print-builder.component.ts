@@ -20,7 +20,6 @@ interface Resource {
 	icon: string;
 	id: number;
 	label: string;
-	extra?: string;
 }
 
 @Component({
@@ -70,9 +69,8 @@ export class MultiplePrintBuilderComponent implements OnInit {
 					return {
 						type: "Pallet",
 						id: it.euroPalletId,
-						label: it.euroPalletId+"",
-						icon: "pallet",
-						extra: it.information
+						label: it.name,
+						icon: "pallet"
 					} as Resource
 				})
 				this.allRes.push(...bruh)
@@ -100,8 +98,8 @@ export class MultiplePrintBuilderComponent implements OnInit {
 	checkFilter(it: Resource): boolean {
 		let f = this.filter.trim()
 		if (f.length == 0) return true
-		return it.label.toLowerCase().includes(f.toLowerCase());
-
+		let search = f.toLowerCase()
+		return it.label.toLowerCase().includes(search) || it.id.toString().includes(search);
 	}
 
 	printInProgress = false

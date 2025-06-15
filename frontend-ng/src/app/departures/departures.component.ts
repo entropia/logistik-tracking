@@ -5,20 +5,20 @@ import {ApiService} from '../api/services/api.service';
 import {HttpErrorResponse} from '@angular/common/http';
 
 const ocMap = {
-	Finanzen: 'FINAZ',
-	Backoffice: 'BACKO',
-	Content: 'CNTNT',
-	Heralding: 'HRALD',
-	DesignUndMotto: 'DESNG',
+	Finanzen: 'FINANZ',
+	Backoffice: 'BACK',
+	Content: 'CONTENT',
+	Heralding: 'HERALD',
+	DesignUndMotto: 'DESIGN',
 	PresseUndSocialMedia: 'PRESS',
-	LoungeControl: 'LNGE',
-	LoungeTechnik: 'LNGET',
+	LoungeControl: 'LOUNGC',
+	LoungeTechnik: 'LOUNGT',
 	Infodesk: 'INFO',
 	Merchdesk: 'MERCH',
-	Schilder: 'SCHLD',
+	Schilder: 'SCHILD',
 	Badges: 'BADGE',
 	Trolle: 'TROLL',
-	Kueche: 'KUECH',
+	Kueche: 'KUECHE',
 	WOC: 'WOC',
 	Fruehstueck: 'FRUEH',
 	RaumDer1000Namen: 'RD1000',
@@ -34,22 +34,24 @@ const ocMap = {
 	Infrastruktur: 'INFRA',
 	Deko: 'DEKO',
 	SafeR: 'SAFER',
-	SilentHacking: 'SLNTH',
-	Projektleitung: 'PL'
+	SilentHacking: 'SILENT',
+	Projektleitung: 'PL',
+	LOC: 'LOC'
 }
 
 const statusMap = {
 	Packing: 'PACKING',
 	WaitingForDelivery: 'WAITDELIVERY',
 	TravelingToGPN: 'TRANSPORT',
-	WaitingAtGPN: 'WAITGPN FINGER WEG',
+	WaitingAtGPN: 'WAITGPN',
 	InDelivery: 'DELIVERY',
 	Delivered: 'DELIVERED'
 
 }
 
-function stringify(p: EuroCrateDto) {
-	return `${(p.internalId+"").padStart(7, '0')}  ${ocMap[p.operationCenter].padStart(5, " ")}  ${p.name.substring(0, 10).padEnd(10, " ")}  ${statusMap[p.deliveryState]}`
+function stringify(p: EuroCrateDto, w: number) {
+	let nameLen = w - 7 - 7 - "WAITDELIVERY".length - 2 - 2 - 2
+	return `${(p.internalId+"").padStart(7, '0')}  ${ocMap[p.operationCenter].padStart(7, " ")}  ${p.name.substring(0, nameLen).padEnd(nameLen, " ")}  ${statusMap[p.deliveryState]}`
 }
 
 @Component({
@@ -75,7 +77,7 @@ export class DeparturesComponent implements AfterViewInit{
 		this.api.getAllEuroCrates()
 			.subscribe({
 				next: v => {
-					this.setText(v.filter(it => it.deliveryState != DeliveryStateEnumDto.Delivered).map(e => stringify(e)).join("\n"))
+					this.setText(v.filter(it => it.deliveryState != DeliveryStateEnumDto.Delivered).map(e => stringify(e, this.cols)).join("\n"))
 				},
 				error: e => {
 					console.error(e)
@@ -102,11 +104,11 @@ export class DeparturesComponent implements AfterViewInit{
 		// FIXME wtf
 		setTimeout(() => {
 			requestAnimationFrame(this.drawFrame.bind(this))
-		}, 2000)
+		}, 1000)
 		this.updateData()
 		setInterval(() => {
 			this.updateData()
-		}, 6000)
+		}, 10_000)
 	}
 
 	aLetterWidth: number = 0
@@ -119,7 +121,7 @@ export class DeparturesComponent implements AfterViewInit{
 	canUpdateAt: Array<number> = []
 	lastSeenOk: Array<number> = []
 
-	glyphs = " ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!?"
+	glyphs = " ABCDEFGHIJKLMNOPQRSTUVWXYÄÖÜZ0123456789!?(+-)"
 	dirty = false
 
 	g_columns = 5

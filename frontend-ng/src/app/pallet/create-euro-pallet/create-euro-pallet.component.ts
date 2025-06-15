@@ -2,7 +2,7 @@ import {Component} from '@angular/core';
 import {MatDialogActions, MatDialogContent, MatDialogRef, MatDialogTitle} from '@angular/material/dialog';
 import {MatButton} from '@angular/material/button';
 import {MatFormField, MatInput, MatLabel} from '@angular/material/input';
-import {FormControl, FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {NewEuroPalletDto} from '../../api/models/new-euro-pallet-dto';
 import {LocationDto} from '../../api/models/location-dto';
 import {LocationEditorComponent} from '../../location/location-editor/location-editor.component';
@@ -41,7 +41,7 @@ export class CreateEuroPalletComponent {
 				operationCenter: OperationCenterDto.Aussenbar,
 				somewhereElse: ''
 			}, {nonNullable: true}),
-			infos: new FormControl<string>("", [])
+			name: new FormControl<string>("", [Validators.required, Validators.maxLength(255)])
 		});
 	}
 
@@ -52,7 +52,7 @@ export class CreateEuroPalletComponent {
 	handleSubmit() {
 		let epd: NewEuroPalletDto = {
 			location: this.form.value.location!,
-			information: this.form.value.infos ?? undefined
+			name: this.form.value.name!
 		}
 		this.dialogRef.close(epd)
 	}

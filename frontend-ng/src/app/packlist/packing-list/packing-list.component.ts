@@ -94,7 +94,8 @@ export class PackingListComponent implements OnInit {
 								.catch(reason => {
 									console.log("Failed to redirect to newly created packing list because: " + reason);
 								});
-						}
+						},
+						error: handleDefaultError
 					});
 				});
 		})

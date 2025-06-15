@@ -46,7 +46,7 @@ export class CreatePackingListComponent implements OnInit {
 	) {
 		this.form = new FormGroup({
 			name: new FormControl<string>("", { nonNullable: true }),
-			packedOnPallet: new FormControl<number>(-1, { nonNullable: true })
+			packedOnPallet: new FormControl<number>(data?.packedOnPallet ?? -1, { nonNullable: true })
 		});
 	}
 
@@ -55,7 +55,7 @@ export class CreatePackingListComponent implements OnInit {
 			next: (euroPallets) => {
 				this.euroPallets = euroPallets.map(pallet => ({
 					palletId: pallet.euroPalletId,
-					information: pallet.information ?? ''
+					information: pallet.name
 				}));
 			}
 		});

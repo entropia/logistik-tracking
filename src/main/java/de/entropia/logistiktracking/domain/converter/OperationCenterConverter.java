@@ -41,6 +41,7 @@ public class OperationCenterConverter implements Converter<String, OperationCent
 			case SAFE_R -> OperationCenter.SafeR;
 			case SILENT_HACKING -> OperationCenter.SilentHacking;
 			case PROJEKTLEITUNG -> OperationCenter.Projektleitung;
+			case LOC -> OperationCenter.LOC;
 		};
 	}
 

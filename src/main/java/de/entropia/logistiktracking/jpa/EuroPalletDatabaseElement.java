@@ -19,7 +19,7 @@ public class EuroPalletDatabaseElement {
 	private long palletId;
 
 	@Column(name = "information", nullable = false)
-	private String information;
+	private String palleteName;
 
 	@Embedded
 	private LocationDatabaseElement location;

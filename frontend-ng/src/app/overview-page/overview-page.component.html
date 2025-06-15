@@ -66,7 +66,7 @@
 		<tr mat-row *matRowDef="let row; columns: viewColsEuroCrate;" [routerLink]="'/euroCrate/'+row.internalId" class="clickable"></tr>
 	</table>
 
-	<mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" #matPaginatorCrates></mat-paginator>
+	<mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" [pageSize]="10" #matPaginatorCrates></mat-paginator>
 </div>
 
 <h2>Paletten</h2>
@@ -92,7 +92,7 @@
 		<tr mat-row *matRowDef="let row; columns: viewColsEuroPallet;" [routerLink]="'/euroPallet/'+row.euroPalletId" class="clickable"></tr>
 	</table>
 
-	<mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" #matPaginatorPallet></mat-paginator>
+	<mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" [pageSize]="10" #matPaginatorPallet></mat-paginator>
 </div>
 
 <h2>Listen</h2>
@@ -118,5 +118,5 @@
 		<tr mat-row *matRowDef="let row; columns: viewColsLists;" [routerLink]="'/packingList/'+row.packingListId" class="clickable"></tr>
 	</table>
 
-	<mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" #matPaginatorLists></mat-paginator>
+	<mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" [pageSize]="10" #matPaginatorLists></mat-paginator>
 </div>

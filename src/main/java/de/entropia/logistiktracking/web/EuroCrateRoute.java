@@ -35,7 +35,7 @@ public class EuroCrateRoute implements EuroCrateApi {
 	private final LocationConverter locationConverter;
 
 	@Override
-	@HasAuthority(AuthorityEnumDto.MANAGE_RESOURCES)
+	@HasAuthority(AuthorityEnumDto.CREATE_RESOURCES)
 	public ResponseEntity<EuroCrateDto> createNewEuroCrate(NewEuroCrateDto newEuroCrateDto) {
 		Result<EuroCrateDto, EuroCrateUseCase.CreateEuroCrateError> result = euroCrateUseCase.createEuroCrate(newEuroCrateDto);
 
@@ -96,7 +96,7 @@ public class EuroCrateRoute implements EuroCrateApi {
 	}
 
 	@Override
-	@HasAuthority(AuthorityEnumDto.MANAGE_RESOURCES)
+	@HasAuthority(AuthorityEnumDto.MODIFY_RESOURCES)
 	public ResponseEntity<Void> modifyEuroCrate(Long id, EuroCratePatchDto euroCratePatchDto) {
 		return switch (euroCrateUseCase.modifyEuroCrate(id, euroCratePatchDto)) {
 			case Result.Error<?, EuroCrateUseCase.ModifyEuroCrateError>(var _) -> ResponseEntity.notFound().build();

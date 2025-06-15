@@ -24,7 +24,7 @@ public class PackingListRoute implements PackingListApi {
 	private final ManagePackingListUseCase managePackingListUseCase;
 
 	@Override
-	@HasAuthority(AuthorityEnumDto.MANAGE_RESOURCES)
+	@HasAuthority(AuthorityEnumDto.CREATE_RESOURCES)
 	public ResponseEntity<PackingListDto> createPackingList(NewPackingListDto newPackingListDto) {
 		Result<PackingListDto, ManagePackingListUseCase.CreateNewPackingListError> result = managePackingListUseCase.createNewPackingListUseCase(newPackingListDto);
 
@@ -74,7 +74,7 @@ public class PackingListRoute implements PackingListApi {
 	}
 
 	@Override
-	@HasAuthority(AuthorityEnumDto.MANAGE_RESOURCES)
+	@HasAuthority(AuthorityEnumDto.MODIFY_RESOURCES)
 	public ResponseEntity<Void> modifyPackingList(Long packingListId, PackingListPatchDto packingListPatchDto) {
 		return switch (managePackingListUseCase.modifyPackingList(packingListId, packingListPatchDto)) {
 			case Result.Error<?, ManagePackingListUseCase.PackingListModError>(var error) -> switch (error) {

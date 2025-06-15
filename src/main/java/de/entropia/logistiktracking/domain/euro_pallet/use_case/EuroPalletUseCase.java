@@ -46,7 +46,7 @@ public class EuroPalletUseCase {
 		try {
 			newEuroPallet = EuroPallet.builder()
 					.location(initialLocation)
-					.information(newEuroPalletDto.getInformation().orElse(""))
+					.name(newEuroPalletDto.getName())
 					.build();
 		} catch (IllegalArgumentException e) {
 			return new Result.Error<>(CreateEuroPalletError.BadArguments);

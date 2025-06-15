@@ -4,7 +4,7 @@ import {EuroCrateDto} from '../../api/models/euro-crate-dto';
 import {FormsModule, NgForm, NgModel} from '@angular/forms';
 import {LocationEditorComponent} from '../../location/location-editor/location-editor.component';
 import {ValidateLocationDirective} from '../../location/location-editor/location-validator';
-import {AuthorityEnumDto, DeliveryStateEnumDto, EuroCratePatchDto, LogisticsLocationDto, OperationCenterDto} from '../../api/models';
+import {AuthorityEnumDto, DeliveryStateEnumDto, EuroCratePatchDto, LogisticsLocationDto, NewEuroCrateDto, OperationCenterDto} from '../../api/models';
 import {MatError, MatFormField, MatInput, MatLabel} from '@angular/material/input';
 import {MatOption, MatSelect} from '@angular/material/select';
 import {MatButton} from '@angular/material/button';
@@ -13,6 +13,9 @@ import {MatProgressSpinner} from '@angular/material/progress-spinner';
 import {PrintButtonComponent} from '../../util/print-button/print-button.component';
 import {RequiresAuthorityDirective} from '../../util/requires-permission.directive';
 import {AuthorityStatus, UserService} from '../../util/user.service';
+import {MatIcon} from '@angular/material/icon';
+import {MatDialog} from '@angular/material/dialog';
+import {Router} from '@angular/router';
 
 @Component({
 	selector: 'app-selected-euro-crate',
@@ -29,7 +32,8 @@ import {AuthorityStatus, UserService} from '../../util/user.service';
 		MatButton,
 		MatProgressSpinner,
 		PrintButtonComponent,
-		RequiresAuthorityDirective
+		RequiresAuthorityDirective,
+		MatIcon
 	],
 	templateUrl: './selected-euro-crate.component.html',
 	styleUrl: './selected-euro-crate.component.scss'
@@ -41,9 +45,11 @@ export class SelectedEuroCrateComponent implements OnInit {
 	constructor(
 		private apiService: ApiService,
 		userService: UserService,
+		private diag: MatDialog,
+		private router: Router
 
 	) {
-		userService.hasAuthority(AuthorityEnumDto.ManageResources).then(does => {
+		userService.hasAuthority(AuthorityEnumDto.ModifyResources).then(does => {
 			this.canEdit = does == AuthorityStatus.HasIt
 		});
 	}
@@ -89,4 +95,27 @@ export class SelectedEuroCrateComponent implements OnInit {
 	protected readonly DeliveryStateEnumDto = DeliveryStateEnumDto;
 	protected readonly AuthorityEnumDto = AuthorityEnumDto;
 	protected readonly OperationCenterDto = OperationCenterDto;
+
+	dupeCrate() {
+		import('../create-euro-crate/create-euro-crate.component').then(it => {
+			this.diag.open<any, any, EuroCrateDto | undefined>(it.CreateEuroCrateComponent, {
+					data: this.crate
+				})
+				.afterClosed()
+				.subscribe(value => {
+					if (!value) return;
+					this.apiService.createNewEuroCrate({
+						body: value
+					}).subscribe({
+						next: crate => {
+							this.router.navigate(['euroCrate/' + crate.internalId])
+								.catch(reason => {
+									console.log("Failed to redirect to newly created crate because: " + reason);
+								});
+						},
+						error: handleDefaultError
+					});
+				})
+		})
+	}
 }

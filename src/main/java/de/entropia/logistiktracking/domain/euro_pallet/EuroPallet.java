@@ -13,12 +13,12 @@ public class EuroPallet {
 	@Setter
 	private Location location;
 	@Setter
-	private String information;
+	private String name;
 
 	@Builder
-	EuroPallet(long palletId, @NonNull Location location, String information) {
+	EuroPallet(long palletId, @NonNull Location location, @NonNull String name) {
 		this.palletId = palletId;
 		this.location = location;
-		this.information = information == null ? "" : information;
+		this.name = name;
 	}
 }

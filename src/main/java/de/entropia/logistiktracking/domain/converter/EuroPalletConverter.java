@@ -14,7 +14,7 @@ public class EuroPalletConverter {
 
 	public EuroPalletDatabaseElement toDatabaseElement(EuroPallet euroPallet) {
 		LocationDatabaseElement locationDatabaseElement = locationConverter.toDatabaseElement(euroPallet.getLocation());
-		return new EuroPalletDatabaseElement(euroPallet.getPalletId(), euroPallet.getInformation(), locationDatabaseElement);
+		return new EuroPalletDatabaseElement(euroPallet.getPalletId(), euroPallet.getName(), locationDatabaseElement);
 	}
 
 	public EuroPallet from(EuroPalletDatabaseElement databaseElement) {
@@ -22,7 +22,7 @@ public class EuroPalletConverter {
 				.builder()
 				.palletId(databaseElement.getPalletId())
 				.location(locationConverter.from(databaseElement.getLocation()))
-				.information(databaseElement.getInformation())
+				.name(databaseElement.getPalleteName())
 				.build();
 	}
 
@@ -30,6 +30,6 @@ public class EuroPalletConverter {
 		return new EuroPalletDto()
 				.euroPalletId(euroPallet.getPalletId())
 				.location(locationConverter.toDto(euroPallet.getLocation()))
-				.information(euroPallet.getInformation());
+				.name(euroPallet.getName());
 	}
 }
