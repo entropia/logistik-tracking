@@ -1,4 +1,4 @@
-import {Component, input} from '@angular/core';
+import {Component, input, TemplateRef, ViewChild} from '@angular/core';
 import {ApiService} from '../../api/services';
 import {EuroCrateDto} from '../../api/models/euro-crate-dto';
 import {FormsModule, NgForm, NgModel} from '@angular/forms';
@@ -15,10 +15,11 @@ import {RequiresAuthorityDirective} from '../../util/requires-permission.directi
 import {AuthorityStatus, UserService} from '../../util/user.service';
 import {MatIcon} from '@angular/material/icon';
 import {MatDialog} from '@angular/material/dialog';
-import {Router, RouterLink} from '@angular/router';
+import {ActivatedRoute, Router, RouterLink} from '@angular/router';
 import {toObservable, toSignal} from '@angular/core/rxjs-interop';
 import {catchError, switchMap} from 'rxjs/operators';
 import {forkJoin, of} from 'rxjs';
+import {openAreYouSureOverlay} from '../../are-you-sure/are-you-sure.component';
 
 @Component({
 	selector: 'app-selected-euro-crate',
@@ -49,11 +50,40 @@ export class SelectedEuroCrateComponent {
 		private apiService: ApiService,
 		userService: UserService,
 		private diag: MatDialog,
-		private router: Router
+		private router: Router,
+		private ac: ActivatedRoute
 	) {
 		userService.hasAuthority(AuthorityEnumDto.ModifyResources).then(does => {
 			this.canEdit = does == AuthorityStatus.HasIt
 		});
+	}
+
+	@ViewChild("deleteError")
+	delErrorTempl!: TemplateRef<any>;
+	deleteIt() {
+		openAreYouSureOverlay<"cancel" | "delete">(this.diag, {
+			body: this.delErrorTempl,
+			choices: [{
+				title: "Abbrechen",
+				token: "cancel"
+			}, {
+				title: "Löschen",
+				style: "color: #ea680b",
+				token: "delete"
+			}],
+			title: "Kiste löschen?"
+		}).afterClosed().subscribe(result => {
+			if (result == "delete") {
+				this.apiService.deleteEuroCrate({
+					id: this.id()
+				}).subscribe({
+					next: () => {
+						this.router.navigate([".."], {relativeTo: this.ac})
+					},
+					error: handleDefaultError
+				})
+			}
+		})
 	}
 
 	id = input.required<number>()

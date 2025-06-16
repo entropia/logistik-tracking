@@ -19,4 +19,9 @@ public interface EuroCrateDatabaseService extends JpaRepository<EuroCrateDatabas
 	@Modifying
 	@Query("update EuroCrateDatabaseElement ec set ec.location = ?2 where ec.id in ?1")
 	int setMultipleLocations(long[] ids, LocationDatabaseElement newDeliveryState);
+
+	// muss so weil deleteById shadowed ist
+	@Modifying
+	@Query("delete from EuroCrateDatabaseElement ec where ec.id = ?1")
+	int deleteItWithId(long id);
 }

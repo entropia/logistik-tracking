@@ -1,3 +1,13 @@
+<ng-template #deleteError>
+	<p>Bist du dir sicher, dass du diese Palette löschen willst?</p>
+	<p><b>Das kann NICHT rückgängig gemacht werden!</b></p>
+	<ul>
+		<li>Wenn Packlisten mit dieser Palette bestehen, müssen diese zuerst gelöscht werden!</li>
+		<li>Falls diese Palette schon gedruckt wurde, werden scans fehlschlagen und viele leute verwirrt sein</li>
+	</ul>
+	<p>Sei dir <b>absolut sicher</b>, dass das alles stimmt!</p>
+</ng-template>
+
 <main>
 	@let pallet = selected()?.pallet;
 	@if (!pallet) {
@@ -48,5 +58,9 @@
 				</button>
 			</div>
 		</form>
+		<button class="danger" mat-flat-button *requireAuthority="AuthorityEnumDto.DeleteResources" (click)="deleteIt()" style="margin-top: 10px">
+			<mat-icon>delete</mat-icon>
+			Löschen
+		</button>
 	}
 </main>

@@ -33,7 +33,10 @@ public interface PackingListDatabaseService extends JpaRepository<PackingListDat
 	long[] getAllCratesForId(long id);
 
 	List<PackingListDatabaseElement> findByPackedOn(EuroPalletDatabaseElement epde, Sort sort);
+	List<PackingListDatabaseElement> findByPackedOn(EuroPalletDatabaseElement epde);
 
 
 	Optional<PackingListDatabaseElement> getByPackedCratesContains(EuroCrateDatabaseElement dbEl);
+
+	int deleteByPackingListId(long packingListId);
 }

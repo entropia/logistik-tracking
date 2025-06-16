@@ -3,6 +3,17 @@
 	<p>Bist du dir sicher, dass du das machen willst?</p>
 </ng-template>
 
+<ng-template #deleteError>
+	<p>Bist du dir sicher, dass du diese Packliste löschen willst?</p>
+	<p><b>Das kann NICHT rückgängig gemacht werden!</b></p>
+	<ul>
+		<li><b>Alle</b> kisten werden aus der packliste entfernt; sie bestehen weiterhin</li>
+		<li>Die palette wird weiterhin bestehen</li>
+		<li>Falls diese Packliste schon gedruckt wurde, werden scans fehlschlagen und viele leute verwirrt sein</li>
+	</ul>
+	<p>Sei dir <b>absolut sicher</b>, dass das alles stimmt!</p>
+</ng-template>
+
 @let current = selected();
 
 @if (!current) {
@@ -71,6 +82,11 @@
 					</button>
 				</form>
 			}
+
+			<button class="danger" mat-flat-button *requireAuthority="AuthorityEnumDto.DeleteResources" (click)="deleteIt()" style="margin-top: 10px">
+				<mat-icon>delete</mat-icon>
+				Löschen
+			</button>
 
 		</mat-tab>
 		<mat-tab label="Kisten">

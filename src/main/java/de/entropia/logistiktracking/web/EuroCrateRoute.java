@@ -115,4 +115,15 @@ public class EuroCrateRoute implements EuroCrateApi {
 		}
 		return ResponseEntity.ok().build();
 	}
+
+	@HasAuthority(AuthorityEnumDto.DELETE_RESOURCES)
+	@Override
+	@Transactional
+	public ResponseEntity<Void> deleteEuroCrate(Long id) {
+		int count = euroCrateDatabaseService.deleteItWithId(id);
+		if (count == 0) {
+			return ResponseEntity.notFound().build();
+		}
+		return ResponseEntity.ok().build();
+	}
 }

@@ -47,6 +47,26 @@ paths:
           description: "A euro crate with this combination of name and OC already exists."
 
   /euroCrate/{id}:
+    delete:
+      operationId: deleteEuroCrate
+      summary: Remove the specified euro crate from its packing list and delete it from the database
+      security:
+        - springCookieAuth: [ ]
+      parameters:
+        - name: "id"
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/EuroCrateId"
+      responses:
+        200:
+          description: Euro crate was deleted
+        404:
+          description: Resource not found
+        "401":
+          description: "User did not provide valid session details and cannot delete euro crates."
+        "403":
+          description: "User does not have permission to delete euro crates."
     get:
       operationId: getEuroCrate
       summary: "Get a specific euro crates with all details."
@@ -240,6 +260,53 @@ paths:
           description: "User does not have permission to create new pallets."
 
   /euroPallet/{euroPalletId}:
+    delete:
+      operationId: deleteEuroPallet
+      summary: If no packing lists exist for this pallet, delete it from the database
+      security:
+        - springCookieAuth: [ ]
+      parameters:
+        - name: "euroPalletId"
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: Euro pallet was deleted
+          content:
+            application/json:
+              schema:
+                description: Placeholder for codegen. will be empty
+                type: array
+                maxLength: 0
+                items: {}
+                example: []
+        404:
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                description: Placeholder for codegen. will be empty
+                type: array
+                maxLength: 0
+                items: {}
+                example: [ ]
+        409:
+          description: At least one or more packing lists exist for this pallet, could not be deleted
+          content:
+            application/json:
+              schema:
+                description: packing lists that still exist
+                type: array
+                items:
+                  $ref: "#/components/schemas/VeryBasicPackingListDto"
+        "401":
+          description: "User did not provide valid session details and cannot delete palettes."
+
+        "403":
+          description: "User does not have permission to delete pallets."
     get:
       operationId: getEuroPallet
       summary: "Get a specific euro pallet."
@@ -382,6 +449,27 @@ paths:
           description: "User does not have permission to create new packing lists."
 
   /packingList/{packingListId}:
+    delete:
+      operationId: deletePackingList
+      summary: Delete this packing list, remove all associations to it
+      security:
+        - springCookieAuth: [ ]
+      parameters:
+        - name: "packingListId"
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: Packing list was deleted
+        404:
+          description: Resource not found
+        "401":
+          description: "User did not provide valid session details and cannot delete packing lists."
+        "403":
+          description: "User does not have permission to delete packing lists."
     get:
       operationId: getPackingList
       summary: "Get packing list"

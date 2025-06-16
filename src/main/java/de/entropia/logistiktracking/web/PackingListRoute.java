@@ -2,6 +2,7 @@ package de.entropia.logistiktracking.web;
 
 import de.entropia.logistiktracking.auth.HasAuthority;
 import de.entropia.logistiktracking.domain.packing_list.use_case.ManagePackingListUseCase;
+import de.entropia.logistiktracking.jpa.repo.PackingListDatabaseService;
 import de.entropia.logistiktracking.openapi.api.PackingListApi;
 import de.entropia.logistiktracking.openapi.model.*;
 import de.entropia.logistiktracking.utility.Result;
@@ -11,6 +12,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
@@ -22,6 +24,7 @@ import java.util.Optional;
 @RequestMapping("/api")
 public class PackingListRoute implements PackingListApi {
 	private final ManagePackingListUseCase managePackingListUseCase;
+	private final PackingListDatabaseService packingListDatabaseService;
 
 	@Override
 	@HasAuthority(AuthorityEnumDto.CREATE_RESOURCES)
@@ -83,5 +86,14 @@ public class PackingListRoute implements PackingListApi {
 			};
 			case Result.Ok<Void, ?>(var _) -> ResponseEntity.ok().build();
 		};
+	}
+
+	@HasAuthority(AuthorityEnumDto.DELETE_RESOURCES)
+	@Transactional
+	@Override
+	public ResponseEntity<Void> deletePackingList(Long packingListId) {
+		int c = packingListDatabaseService.deleteByPackingListId(packingListId);
+		if (c == 0) return ResponseEntity.notFound().build();
+		return ResponseEntity.ok().build();
 	}
 }

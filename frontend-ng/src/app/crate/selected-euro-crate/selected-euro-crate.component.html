@@ -1,3 +1,13 @@
+<ng-template #deleteError>
+	<p>Bist du dir sicher, dass du diese Kiste löschen willst?</p>
+	<p><b>Das kann NICHT rückgängig gemacht werden!</b></p>
+	<ul>
+		<li>Diese Kiste wird aus ihrer Packliste <b>entfernt</b></li>
+		<li>Falls diese Kiste schon gedruckt wurde, werden scans fehlschlagen und viele leute verwirrt sein</li>
+	</ul>
+	<p>Sei dir <b>absolut sicher</b>, dass das alles stimmt!</p>
+</ng-template>
+
 @let currentSet = crate();
 
 @if (!currentSet) {
@@ -70,4 +80,8 @@
 			<button *requireAuthority="AuthorityEnumDto.ModifyResources" mat-flat-button type="submit" [disabled]="!theForm.form.valid || !theForm.dirty">Änderungen Speichern</button>
 		</div>
 	</form>
+	<button class="danger" mat-flat-button *requireAuthority="AuthorityEnumDto.DeleteResources" (click)="deleteIt()" type="button" style="margin-top: 10px">
+		<mat-icon>delete</mat-icon>
+		Löschen
+	</button>
 }

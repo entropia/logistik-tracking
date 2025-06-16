@@ -1,4 +1,4 @@
-import {Component, input} from '@angular/core';
+import {Component, input, TemplateRef, ViewChild} from '@angular/core';
 import {ApiService} from '../../api/services/api.service';
 import {LocationEditorComponent} from '../../location/location-editor/location-editor.component';
 import {FormsModule, NgForm} from '@angular/forms';
@@ -9,7 +9,7 @@ import {MatButton} from '@angular/material/button';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {handleDefaultError} from '../../util/auth';
 import {NewPackingListDto} from '../../api/models/new-packing-list-dto';
-import {Router, RouterLink} from '@angular/router';
+import {ActivatedRoute, Router, RouterLink} from '@angular/router';
 import {MatDialog} from '@angular/material/dialog';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
 import {RequiresAuthorityDirective} from '../../util/requires-permission.directive';
@@ -19,6 +19,11 @@ import {PrintButtonComponent} from '../../util/print-button/print-button.compone
 import {toObservable, toSignal} from '@angular/core/rxjs-interop';
 import {switchMap} from 'rxjs/operators';
 import {forkJoin} from 'rxjs';
+import {openAreYouSureOverlay} from '../../are-you-sure/are-you-sure.component';
+import {HttpErrorResponse} from '@angular/common/http';
+import {MatIcon} from '@angular/material/icon';
+import {VeryBasicPackingListDto} from '../../api/models/very-basic-packing-list-dto';
+import {EpDeleteConfirmComponent} from '../ep-delete-confirm/ep-delete-confirm.component';
 
 @Component({
 	selector: 'app-selected-euro-pallet',
@@ -32,7 +37,8 @@ import {forkJoin} from 'rxjs';
 		RequiresAuthorityDirective,
 		MatProgressSpinner,
 		PrintButtonComponent,
-		RouterLink
+		RouterLink,
+		MatIcon
 	],
 	templateUrl: './selected-euro-pallet.component.html',
 	styleUrl: './selected-euro-pallet.component.scss'
@@ -55,11 +61,58 @@ export class SelectedEuroPalletComponent {
 		private snackbar: MatSnackBar,
 		private router: Router,
 		private diag: MatDialog,
-		userService: UserService
+		userService: UserService,
+		private ac: ActivatedRoute
 	) {
 		userService.hasAuthority(AuthorityEnumDto.ModifyResources).then(does => {
 			this.canEdit = does == AuthorityStatus.HasIt
 		});
+	}
+
+	@ViewChild("deleteError")
+	delErrorTempl!: TemplateRef<any>;
+	deleteIt() {
+
+		openAreYouSureOverlay<"cancel" | "delete">(this.diag, {
+			body: this.delErrorTempl,
+			choices: [{
+				title: "Abbrechen",
+				token: "cancel"
+			}, {
+				title: "Löschen",
+				style: "color: #ea680b",
+				token: "delete"
+			}],
+			title: "Palette löschen?"
+		}).afterClosed().subscribe(result => {
+			if (result == "delete") {
+				this.tryDelete()
+			}
+		})
+	}
+
+	tryDelete() {
+		this.apiService.deleteEuroPallet({
+			euroPalletId: this.id()
+		}).subscribe({
+			next: () => {
+				this.router.navigate([".."], {relativeTo: this.ac})
+			},
+			error: (e) => {
+				if (e instanceof HttpErrorResponse && e.status == 409) {
+					let whenDeleting_packingLists = e.error as VeryBasicPackingListDto[]
+					this.diag.open<EpDeleteConfirmComponent, VeryBasicPackingListDto[], boolean>(EpDeleteConfirmComponent, {
+						data: whenDeleting_packingLists
+					}).afterClosed().subscribe({
+						next: v => {
+							if (v == true) {
+								this.tryDelete()
+							}
+						}
+					})
+				}
+			}
+		})
 	}
 
 	saveIt(form: NgForm) {

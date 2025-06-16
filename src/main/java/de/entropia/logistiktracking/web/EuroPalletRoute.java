@@ -18,6 +18,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
@@ -97,5 +98,25 @@ public class EuroPalletRoute implements EuroPalletApi {
 		EuroPalletDatabaseElement ep = byId.get();
 		List<PackingListDatabaseElement> byPackedOn = packingListDatabaseService.findByPackedOn(ep, Sort.by(PackingListDatabaseElement_.PACKING_LIST_ID).ascending());
 		return ResponseEntity.ok(byPackedOn.stream().map(packingListConverter::from).map(packingListConverter::toVeryBasicDto).toList());
+	}
+
+	@HasAuthority(AuthorityEnumDto.DELETE_RESOURCES)
+	@Override
+	@Transactional
+	public ResponseEntity<List<Object>> deleteEuroPallet(Long euroPalletId) {
+		Optional<EuroPalletDatabaseElement> byId = euroPalletDatabaseService.findById(euroPalletId);
+		if (byId.isEmpty()) return ResponseEntity.notFound().build();
+		EuroPalletDatabaseElement ep = byId.get();
+		List<PackingListDatabaseElement> byPackedOn = packingListDatabaseService.findByPackedOn(ep);
+		if (!byPackedOn.isEmpty()) {
+			// ugly ass explicit object mention to get a List<Object> and not a properly typed one
+			// because javas generic system is ass and cant differentiate between in and out generics
+			// (this is an out generic. types extending object are valid)
+			// fuck you java and fuck you openapi codegen for not doing ? extends Object
+			return ResponseEntity.status(HttpStatus.CONFLICT)
+					.body(byPackedOn.stream().map(packingListConverter::from).<Object>map(packingListConverter::toVeryBasicDto).toList());
+		}
+		euroPalletDatabaseService.delete(ep);
+		return ResponseEntity.ok(List.of());
 	}
 }

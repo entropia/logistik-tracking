@@ -1,6 +1,6 @@
 import {Component, effect, input, TemplateRef, ViewChild} from '@angular/core';
 import {ApiService} from '../../api/services/api.service';
-import {RouterLink} from '@angular/router';
+import {ActivatedRoute, Router, RouterLink} from '@angular/router';
 import {FormsModule, NgForm, NgModel} from '@angular/forms';
 import {AuthorityEnumDto, DeliveryStateEnumDto, EuroCrateDto, LocationDto, LocationTypeDto, LogisticsLocationDto, PackingListPatchDto} from '../../api/models';
 import {MatFormField, MatLabel} from '@angular/material/input';
@@ -121,7 +121,9 @@ export class SelectedPackingListComponent {
 		private snackbar: MatSnackBar,
 		private qr: QrScannerService,
 		userService: UserService,
-		private diag: MatDialog
+		private diag: MatDialog,
+		private router: Router,
+		private ac: ActivatedRoute
 	) {
 		userService.hasAuthority(AuthorityEnumDto.ModifyResources).then(does => {
 			this.canEdit = does == AuthorityStatus.HasIt
@@ -367,4 +369,32 @@ export class SelectedPackingListComponent {
 	}
 
 	protected readonly AuthorityEnumDto = AuthorityEnumDto;
+
+	@ViewChild("deleteError")
+	delErrorTempl!: TemplateRef<any>;
+	deleteIt() {
+		openAreYouSureOverlay<"cancel" | "delete">(this.diag, {
+			body: this.delErrorTempl,
+			choices: [{
+				title: "Abbrechen",
+				token: "cancel"
+			}, {
+				title: "Löschen",
+				style: "color: #ea680b",
+				token: "delete"
+			}],
+			title: "Packliste löschen?"
+		}).afterClosed().subscribe(result => {
+			if (result == "delete") {
+				this.apiService.deletePackingList({
+					packingListId: this.id()
+				}).subscribe({
+					next: () => {
+						this.router.navigate([".."], {relativeTo: this.ac})
+					},
+					error: handleDefaultError
+				})
+			}
+		})
+	}
 }
