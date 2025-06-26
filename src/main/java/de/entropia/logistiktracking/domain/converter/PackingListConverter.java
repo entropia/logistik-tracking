@@ -1,9 +1,6 @@
 package de.entropia.logistiktracking.domain.converter;
 
 
-import de.entropia.logistiktracking.domain.euro_pallet.EuroPallet;
-import de.entropia.logistiktracking.domain.packing_list.PackingList;
-import de.entropia.logistiktracking.jpa.EuroPalletDatabaseElement;
 import de.entropia.logistiktracking.jpa.PackingListDatabaseElement;
 import de.entropia.logistiktracking.openapi.model.BasicPackingListDto;
 import de.entropia.logistiktracking.openapi.model.PackingListDto;
@@ -26,30 +23,7 @@ public class PackingListConverter {
 		this.euroCrateConverter = euroCrateConverter;
 	}
 
-	public PackingListDatabaseElement toDatabaseElement(PackingList packingList) {
-		EuroPalletDatabaseElement euroPallet = euroPalletConverter.toDatabaseElement(packingList.getPackedOn());
-		return new PackingListDatabaseElement(
-				packingList.getPackingListId(),
-				packingList.getName(),
-				packingList.getDeliveryState(),
-				euroPallet,
-				packingList.getPackedCrates().stream().map(euroCrateConverter::toDatabaseElement).collect(Collectors.toList())
-		);
-	}
-
-	public PackingList from(PackingListDatabaseElement databaseElement) {
-		EuroPallet packedOn = euroPalletConverter.from(databaseElement.getPackedOn());
-		return PackingList
-				.builder()
-				.packingListId(databaseElement.getPackingListId())
-				.name(databaseElement.getName())
-				.deliveryState(databaseElement.getDeliveryState())
-				.packedOn(packedOn)
-				.packedCrates(databaseElement.getPackedCrates().stream().map(euroCrateConverter::from).collect(Collectors.toList()))
-				.build();
-	}
-
-	public PackingListDto toDto(PackingList packingList) {
+	public PackingListDto toDto(PackingListDatabaseElement packingList) {
 		return new PackingListDto()
 				.packingListId(packingList.getPackingListId())
 				.packingListName(packingList.getName())
@@ -62,7 +36,7 @@ public class PackingListConverter {
 						.collect(Collectors.toList()));
 	}
 
-	public BasicPackingListDto toBasicDto(PackingList packingList) {
+	public BasicPackingListDto toBasicDto(PackingListDatabaseElement packingList) {
 		return new BasicPackingListDto()
 				.packingListId(packingList.getPackingListId())
 				.packingListName(packingList.getName())
@@ -70,7 +44,7 @@ public class PackingListConverter {
 				.deliveryState(deliveryStateConverter.toDto(packingList.getDeliveryState()));
 	}
 
-	public VeryBasicPackingListDto toVeryBasicDto(PackingList pl)  {
+	public VeryBasicPackingListDto toVeryBasicDto(PackingListDatabaseElement pl) {
 		return new VeryBasicPackingListDto()
 				.packingListId(pl.getPackingListId())
 				.packingListName(pl.getName())

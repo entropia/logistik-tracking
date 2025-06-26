@@ -31,7 +31,7 @@ public class NotifySystemdAfterStartup {
 			MemorySegment memorySegment = arena.allocateFrom("READY=1");
 			// DO NOT remove this cast. dynamic methods rely on an explicit cast to figure out their signature
 			// without it, the method would assume void return type, and fail at runtime because that's wrong.
-			int _ = (int)handle.invokeExact(0, memorySegment);
+			int _ = (int) handle.invokeExact(0, memorySegment);
 		} catch (Throwable t) {
 			log.error("Failed to notify systemd:", t);
 		}

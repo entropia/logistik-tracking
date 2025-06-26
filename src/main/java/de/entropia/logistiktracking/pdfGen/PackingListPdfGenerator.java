@@ -1,4 +1,4 @@
-package de.entropia.logistiktracking.domain.packing_list.pdf;
+package de.entropia.logistiktracking.pdfGen;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
@@ -6,9 +6,9 @@ import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.lowagie.text.DocumentException;
-import de.entropia.logistiktracking.domain.euro_crate.EuroCrate;
-import de.entropia.logistiktracking.domain.operation_center.OperationCenter;
-import de.entropia.logistiktracking.domain.packing_list.PackingList;
+import de.entropia.logistiktracking.jpa.EuroCrateDatabaseElement;
+import de.entropia.logistiktracking.jpa.PackingListDatabaseElement;
+import de.entropia.logistiktracking.models.OperationCenter;
 import de.entropia.logistiktracking.utility.Result;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +16,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
-
 import org.xhtmlrenderer.pdf.ITextRenderer;
 
 import javax.imageio.ImageIO;
@@ -36,11 +35,11 @@ public class PackingListPdfGenerator {
 	@Value("${logitrack.frontendBaseUrl}")
 	private String frontendBaseUrl;
 
-	private String encodeData(PackingList pl) {
-		return frontendBaseUrl+"/#/qr/L"+ pl.getPackingListId();
+	private String encodeData(PackingListDatabaseElement pl) {
+		return frontendBaseUrl + "/#/qr/L" + pl.getPackingListId();
 	}
 
-	public Result<byte[], Void> generatePdf(PackingList crate) {
+	public Result<byte[], Void> generatePdf(PackingListDatabaseElement crate) {
 		String url = encodeData(crate);
 		QRCodeWriter writer = new QRCodeWriter();
 		BitMatrix bitMatrix;
@@ -73,13 +72,13 @@ public class PackingListPdfGenerator {
 
 		Context context = new Context(Locale.GERMANY);
 		context.setVariable("list", crate);
-		Map<OperationCenter, List<EuroCrate>> collect = crate.getPackedCrates().stream().collect(Collectors.groupingBy(EuroCrate::getOperationCenter));
-		Map<OperationCenter, List<EuroCrate[]>> mapped = new HashMap<>();
+		Map<OperationCenter, List<EuroCrateDatabaseElement>> collect = crate.getPackedCrates().stream().collect(Collectors.groupingBy(EuroCrateDatabaseElement::getOperationCenter));
+		Map<OperationCenter, List<EuroCrateDatabaseElement[]>> mapped = new HashMap<>();
 		collect.forEach((a, b) -> {
-			Map<Integer, List<EuroCrate>> partitioned = IntStream.range(0, b.size())
+			Map<Integer, List<EuroCrateDatabaseElement>> partitioned = IntStream.range(0, b.size())
 					.boxed()
 					.collect(Collectors.groupingBy(i -> i / 3, Collectors.mapping(b::get, Collectors.toList())));
-			mapped.put(a, partitioned.values().stream().map(it -> it.toArray(EuroCrate[]::new)).toList());
+			mapped.put(a, partitioned.values().stream().map(it -> it.toArray(EuroCrateDatabaseElement[]::new)).toList());
 		});
 		context.setVariable("groupedCrates", mapped);
 		context.setVariable("image", base64Image);

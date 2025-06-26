@@ -1,6 +1,6 @@
 package de.entropia.logistiktracking.domain.converter;
 
-import de.entropia.logistiktracking.domain.operation_center.OperationCenter;
+import de.entropia.logistiktracking.models.OperationCenter;
 import de.entropia.logistiktracking.openapi.model.OperationCenterDto;
 import lombok.NonNull;
 import org.springframework.core.convert.converter.Converter;

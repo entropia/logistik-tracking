@@ -1,6 +1,6 @@
 package de.entropia.logistiktracking.domain.converter;
 
-import de.entropia.logistiktracking.domain.delivery_state.DeliveryState;
+import de.entropia.logistiktracking.models.DeliveryState;
 import de.entropia.logistiktracking.openapi.model.DeliveryStateEnumDto;
 import lombok.NonNull;
 import org.springframework.stereotype.Component;

@@ -1,4 +1,4 @@
-package de.entropia.logistiktracking.domain.delivery_state;
+package de.entropia.logistiktracking.models;
 
 public enum DeliveryState {
 	Packing("packing"),

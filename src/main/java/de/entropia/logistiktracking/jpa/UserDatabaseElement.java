@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.security.core.userdetails.User;
 
 import java.util.ArrayList;
@@ -20,9 +21,10 @@ import java.util.List;
 @Setter
 @Getter
 @Table(name = "logitrack_user")
+@DynamicUpdate
 public class UserDatabaseElement {
 	@Id
-	@Column(name="username", nullable=false)
+	@Column(name = "username", nullable = false)
 	private String username;
 
 	@Column(name = "hashed_pw", nullable = false, length = 72) // 72 = max length für bcrypt

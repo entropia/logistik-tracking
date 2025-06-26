@@ -1,7 +1,7 @@
 package de.entropia.logistiktracking.jpa;
 
 import de.entropia.logistiktracking.domain.location.LogisticsLocationType;
-import de.entropia.logistiktracking.domain.operation_center.OperationCenter;
+import de.entropia.logistiktracking.models.OperationCenter;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;

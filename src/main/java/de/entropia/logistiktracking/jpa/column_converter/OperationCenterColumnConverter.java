@@ -1,7 +1,7 @@
 package de.entropia.logistiktracking.jpa.column_converter;
 
 
-import de.entropia.logistiktracking.domain.operation_center.OperationCenter;
+import de.entropia.logistiktracking.models.OperationCenter;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 

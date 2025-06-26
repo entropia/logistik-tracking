@@ -40,7 +40,7 @@ public class PrintMultipleRoute implements PrintMultipleApi {
 		for (int i = 0; i < theFunny.size(); i++) {
 			CompletableFuture<Result<byte[], ?>> resultCompletableFuture = theFunny.get(i);
 			Result<byte[], ?> join = resultCompletableFuture.join();
-			if (join instanceof Result.Error<byte[],?>) {
+			if (join instanceof Result.Error<byte[], ?>) {
 				return switch (join.error()) {
 					case EuroCrateUseCase.PrintEuroCrateError pe -> switch (pe) {
 						case CrateNotFound -> ResponseEntity.notFound().build();
@@ -66,8 +66,10 @@ public class PrintMultipleRoute implements PrintMultipleApi {
 
 	private CompletableFuture<Result<byte[], ?>> createJob(PrintMultipleDtoInner it) {
 		return switch (it.getType()) {
-			case PrintMultipleDtoInner.TypeEnum.CRATE -> CompletableFuture.supplyAsync(() -> euroCrateUseCase.printEuroCrate(it.getId()));
-			case PrintMultipleDtoInner.TypeEnum.PALLET -> CompletableFuture.supplyAsync(() -> euroPalletUseCase.printEuroPallet(it.getId()));
+			case PrintMultipleDtoInner.TypeEnum.CRATE ->
+					CompletableFuture.supplyAsync(() -> euroCrateUseCase.printEuroCrate(it.getId()));
+			case PrintMultipleDtoInner.TypeEnum.PALLET ->
+					CompletableFuture.supplyAsync(() -> euroPalletUseCase.printEuroPallet(it.getId()));
 		};
 	}
 }

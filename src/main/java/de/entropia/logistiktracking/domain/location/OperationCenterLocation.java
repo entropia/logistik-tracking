@@ -1,6 +1,6 @@
 package de.entropia.logistiktracking.domain.location;
 
-import de.entropia.logistiktracking.domain.operation_center.OperationCenter;
+import de.entropia.logistiktracking.models.OperationCenter;
 
 
 public record OperationCenterLocation(OperationCenter operationCenter) implements Location {

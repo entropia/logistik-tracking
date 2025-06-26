@@ -3,14 +3,14 @@ package de.entropia.logistiktracking.domain.euro_pallet.use_case;
 
 import de.entropia.logistiktracking.domain.converter.EuroPalletConverter;
 import de.entropia.logistiktracking.domain.converter.LocationConverter;
-import de.entropia.logistiktracking.domain.euro_pallet.EuroPallet;
-import de.entropia.logistiktracking.domain.euro_pallet.pdf.EuroPalletPdfGenerator;
 import de.entropia.logistiktracking.domain.location.Location;
 import de.entropia.logistiktracking.domain.repository.EuroPalletRepository;
+import de.entropia.logistiktracking.jpa.EuroPalletDatabaseElement;
 import de.entropia.logistiktracking.jpa.repo.EuroPalletDatabaseService;
 import de.entropia.logistiktracking.openapi.model.EuroPalletDto;
 import de.entropia.logistiktracking.openapi.model.LocationDto;
 import de.entropia.logistiktracking.openapi.model.NewEuroPalletDto;
+import de.entropia.logistiktracking.pdfGen.EuroPalletPdfGenerator;
 import de.entropia.logistiktracking.utility.Result;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -35,24 +35,7 @@ public class EuroPalletUseCase {
 			return new Result.Error<>(CreateEuroPalletError.BadArguments);
 		}
 
-		Location initialLocation;
-		try {
-			initialLocation = locationConverter.from(newEuroPalletDto.getLocation());
-		} catch (IllegalArgumentException e) {
-			return new Result.Error<>(CreateEuroPalletError.BadArguments);
-		}
-
-		EuroPallet newEuroPallet;
-		try {
-			newEuroPallet = EuroPallet.builder()
-					.location(initialLocation)
-					.name(newEuroPalletDto.getName())
-					.build();
-		} catch (IllegalArgumentException e) {
-			return new Result.Error<>(CreateEuroPalletError.BadArguments);
-		}
-
-		newEuroPallet = euroPalletRepository.createNewEuroPallet(newEuroPallet);
+		EuroPalletDatabaseElement newEuroPallet = euroPalletRepository.createNewEuroPallet(newEuroPalletDto);
 
 		return new Result.Ok<>(euroPalletConverter.toDto(newEuroPallet));
 	}
@@ -66,7 +49,7 @@ public class EuroPalletUseCase {
 
 	public Result<EuroPalletDto, FindEuroPalletError> findEuroPallet(long euroPalletId) {
 
-		Optional<EuroPallet> euroPallet = euroPalletRepository.findEuroPallet(euroPalletId);
+		Optional<EuroPalletDatabaseElement> euroPallet = euroPalletRepository.findEuroPallet(euroPalletId);
 
 		if (euroPallet.isEmpty()) {
 			return new Result.Error<>(FindEuroPalletError.PalletNotFound);
@@ -83,10 +66,10 @@ public class EuroPalletUseCase {
 			return new Result.Error<>(ModifyPalletError.BadArguments);
 		}
 
-		int n = euroPalletDatabaseService.updateLocation(id, locationConverter.toDatabaseElement(location));
-		if (n == 0) {
-			return new Result.Error<>(ModifyPalletError.NotFound);
-		}
+		Optional<EuroPalletDatabaseElement> byId = euroPalletDatabaseService.findById(id);
+		if (byId.isEmpty()) return new Result.Error<>(ModifyPalletError.NotFound);
+		EuroPalletDatabaseElement euroPalletDatabaseElement = byId.get();
+		euroPalletDatabaseElement.setLocation(locationConverter.toDatabaseElement(location));
 
 		return new Result.Ok<>(null);
 	}
@@ -96,7 +79,7 @@ public class EuroPalletUseCase {
 	}
 
 	public Result<byte[], PrintEuroPalletError> printEuroPallet(long id) {
-		Optional<EuroPallet> euroPallet = euroPalletRepository.findEuroPallet(id);
+		Optional<EuroPalletDatabaseElement> euroPallet = euroPalletRepository.findEuroPallet(id);
 
 		if (euroPallet.isEmpty()) {
 			return new Result.Error<>(PrintEuroPalletError.PalletNotFound);

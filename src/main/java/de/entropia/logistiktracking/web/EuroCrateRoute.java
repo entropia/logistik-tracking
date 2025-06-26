@@ -55,7 +55,7 @@ public class EuroCrateRoute implements EuroCrateApi {
 				operationCenterConverter.from(oc), name
 		);
 		return byId
-				.map(it -> ResponseEntity.ok(euroCrateConverter.toDto(euroCrateConverter.from(it))))
+				.map(it -> ResponseEntity.ok(euroCrateConverter.toDto(it)))
 				.orElseGet(() -> ResponseEntity.notFound().build());
 	}
 
@@ -68,7 +68,7 @@ public class EuroCrateRoute implements EuroCrateApi {
 	public ResponseEntity<EuroCrateDto> getEuroCrate(Long id) {
 		Optional<EuroCrateDatabaseElement> byId = euroCrateDatabaseService.findById(id);
 		return byId
-				.map(it -> ResponseEntity.ok(euroCrateConverter.toDto(euroCrateConverter.from(it))))
+				.map(it -> ResponseEntity.ok(euroCrateConverter.toDto(it)))
 				.orElseGet(() -> ResponseEntity.notFound().build());
 	}
 
@@ -91,7 +91,8 @@ public class EuroCrateRoute implements EuroCrateApi {
 		Result<BasicPackingListDto, EuroCrateUseCase.FindRelatedPackingListError> packingListsOfCrate = euroCrateUseCase.getPackingListsOfCrate(id);
 		return switch (packingListsOfCrate) {
 			case Result.Ok<BasicPackingListDto, ?>(var result) -> ResponseEntity.ok(result);
-			case Result.Error<?, EuroCrateUseCase.FindRelatedPackingListError>(var _) -> ResponseEntity.notFound().build();
+			case Result.Error<?, EuroCrateUseCase.FindRelatedPackingListError>(var _) ->
+					ResponseEntity.notFound().build();
 		};
 	}
 

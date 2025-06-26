@@ -1,12 +1,13 @@
 package de.entropia.logistiktracking.jpa;
 
 
-import de.entropia.logistiktracking.domain.delivery_state.DeliveryState;
+import de.entropia.logistiktracking.models.DeliveryState;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.DynamicUpdate;
 
 import java.util.List;
 
@@ -16,6 +17,7 @@ import java.util.List;
 @Getter
 @Entity
 @Table(name = "packing_list")
+@DynamicUpdate
 public class PackingListDatabaseElement {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

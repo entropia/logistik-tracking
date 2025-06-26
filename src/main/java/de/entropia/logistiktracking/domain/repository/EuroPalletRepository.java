@@ -2,10 +2,11 @@ package de.entropia.logistiktracking.domain.repository;
 
 
 import de.entropia.logistiktracking.domain.converter.EuroPalletConverter;
-import de.entropia.logistiktracking.domain.euro_pallet.EuroPallet;
+import de.entropia.logistiktracking.domain.converter.LocationConverter;
 import de.entropia.logistiktracking.jpa.EuroPalletDatabaseElement;
 import de.entropia.logistiktracking.jpa.EuroPalletDatabaseElement_;
 import de.entropia.logistiktracking.jpa.repo.EuroPalletDatabaseService;
+import de.entropia.logistiktracking.openapi.model.NewEuroPalletDto;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
@@ -18,34 +19,28 @@ import java.util.Optional;
 @AllArgsConstructor
 public class EuroPalletRepository {
 	private final EuroPalletDatabaseService euroPalletDatabaseService;
-	private final EuroPalletConverter euroPalletConverter;
+	private final LocationConverter locationConverter;
 
-	public EuroPallet createNewEuroPallet(EuroPallet newEuroPallet) throws IllegalArgumentException {
-		if (newEuroPallet.getPalletId() != 0) {
-			throw new IllegalArgumentException("palletId of a new pallet must be zero.");
-		}
+	public EuroPalletDatabaseElement createNewEuroPallet(NewEuroPalletDto newEuroPallet) throws IllegalArgumentException {
 
-		EuroPalletDatabaseElement euroPalletDatabaseElement = euroPalletConverter.toDatabaseElement(newEuroPallet);
+		EuroPalletDatabaseElement euroPalletDatabaseElement = new EuroPalletDatabaseElement(
+				0,
+				newEuroPallet.getName(),
+				locationConverter.toDatabaseElement(locationConverter.from(newEuroPallet.getLocation()))
+		);
 		euroPalletDatabaseElement = euroPalletDatabaseService.save(euroPalletDatabaseElement);
-		newEuroPallet = euroPalletConverter.from(euroPalletDatabaseElement);
 
-		return newEuroPallet;
+		return euroPalletDatabaseElement;
 	}
 
-	public List<EuroPallet> findAllEuroPallets() {
+	public List<EuroPalletDatabaseElement> findAllEuroPallets() {
 		return euroPalletDatabaseService.findAll(Sort.by(EuroPalletDatabaseElement_.PALLET_ID).ascending()).stream()
-				.map(euroPalletConverter::from)
 				.toList();
 	}
 
-	public Optional<EuroPallet> findEuroPallet(long palletId) {
+	public Optional<EuroPalletDatabaseElement> findEuroPallet(long palletId) {
 		return euroPalletDatabaseService
-				.findById(palletId)
-				.map(euroPalletConverter::from);
+				.findById(palletId);
 	}
 
-	public void updatePallet(EuroPallet euroPallet1) {
-		EuroPalletDatabaseElement dbEl = euroPalletConverter.toDatabaseElement(euroPallet1);
-		euroPalletDatabaseService.save(dbEl);
-	}
 }

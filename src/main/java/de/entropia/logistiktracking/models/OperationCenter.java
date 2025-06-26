@@ -1,4 +1,4 @@
-package de.entropia.logistiktracking.domain.operation_center;
+package de.entropia.logistiktracking.models;
 
 import de.entropia.logistiktracking.openapi.model.OperationCenterDto;
 import lombok.Getter;

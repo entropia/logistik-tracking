@@ -91,7 +91,7 @@ public class PdfMerger {
 
 	private String computeSha1(byte[] bytes) {
 		byte[] digest = this.digest.digest(bytes);
-		StringBuilder sb = new StringBuilder(digest.length*2);
+		StringBuilder sb = new StringBuilder(digest.length * 2);
 		for (byte b : digest) {
 			sb.append(String.format("%02x", Byte.toUnsignedInt(b)));
 		}

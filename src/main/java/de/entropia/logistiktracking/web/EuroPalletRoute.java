@@ -97,7 +97,7 @@ public class EuroPalletRoute implements EuroPalletApi {
 		if (byId.isEmpty()) return ResponseEntity.notFound().build();
 		EuroPalletDatabaseElement ep = byId.get();
 		List<PackingListDatabaseElement> byPackedOn = packingListDatabaseService.findByPackedOn(ep, Sort.by(PackingListDatabaseElement_.PACKING_LIST_ID).ascending());
-		return ResponseEntity.ok(byPackedOn.stream().map(packingListConverter::from).map(packingListConverter::toVeryBasicDto).toList());
+		return ResponseEntity.ok(byPackedOn.stream().map(packingListConverter::toVeryBasicDto).toList());
 	}
 
 	@HasAuthority(AuthorityEnumDto.DELETE_RESOURCES)
@@ -114,7 +114,7 @@ public class EuroPalletRoute implements EuroPalletApi {
 			// (this is an out generic. types extending object are valid)
 			// fuck you java and fuck you openapi codegen for not doing ? extends Object
 			return ResponseEntity.status(HttpStatus.CONFLICT)
-					.body(byPackedOn.stream().map(packingListConverter::from).<Object>map(packingListConverter::toVeryBasicDto).toList());
+					.body(byPackedOn.stream().<Object>map(packingListConverter::toVeryBasicDto).toList());
 		}
 		euroPalletDatabaseService.delete(ep);
 		return ResponseEntity.ok(List.of());

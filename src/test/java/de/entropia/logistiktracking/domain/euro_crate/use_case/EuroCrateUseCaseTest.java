@@ -3,9 +3,9 @@ package de.entropia.logistiktracking.domain.euro_crate.use_case;
 import de.entropia.logistiktracking.PdfMetadata;
 import de.entropia.logistiktracking.TestHelper;
 import de.entropia.logistiktracking.domain.converter.PackingListConverter;
-import de.entropia.logistiktracking.domain.delivery_state.DeliveryState;
+import de.entropia.logistiktracking.models.DeliveryState;
 import de.entropia.logistiktracking.domain.location.LogisticsLocationType;
-import de.entropia.logistiktracking.domain.operation_center.OperationCenter;
+import de.entropia.logistiktracking.models.OperationCenter;
 import de.entropia.logistiktracking.jpa.EuroCrateDatabaseElement;
 import de.entropia.logistiktracking.jpa.EuroPalletDatabaseElement;
 import de.entropia.logistiktracking.jpa.LocationDatabaseElement;
@@ -70,7 +70,7 @@ class EuroCrateUseCaseTest {
         assertThat(packingListsOfCrate).isInstanceOf(Result.Ok.class);
 
         BasicPackingListDto result = packingListsOfCrate.result();
-        BasicPackingListDto expected = packingListConverter.toBasicDto(packingListConverter.from(pl));
+        BasicPackingListDto expected = packingListConverter.toBasicDto(pl);
 
         assertThat(result).usingRecursiveComparison().isEqualTo(expected);
     }

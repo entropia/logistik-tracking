@@ -1,13 +1,14 @@
 package de.entropia.logistiktracking.jpa;
 
 
-import de.entropia.logistiktracking.domain.delivery_state.DeliveryState;
-import de.entropia.logistiktracking.domain.operation_center.OperationCenter;
+import de.entropia.logistiktracking.models.DeliveryState;
+import de.entropia.logistiktracking.models.OperationCenter;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.DynamicUpdate;
 
 import java.time.LocalDate;
 
@@ -19,6 +20,7 @@ import java.time.LocalDate;
 @Table(name = "euro_crate", uniqueConstraints = {
 		@UniqueConstraint(columnNames = {"operation_center", "name"})
 })
+@DynamicUpdate
 public class EuroCrateDatabaseElement {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

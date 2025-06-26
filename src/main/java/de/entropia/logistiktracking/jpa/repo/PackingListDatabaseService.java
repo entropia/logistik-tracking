@@ -1,9 +1,9 @@
 package de.entropia.logistiktracking.jpa.repo;
 
-import de.entropia.logistiktracking.domain.delivery_state.DeliveryState;
 import de.entropia.logistiktracking.jpa.EuroCrateDatabaseElement;
 import de.entropia.logistiktracking.jpa.EuroPalletDatabaseElement;
 import de.entropia.logistiktracking.jpa.PackingListDatabaseElement;
+import de.entropia.logistiktracking.models.DeliveryState;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -33,6 +33,7 @@ public interface PackingListDatabaseService extends JpaRepository<PackingListDat
 	long[] getAllCratesForId(long id);
 
 	List<PackingListDatabaseElement> findByPackedOn(EuroPalletDatabaseElement epde, Sort sort);
+
 	List<PackingListDatabaseElement> findByPackedOn(EuroPalletDatabaseElement epde);
 
 

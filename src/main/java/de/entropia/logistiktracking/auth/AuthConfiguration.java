@@ -41,15 +41,15 @@ public class AuthConfiguration {
 				.formLogin(fl -> {
 					fl.loginProcessingUrl("/api/login"); // POST /login to log in
 					SimpleUrlAuthenticationSuccessHandler handler = new SimpleUrlAuthenticationSuccessHandler();
-					handler.setDefaultTargetUrl(frontendBaseUrl+"/"); // default: no idea where to go
+					handler.setDefaultTargetUrl(frontendBaseUrl + "/"); // default: no idea where to go
 					handler.setAlwaysUseDefaultTargetUrl(false);
 					handler.setTargetUrlParameter("redirect"); // ?redirect=/to/where/after/login
 					fl.successHandler(handler);
 
-					fl.failureUrl(frontendBaseUrl+"/#/login?loginFailed="); // ja das soll so, angular macht da sein eigenen scheiß
+					fl.failureUrl(frontendBaseUrl + "/#/login?loginFailed="); // ja das soll so, angular macht da sein eigenen scheiß
 				})
 				.logout(it -> {
-					it.logoutSuccessUrl(frontendBaseUrl+"/");
+					it.logoutSuccessUrl(frontendBaseUrl + "/");
 					it.logoutUrl("/api/logout");
 				})
 				.cors((cors) -> cors.configurationSource(apiConfigurationSource()))

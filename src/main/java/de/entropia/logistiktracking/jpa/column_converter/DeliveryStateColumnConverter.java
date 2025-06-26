@@ -1,6 +1,6 @@
 package de.entropia.logistiktracking.jpa.column_converter;
 
-import de.entropia.logistiktracking.domain.delivery_state.DeliveryState;
+import de.entropia.logistiktracking.models.DeliveryState;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 

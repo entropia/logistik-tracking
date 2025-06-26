@@ -1,4 +1,4 @@
-package de.entropia.logistiktracking.domain.euro_pallet.pdf;
+package de.entropia.logistiktracking.pdfGen;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
@@ -6,7 +6,7 @@ import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.lowagie.text.DocumentException;
-import de.entropia.logistiktracking.domain.euro_pallet.EuroPallet;
+import de.entropia.logistiktracking.jpa.EuroPalletDatabaseElement;
 import de.entropia.logistiktracking.utility.Result;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -33,11 +33,11 @@ public class EuroPalletPdfGenerator {
 	@Value("${logitrack.frontendBaseUrl}")
 	private String frontendBaseUrl;
 
-	private String encodeData(EuroPallet ep) {
-		return frontendBaseUrl+"/#/qr/P"+ep.getPalletId();
+	private String encodeData(EuroPalletDatabaseElement ep) {
+		return frontendBaseUrl + "/#/qr/P" + ep.getPalletId();
 	}
 
-	public Result<byte[], Void> generate(EuroPallet euroPallet) {
+	public Result<byte[], Void> generate(EuroPalletDatabaseElement euroPallet) {
 		String url = encodeData(euroPallet);
 		QRCodeWriter writer = new QRCodeWriter();
 		BitMatrix bitMatrix;

@@ -1,4 +1,4 @@
-package de.entropia.logistiktracking.domain.euro_crate.pdf;
+package de.entropia.logistiktracking.pdfGen;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
@@ -10,7 +10,7 @@ import com.itextpdf.kernel.pdf.PdfPage;
 import com.itextpdf.kernel.pdf.PdfReader;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.lowagie.text.DocumentException;
-import de.entropia.logistiktracking.domain.euro_crate.EuroCrate;
+import de.entropia.logistiktracking.jpa.EuroCrateDatabaseElement;
 import de.entropia.logistiktracking.utility.Result;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -40,11 +40,11 @@ public class EuroCratePdfGenerator {
 	private String frontendBaseUrl;
 
 
-	private String encodeData(EuroCrate ep) {
-		return frontendBaseUrl+"/#/qr/C"+ep.getId();
+	private String encodeData(EuroCrateDatabaseElement ep) {
+		return frontendBaseUrl + "/#/qr/C" + ep.getId();
 	}
 
-	public Result<byte[], Void> generatePdf(EuroCrate crate) {
+	public Result<byte[], Void> generatePdf(EuroCrateDatabaseElement crate) {
 		String url = encodeData(crate);
 		QRCodeWriter writer = new QRCodeWriter();
 		BitMatrix bitMatrix;
@@ -89,8 +89,8 @@ public class EuroCratePdfGenerator {
 			byte[] ba = htmlOs.toByteArray();
 			try (PdfReader pdfReader = new PdfReader(new ByteArrayInputStream(ba));
 				 ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-				try(PdfWriter pw = new PdfWriter(baos);
-					PdfDocument pd = new PdfDocument(pdfReader, pw)) {
+				try (PdfWriter pw = new PdfWriter(baos);
+					 PdfDocument pd = new PdfDocument(pdfReader, pw)) {
 					for (int i = 1; i <= pd.getNumberOfPages(); i++) {
 						PdfPage page = pd.getPage(i);
 						// seite ist bei single nach rechts rotiert und bei batch auf links aber das juckt mich grade GAR nicht
