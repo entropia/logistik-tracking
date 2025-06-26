@@ -4,7 +4,6 @@ package de.entropia.logistiktracking.jpa;
 import de.entropia.logistiktracking.models.DeliveryState;
 import de.entropia.logistiktracking.models.OperationCenter;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -13,7 +12,6 @@ import org.hibernate.annotations.DynamicUpdate;
 import java.time.LocalDate;
 
 @Entity
-@AllArgsConstructor
 @NoArgsConstructor
 @Setter
 @Getter
@@ -26,6 +24,9 @@ public class EuroCrateDatabaseElement {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id", nullable = false)
 	private Long id;
+
+	@Version
+	private Long version;
 
 	@Column(name = "operation_center", nullable = false)
 	private OperationCenter operationCenter;
@@ -44,4 +45,14 @@ public class EuroCrateDatabaseElement {
 
 	@Embedded
 	private LocationDatabaseElement location;
+
+	public EuroCrateDatabaseElement(Long id, OperationCenter operationCenter, String name, LocalDate returnBy, String information, DeliveryState deliveryState, LocationDatabaseElement location) {
+		this.id = id;
+		this.operationCenter = operationCenter;
+		this.name = name;
+		this.returnBy = returnBy;
+		this.information = information;
+		this.deliveryState = deliveryState;
+		this.location = location;
+	}
 }

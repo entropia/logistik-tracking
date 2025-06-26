@@ -70,24 +70,8 @@ public class UserManagementRoute implements UsersApi {
 		if (byId.isEmpty()) return ResponseEntity.notFound().build();
 		UserDatabaseElement theUser = byId.get();
 
-		if (modifyUserRequest.getActive().isPresent() || modifyUserRequest.getHashedPassword().isPresent()) {
-			CriteriaBuilder builder = em.getCriteriaBuilder();
-			CriteriaUpdate<UserDatabaseElement> update = builder.createCriteriaUpdate(UserDatabaseElement.class);
-
-			// root komponent (update EuroCrateDatabaseElement); die zeile
-			Root<UserDatabaseElement> root = update.from(UserDatabaseElement.class);
-
-			// where klausel (... where x = y and z = w), properties aus dem root beziehen
-			update.where(
-					builder.equal(root.get(UserDatabaseElement_.username), username)
-			);
-
-			modifyUserRequest.getActive()
-					.ifPresent(it -> update.set(UserDatabaseElement_.enabled, it));
-			modifyUserRequest.getHashedPassword()
-					.ifPresent(it -> update.set(UserDatabaseElement_.hashedPw, it));
-			em.createQuery(update).executeUpdate();
-		}
+		modifyUserRequest.getActive().ifPresent(theUser::setEnabled);
+		modifyUserRequest.getHashedPassword().ifPresent(theUser::setHashedPw);
 
 		List<AuthorityEnumDto> newAuthorities = modifyUserRequest.getAuthorities();
 		if (!newAuthorities.isEmpty()) {
@@ -95,12 +79,8 @@ public class UserManagementRoute implements UsersApi {
 			List<AuthorityEnumDto> existingAuthorities = theUser.getRoles();
 			List<AuthorityEnumDto> removeAuth = existingAuthorities.stream().filter(it -> !newAuthorities.contains(it)).toList();
 			List<AuthorityEnumDto> addAuth = newAuthorities.stream().filter(it -> !existingAuthorities.contains(it)).toList();
-			for (AuthorityEnumDto authorityEnumDto : removeAuth) {
-				userDatabaseService.removeAuthority(username, authorityEnumDto.getValue());
-			}
-			for (AuthorityEnumDto authorityEnumDto : addAuth) {
-				userDatabaseService.addAuthority(username, authorityEnumDto.getValue());
-			}
+			theUser.getRoles().removeAll(removeAuth);
+			theUser.getRoles().addAll(addAuth);
 		}
 
 		sessionManagement.invalidateSessionsOf(username);

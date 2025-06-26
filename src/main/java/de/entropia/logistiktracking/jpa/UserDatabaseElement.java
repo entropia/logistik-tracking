@@ -4,7 +4,6 @@ import de.entropia.logistiktracking.auth.AuthorityEnumAuthority;
 import de.entropia.logistiktracking.openapi.model.AuthorityEnumDto;
 import de.entropia.logistiktracking.openapi.model.UserDto;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,7 +15,6 @@ import java.util.Collection;
 import java.util.List;
 
 @Entity
-@AllArgsConstructor
 @NoArgsConstructor
 @Setter
 @Getter
@@ -26,6 +24,9 @@ public class UserDatabaseElement {
 	@Id
 	@Column(name = "username", nullable = false)
 	private String username;
+
+	@Version
+	private Long version;
 
 	@Column(name = "hashed_pw", nullable = false, length = 72) // 72 = max length für bcrypt
 	private String hashedPw;
@@ -38,6 +39,13 @@ public class UserDatabaseElement {
 	@Getter
 	@Column(name = "enabled", nullable = false)
 	private boolean enabled;
+
+	public UserDatabaseElement(String username, String hashedPw, List<AuthorityEnumDto> roles, boolean enabled) {
+		this.username = username;
+		this.hashedPw = hashedPw;
+		this.roles = roles;
+		this.enabled = enabled;
+	}
 
 	public Collection<AuthorityEnumAuthority> getAuthorities() {
 		return getRoles().stream().map(AuthorityEnumAuthority::new).toList();

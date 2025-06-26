@@ -56,6 +56,7 @@ export class CreateEuroCrateComponent {
 	readonly returnDates = this.generateDateRange('2025-06-16', '2025-06-23', "2025-06-18");
 
 	constructor(private dialogRef: MatDialogRef<CreateEuroCrateComponent>, @Inject(MAT_DIALOG_DATA) protected data: EuroCrateDto | undefined) {
+		console.log(data)
 		this.form = new FormGroup({
 			name: new FormControl<string>(data?.name || "", { nonNullable: true }),
 			location: new FormControl<LocationDto>(data?.location || {locationType: LocationTypeDto.Logistics, logisticsLocation: LogisticsLocationDto.Entropia}, {nonNullable: true}),

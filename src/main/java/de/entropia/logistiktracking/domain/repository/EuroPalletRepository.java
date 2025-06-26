@@ -24,7 +24,7 @@ public class EuroPalletRepository {
 	public EuroPalletDatabaseElement createNewEuroPallet(NewEuroPalletDto newEuroPallet) throws IllegalArgumentException {
 
 		EuroPalletDatabaseElement euroPalletDatabaseElement = new EuroPalletDatabaseElement(
-				0,
+				null,
 				newEuroPallet.getName(),
 				locationConverter.toDatabaseElement(locationConverter.from(newEuroPallet.getLocation()))
 		);

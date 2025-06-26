@@ -134,7 +134,7 @@ export class SelectedEuroCrateComponent {
 	dupeCrate() {
 		import('../create-euro-crate/create-euro-crate.component').then(it => {
 			this.diag.open<any, any, EuroCrateDto | undefined>(it.CreateEuroCrateComponent, {
-					data: this.crate
+					data: this.crate()?.crate
 				})
 				.afterClosed()
 				.subscribe(value => {

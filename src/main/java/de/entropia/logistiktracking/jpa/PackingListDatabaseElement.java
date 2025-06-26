@@ -3,7 +3,6 @@ package de.entropia.logistiktracking.jpa;
 
 import de.entropia.logistiktracking.models.DeliveryState;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -11,7 +10,6 @@ import org.hibernate.annotations.DynamicUpdate;
 
 import java.util.List;
 
-@AllArgsConstructor
 @NoArgsConstructor
 @Setter
 @Getter
@@ -22,7 +20,10 @@ public class PackingListDatabaseElement {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "packing_list_id", nullable = false)
-	private long packingListId;
+	private Long packingListId;
+
+	@Version
+	private Long version;
 
 	@Column(name = "name", nullable = false)
 	private String name;
@@ -37,4 +38,12 @@ public class PackingListDatabaseElement {
 	@OneToMany(fetch = FetchType.EAGER)
 	@JoinColumn(name = "packed_crates")
 	private List<EuroCrateDatabaseElement> packedCrates;
+
+	public PackingListDatabaseElement(Long packingListId, String name, DeliveryState deliveryState, EuroPalletDatabaseElement packedOn, List<EuroCrateDatabaseElement> packedCrates) {
+		this.packingListId = packingListId;
+		this.name = name;
+		this.deliveryState = deliveryState;
+		this.packedOn = packedOn;
+		this.packedCrates = packedCrates;
+	}
 }

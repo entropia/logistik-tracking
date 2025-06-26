@@ -1,12 +1,8 @@
 package de.entropia.logistiktracking.domain.repository;
 
-import de.entropia.logistiktracking.domain.converter.DeliveryStateConverter;
-import de.entropia.logistiktracking.domain.converter.LocationConverter;
-import de.entropia.logistiktracking.domain.converter.OperationCenterConverter;
 import de.entropia.logistiktracking.jpa.EuroCrateDatabaseElement;
 import de.entropia.logistiktracking.jpa.EuroCrateDatabaseElement_;
 import de.entropia.logistiktracking.jpa.repo.EuroCrateDatabaseService;
-import jakarta.persistence.EntityManager;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
@@ -18,11 +14,6 @@ import java.util.Optional;
 @AllArgsConstructor
 public class EuroCrateRepository {
 	private final EuroCrateDatabaseService euroCrateDatabaseService;
-
-	private final EntityManager em;
-	private final DeliveryStateConverter deliveryStateConverter;
-	private final LocationConverter locationConverter;
-	private final OperationCenterConverter operationCenterConverter;
 
 	public Optional<EuroCrateDatabaseElement> createNewEuroCrate(EuroCrateDatabaseElement euroCrate) {
 		if (euroCrateDatabaseService.existsByOperationCenterAndName(

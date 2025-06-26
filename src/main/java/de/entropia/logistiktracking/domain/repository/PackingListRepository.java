@@ -25,7 +25,7 @@ public class PackingListRepository {
 
 	public PackingListDatabaseElement createNewPackingList(NewPackingListDto packingList) {
 		PackingListDatabaseElement databaseElement = new PackingListDatabaseElement(
-				0,
+				null,
 				packingList.getName(), DeliveryState.Packing,
 				euroPalletRepository.findEuroPallet(packingList.getPackedOnPallet()).orElseThrow(),
 				new ArrayList<>()
