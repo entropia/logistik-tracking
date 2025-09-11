@@ -4,7 +4,6 @@ import com.itextpdf.kernel.pdf.PdfReader;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import de.entropia.logistiktracking.auth.HasAuthority;
 import de.entropia.logistiktracking.domain.euro_crate.use_case.EuroCrateUseCase;
-import de.entropia.logistiktracking.domain.euro_pallet.use_case.EuroPalletUseCase;
 import de.entropia.logistiktracking.openapi.api.PrintMultipleApi;
 import de.entropia.logistiktracking.openapi.model.AuthorityEnumDto;
 import de.entropia.logistiktracking.openapi.model.PrintMultipleDtoInner;
@@ -28,7 +27,6 @@ import java.util.concurrent.CompletableFuture;
 @RequestMapping("/api")
 public class PrintMultipleRoute implements PrintMultipleApi {
 	private final EuroCrateUseCase euroCrateUseCase;
-	private final EuroPalletUseCase euroPalletUseCase;
 	private final PdfMerger pdfMerger;
 
 	@SneakyThrows
@@ -44,10 +42,6 @@ public class PrintMultipleRoute implements PrintMultipleApi {
 				return switch (join.error()) {
 					case EuroCrateUseCase.PrintEuroCrateError pe -> switch (pe) {
 						case CrateNotFound -> ResponseEntity.notFound().build();
-						case FailedToGeneratePdf -> ResponseEntity.internalServerError().build();
-					};
-					case EuroPalletUseCase.PrintEuroPalletError pe -> switch (pe) {
-						case PalletNotFound -> ResponseEntity.notFound().build();
 						case FailedToGeneratePdf -> ResponseEntity.internalServerError().build();
 					};
 					default -> ResponseEntity.notFound().build();
@@ -68,8 +62,6 @@ public class PrintMultipleRoute implements PrintMultipleApi {
 		return switch (it.getType()) {
 			case PrintMultipleDtoInner.TypeEnum.CRATE ->
 					CompletableFuture.supplyAsync(() -> euroCrateUseCase.printEuroCrate(it.getId()));
-			case PrintMultipleDtoInner.TypeEnum.PALLET ->
-					CompletableFuture.supplyAsync(() -> euroPalletUseCase.printEuroPallet(it.getId()));
 		};
 	}
 }

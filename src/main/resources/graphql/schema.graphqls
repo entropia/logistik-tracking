@@ -1,0 +1,78 @@
+type Query {
+    getEuroCrates: [EuroCrate!]!
+    getEuroCrateById(id: ID!): EuroCrate
+
+    getPackingLists: [PackingList!]!
+    getPackingListById(id: ID!): PackingList
+}
+
+type Mutation {
+    createEuroCrate(name: String!, oc: OperationCenter!, deliveryState: DeliveryState!, info: String): EuroCrate!
+    deleteEuroCrate(id: ID!): Boolean!
+    modifyEuroCrate(id: ID!, oc: OperationCenter, deliveryState: DeliveryState, info: String): EuroCrate!
+
+    createPackingList(name: String!): PackingList!
+    setPackingListDeliveryState(id: ID!, deliveryState: DeliveryState!): PackingList!
+    addCratesToPackingList(id: ID!, crateIds: [ID!]!): PackingList!
+    removeCratesFromPackingList(id: ID!, crateIds: [ID!]!): PackingList!
+    deletePackingList(id: ID!): Boolean!
+}
+
+enum DeliveryState {
+    Packing, WaitingForTransport, Transport, AtGpn, AtHome
+}
+
+enum OperationCenter {
+    Finanzen,
+    Backoffice,
+    Content,
+    Heralding,
+    DesignUndMotto,
+    PresseUndSocialMedia,
+    LoungeControl,
+    LoungeTechnik,
+    Infodesk,
+    Merchdesk,
+    Schilder,
+    Badges,
+    Trolle,
+    Kueche,
+    WOC,
+    Fruehstueck,
+    RaumDer1000Namen,
+    Bar,
+    Spaeti,
+    Aussenbar,
+    Kaffeebar,
+    Cocktailbar,
+    NOC,
+    POC,
+    VOC,
+    BuildupAndTeardown,
+    Infrastruktur,
+    Deko,
+    SafeR,
+    SilentHacking,
+    Projektleitung,
+    LOC
+}
+
+type PackingList {
+    deliveryStatet: DeliveryState!
+    name: String!
+    packingListId: ID!
+
+    packedCrates: [EuroCrate!]!
+}
+
+type EuroCrate {
+    information: String
+    deliveryState: DeliveryState!
+    operationCenter: OperationCenter!
+    name: String!
+    internalId: ID!
+
+    packingList: PackingList
+
+
+}

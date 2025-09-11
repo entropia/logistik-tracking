@@ -1,8 +1,7 @@
 package de.entropia.logistiktracking.domain.converter;
 
+import de.entropia.logistiktracking.graphql.gen.types.EuroCrate;
 import de.entropia.logistiktracking.jpa.EuroCrateDatabaseElement;
-import de.entropia.logistiktracking.openapi.model.EuroCrateDto;
-import de.entropia.logistiktracking.openapi.model.NewEuroCrateDto;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -11,29 +10,17 @@ import org.springframework.stereotype.Component;
 @AllArgsConstructor
 public class EuroCrateConverter {
 	private final OperationCenterConverter operationCenterConverter;
-	private final LocationConverter locationConverter;
 	private final DeliveryStateConverter deliveryStateConverter;
 
-	public EuroCrateDto toDto(EuroCrateDatabaseElement euroCrate) {
-		return new EuroCrateDto()
-				.internalId(euroCrate.getId())
-				.operationCenter(operationCenterConverter.toDto(euroCrate.getOperationCenter()))
-				.name(euroCrate.getName())
-				.information(euroCrate.getInformation())
-				.location(locationConverter.toDto(locationConverter.from(euroCrate.getLocation())))
-				.returnBy(euroCrate.getReturnBy())
-				.deliveryState(deliveryStateConverter.toDto(euroCrate.getDeliveryState()));
-	}
-
-	public EuroCrateDatabaseElement from(NewEuroCrateDto euroCrateDto) {
-		return new EuroCrateDatabaseElement(
-				null,
-				operationCenterConverter.from(euroCrateDto.getOperationCenter()),
-				euroCrateDto.getName(),
-				euroCrateDto.getReturnBy(),
-				euroCrateDto.getInformation().orElse(""),
-				deliveryStateConverter.from(euroCrateDto.getDeliveryState()),
-				locationConverter.toDatabaseElement(locationConverter.from(euroCrateDto.getLocation()))
-		);
+	public EuroCrate toGraphQl(EuroCrateDatabaseElement dbel) {
+		return EuroCrate.newBuilder()
+				.information(dbel.getInformation())
+				.deliveryState(deliveryStateConverter.toGraphql(dbel.getDeliveryState()))
+				.operationCenter(operationCenterConverter.toGraphQl(dbel.getOperationCenter()))
+				.name(dbel.getName())
+				.internalId(dbel.getId().toString())
+				// explicitly null, we map this later. we dont want to eager fetch
+				.packingList(null)
+				.build();
 	}
 }

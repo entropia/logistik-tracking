@@ -1,7 +1,6 @@
 package de.entropia.logistiktracking.jpa.repo;
 
 import de.entropia.logistiktracking.jpa.EuroCrateDatabaseElement;
-import de.entropia.logistiktracking.jpa.LocationDatabaseElement;
 import de.entropia.logistiktracking.models.DeliveryState;
 import de.entropia.logistiktracking.models.OperationCenter;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -18,10 +17,6 @@ public interface EuroCrateDatabaseService extends JpaRepository<EuroCrateDatabas
 	@Modifying
 	@Query("update EuroCrateDatabaseElement ec set ec.deliveryState = ?2 where ec.id in ?1")
 	int setMultipleStati(long[] ids, DeliveryState newDeliveryState);
-
-	@Modifying
-	@Query("update EuroCrateDatabaseElement ec set ec.location = ?2 where ec.id in ?1")
-	int setMultipleLocations(long[] ids, LocationDatabaseElement newDeliveryState);
 
 	// muss so weil deleteById shadowed ist
 	@Modifying

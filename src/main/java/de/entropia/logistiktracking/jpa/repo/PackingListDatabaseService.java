@@ -1,10 +1,8 @@
 package de.entropia.logistiktracking.jpa.repo;
 
 import de.entropia.logistiktracking.jpa.EuroCrateDatabaseElement;
-import de.entropia.logistiktracking.jpa.EuroPalletDatabaseElement;
 import de.entropia.logistiktracking.jpa.PackingListDatabaseElement;
 import de.entropia.logistiktracking.models.DeliveryState;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -31,10 +29,6 @@ public interface PackingListDatabaseService extends JpaRepository<PackingListDat
 
 	@Query("select pc.id from PackingListDatabaseElement e join e.packedCrates pc where e.packingListId = ?1 ")
 	long[] getAllCratesForId(long id);
-
-	List<PackingListDatabaseElement> findByPackedOn(EuroPalletDatabaseElement epde, Sort sort);
-
-	List<PackingListDatabaseElement> findByPackedOn(EuroPalletDatabaseElement epde);
 
 
 	Optional<PackingListDatabaseElement> getByPackedCratesContains(EuroCrateDatabaseElement dbEl);

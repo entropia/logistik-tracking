@@ -1,6 +1,8 @@
 package de.entropia.logistiktracking.utility;
 
 
+import java.util.Optional;
+
 @SuppressWarnings("unused")
 public sealed interface Result<O, E> {
 	record Ok<O, E>(O result) implements Result<O, E> {
@@ -13,6 +15,11 @@ public sealed interface Result<O, E> {
 		public <EX extends Throwable> Result<O, E> ifOk(Action<Ok<O, E>, EX> action) throws EX {
 			action.consume(this);
 			return this;
+		}
+
+		@Override
+		public Optional<O> optional() {
+			return Optional.of(result);
 		}
 	}
 
@@ -27,6 +34,11 @@ public sealed interface Result<O, E> {
 			action.consume(this);
 			return this;
 		}
+
+		@Override
+		public Optional<O> optional() {
+			return Optional.empty();
+		}
 	}
 
 	// Achtung: throws EX ist nötig damit die impls werfen können. idea schnallt das scheinbar nicht
@@ -39,6 +51,8 @@ public sealed interface Result<O, E> {
 	default <EX extends Throwable> Result<O, E> ifErr(Action<Error<O, E>, EX> action) throws EX {
 		return this;
 	}
+
+	Optional<O> optional();
 
 	O result();
 

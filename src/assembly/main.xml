@@ -7,10 +7,10 @@
         <format>dir</format>
     </formats>
     <fileSets>
-        <fileSet>
-            <outputDirectory>frontend</outputDirectory>
-            <directory>frontend-ng/dist/frontend-ng/browser</directory>
-        </fileSet>
+<!--        <fileSet>-->
+<!--            <outputDirectory>frontend</outputDirectory>-->
+<!--            <directory>frontend-ng/dist/frontend-ng/browser</directory>-->
+<!--        </fileSet>-->
         <fileSet>
             <includes>
                 <include>start.sh</include>

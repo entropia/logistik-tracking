@@ -34,25 +34,17 @@ public class EuroCrateDatabaseElement {
 	@Column(name = "name", nullable = false)
 	private String name;
 
-	@Column(name = "return_by", nullable = false)
-	private LocalDate returnBy;
-
 	@Column(name = "information", nullable = false)
 	private String information;
 
 	@Column(name = "delivery_state", nullable = false)
 	private DeliveryState deliveryState;
 
-	@Embedded
-	private LocationDatabaseElement location;
-
-	public EuroCrateDatabaseElement(Long id, OperationCenter operationCenter, String name, LocalDate returnBy, String information, DeliveryState deliveryState, LocationDatabaseElement location) {
+	public EuroCrateDatabaseElement(Long id, OperationCenter operationCenter, String name, String information, DeliveryState deliveryState) {
 		this.id = id;
 		this.operationCenter = operationCenter;
 		this.name = name;
-		this.returnBy = returnBy;
 		this.information = information;
 		this.deliveryState = deliveryState;
-		this.location = location;
 	}
 }

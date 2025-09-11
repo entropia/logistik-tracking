@@ -1,22 +1,17 @@
 package de.entropia.logistiktracking.domain.packing_list.use_case;
 
 
-import de.entropia.logistiktracking.domain.converter.DeliveryStateConverter;
-import de.entropia.logistiktracking.domain.converter.OperationCenterConverter;
+import de.entropia.logistiktracking.domain.converter.EuroCrateConverter;
 import de.entropia.logistiktracking.domain.converter.PackingListConverter;
-import de.entropia.logistiktracking.domain.repository.EuroPalletRepository;
 import de.entropia.logistiktracking.domain.repository.PackingListRepository;
+import de.entropia.logistiktracking.graphql.gen.types.EuroCrate;
+import de.entropia.logistiktracking.graphql.gen.types.PackingList;
 import de.entropia.logistiktracking.jpa.PackingListDatabaseElement;
-import de.entropia.logistiktracking.openapi.model.BasicPackingListDto;
-import de.entropia.logistiktracking.openapi.model.NewPackingListDto;
-import de.entropia.logistiktracking.openapi.model.PackingListDto;
-import de.entropia.logistiktracking.openapi.model.PackingListPatchDto;
 import de.entropia.logistiktracking.pdfGen.PackingListPdfGenerator;
 import de.entropia.logistiktracking.utility.Result;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.interceptor.TransactionInterceptor;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,23 +23,23 @@ import java.util.Optional;
 public class ManagePackingListUseCase {
 	private final PackingListRepository packingListRepository;
 	private final PackingListConverter packingListConverter;
-	private final DeliveryStateConverter deliveryStateConverter;
 	private final PackingListPdfGenerator packingListPdfGenerator;
+	private final EuroCrateConverter euroCrateConverter;
 
-	public Result<PackingListDto, CreateNewPackingListError> createNewPackingListUseCase(NewPackingListDto newPackingListDto) {
-		PackingListDatabaseElement packingList = packingListRepository.createNewPackingList(newPackingListDto);
-		return new Result.Ok<>(packingListConverter.toDto(packingList));
-	}
-
-	public List<BasicPackingListDto> findAllPackingLists() {
+	public List<PackingList> findAllPackingLists() {
 		return packingListRepository.findAllPackingLists()
 				.stream()
-				.map(packingListConverter::toBasicDto)
+				.map(packingListConverter::toGraphQl)
 				.toList();
 	}
 
-	public Result<PackingListDto, FindPackingListError> findPackingList(long humanReadablePackingListId) {
-		Optional<PackingListDatabaseElement> packingListOpt = packingListRepository.findPackingList(humanReadablePackingListId);
+	public List<EuroCrate> findEuroCratesOfPackingList(long id) {
+		PackingListDatabaseElement ec = packingListRepository.findDatabaseElement(id).orElseThrow();
+		return ec.getPackedCrates().stream().map(euroCrateConverter::toGraphQl).toList();
+	}
+
+	public Result<PackingList, FindPackingListError> findPackingList(long humanReadablePackingListId) {
+		Optional<PackingListDatabaseElement> packingListOpt = packingListRepository.findDatabaseElement(humanReadablePackingListId);
 
 		if (packingListOpt.isEmpty()) {
 			return new Result.Error<>(FindPackingListError.PackingListNotFound);
@@ -52,11 +47,11 @@ public class ManagePackingListUseCase {
 
 		PackingListDatabaseElement packingList = packingListOpt.get();
 
-		return new Result.Ok<>(packingListConverter.toDto(packingList));
+		return new Result.Ok<>(packingListConverter.toGraphQl(packingList));
 	}
 
 	public Result<byte[], PrintPackingListError> printPackingList(long packingListId) {
-		Optional<PackingListDatabaseElement> euroPallet = packingListRepository.findPackingList(packingListId);
+		Optional<PackingListDatabaseElement> euroPallet = packingListRepository.findDatabaseElement(packingListId);
 
 		if (euroPallet.isEmpty()) {
 			return new Result.Error<>(PrintPackingListError.ListNotFound);
@@ -67,25 +62,6 @@ public class ManagePackingListUseCase {
 			case Result.Ok<byte[], Void>(byte[] content) -> new Result.Ok<>(content);
 			default -> new Result.Error<>(PrintPackingListError.FailedToGenerate);
 		};
-	}
-
-	@Transactional
-	public Result<Void, PackingListModError> modifyPackingList(long packingListId, PackingListPatchDto packingListPatchDto) {
-		List<Long> addCrates = packingListPatchDto.getAddCrates();
-		List<Long> removeCrates = packingListPatchDto.getRemoveCrates();
-		if (addCrates.stream().anyMatch(removeCrates::contains))
-			return new Result.Error<>(PackingListModError.ConflictingCrates);
-		// a.none(b.contains) implies b.none(a.contains); at this point we can be sure removeCrates contains nothing from addCrates
-
-		PackingListModError i = packingListRepository.executeUpdate(packingListId, addCrates, removeCrates,
-				packingListPatchDto.getDeliveryState().map(deliveryStateConverter::from));
-
-		if (i != null) {
-			TransactionInterceptor.currentTransactionStatus().setRollbackOnly();
-			return new Result.Error<>(i);
-		}
-
-		return new Result.Ok<>(null);
 	}
 
 	public enum PackingListModError {

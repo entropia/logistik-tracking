@@ -1,7 +1,6 @@
 package de.entropia.logistiktracking.domain.repository;
 
 import de.entropia.logistiktracking.jpa.EuroCrateDatabaseElement;
-import de.entropia.logistiktracking.jpa.EuroCrateDatabaseElement_;
 import de.entropia.logistiktracking.jpa.repo.EuroCrateDatabaseService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Sort;
@@ -31,7 +30,7 @@ public class EuroCrateRepository {
 	}
 
 	public List<EuroCrateDatabaseElement> findAllEuroCrates() {
-		return euroCrateDatabaseService.findAll(Sort.by(EuroCrateDatabaseElement_.ID).ascending())
+		return euroCrateDatabaseService.findAll(Sort.by("id").ascending())
 				.stream()
 				.toList();
 	}

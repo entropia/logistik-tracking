@@ -31,19 +31,14 @@ public class PackingListDatabaseElement {
 	@Column(name = "delivery_state")
 	private DeliveryState deliveryState;
 
-	@ManyToOne(optional = false, fetch = FetchType.EAGER)
-	@JoinColumn(name = "packed_on", nullable = false)
-	private EuroPalletDatabaseElement packedOn;
-
 	@OneToMany(fetch = FetchType.EAGER)
 	@JoinColumn(name = "packed_crates")
 	private List<EuroCrateDatabaseElement> packedCrates;
 
-	public PackingListDatabaseElement(Long packingListId, String name, DeliveryState deliveryState, EuroPalletDatabaseElement packedOn, List<EuroCrateDatabaseElement> packedCrates) {
+	public PackingListDatabaseElement(Long packingListId, String name, DeliveryState deliveryState, List<EuroCrateDatabaseElement> packedCrates) {
 		this.packingListId = packingListId;
 		this.name = name;
 		this.deliveryState = deliveryState;
-		this.packedOn = packedOn;
 		this.packedCrates = packedCrates;
 	}
 }

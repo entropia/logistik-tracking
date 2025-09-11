@@ -32,9 +32,9 @@ jobs:
 
       - run: npm i -g corepack
       - run: yarn install
-        working-directory: frontend-ng
+        working-directory: frontend-ang
       - run: yarn build
-        working-directory: frontend-ng
+        working-directory: frontend-ang
 
 
       - name: Build with Maven

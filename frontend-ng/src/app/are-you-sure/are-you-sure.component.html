@@ -1,9 +1,0 @@
-<h2 mat-dialog-title>{{data.title}}</h2>
-<mat-dialog-content>
-	<ng-container *ngTemplateOutlet="data.body"></ng-container>
-</mat-dialog-content>
-<mat-dialog-actions>
-	@for(a of data.choices; track a.title) {
-		<button mat-button (click)="sendAction(a.token)" [style]="a.style">{{a.title}}</button>
-	}
-</mat-dialog-actions>
