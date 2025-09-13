@@ -14,6 +14,32 @@ export const getAllCratesAllFields = graphql(`
     }
 `);
 
+export const getAllLists = graphql(`
+	query GetAllLists {
+		getPackingLists {
+			packingListId
+			name
+			deliveryStatet
+        }
+	}
+`)
+
+export const getListById = graphql(`
+    query GetListById($i: ID!) {
+        getPackingListById(id: $i) {
+            packingListId
+            name
+            deliveryStatet
+			packedCrates {
+				internalId
+				name
+				operationCenter
+				deliveryState
+            }
+        }
+    }
+`)
+
 export const getSpecificCrate = graphql(`
     query GetCrateById($i: ID!) {
         getEuroCrateById(id: $i) {
@@ -22,9 +48,59 @@ export const getSpecificCrate = graphql(`
             operationCenter
             deliveryState
             information
+			packingList {
+                packingListId
+                name
+                deliveryStatet
+            }
         }
     }
 `);
+
+export const updateCrate = graphql(`
+    mutation UpdateCrate($which: ID!, $oc: OperationCenter!, $deli: DeliveryState!, $info: String!) {
+        modifyEuroCrate(id: $which, oc: $oc, deliveryState: $deli, info: $info) {
+            internalId
+            operationCenter
+            deliveryState
+            information
+        }
+    }
+`);
+
+export const updateListPacking = graphql(`
+	mutation UpdatePacking($id: ID!, $newstate: DeliveryState!) {
+		setPackingListDeliveryState(id: $id, deliveryState: $newstate) {
+			packingListId
+			deliveryStatet
+		}
+	}
+`)
+
+export const removeCratesFromList = graphql(`
+	mutation RemoveCrates($pl: ID!, $crates: [ID!]!) {
+		removeCratesFromPackingList(id: $pl,crateIds: $crates) {
+			packedCrates {
+                internalId
+                name
+                operationCenter
+                deliveryState
+            }
+		}
+	}
+`)
+export const addCratesToList = graphql(`
+	mutation AddCrates($pl: ID!, $crates: [ID!]!) {
+		addCratesToPackingList(id: $pl,crateIds: $crates) {
+			packedCrates {
+                internalId
+                name
+                operationCenter
+                deliveryState
+            }
+		}
+	}
+`)
 
 export async function execute<TResult, TVariables>(
 	query: TypedDocumentString<TResult, TVariables>,

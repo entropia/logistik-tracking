@@ -100,10 +100,10 @@ public class AuthConfiguration {
 	UrlBasedCorsConfigurationSource apiConfigurationSource() {
 		System.out.println(frontendBaseUrl);
 		CorsConfiguration configuration = new CorsConfiguration();
-		configuration.setAllowedOrigins(List.of(frontendBaseUrl));
+		configuration.setAllowedOrigins(List.of("*"));
 		configuration.setAllowedMethods(List.of("GET", "POST", "OPTIONS", "PUT", "DELETE"));
 		configuration.setAllowedHeaders(List.of("Origin", "Content-Type", "Cookie"));
-		configuration.setAllowCredentials(true);
+//		configuration.setAllowCredentials(true);
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		source.registerCorsConfiguration("/**", configuration);
 		return source;

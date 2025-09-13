@@ -3,7 +3,9 @@ import {execute, getAllCratesAllFields} from "$lib/graphql";
 
 
 export const load: PageLoad = async (event) => {
+	let res = (await execute(getAllCratesAllFields, event.fetch)).data;
+
 	return {
-		crates: (await execute(getAllCratesAllFields, event.fetch)).data!!
+		crates: res!!
 	}
 }

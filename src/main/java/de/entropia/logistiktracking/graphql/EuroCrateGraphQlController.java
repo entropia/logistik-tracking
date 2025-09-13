@@ -62,6 +62,22 @@ public class EuroCrateGraphQlController {
 	}
 
 	// todo: modify
+	@MutationMapping(DgsConstants.MUTATION.ModifyEuroCrate)
+	public EuroCrate modifyCrate(
+			@Argument String id,
+			@Argument OperationCenter oc,
+			@Argument DeliveryState deliveryState,
+			@Argument String info
+	) {
+		Optional<EuroCrateDatabaseElement> found = euroCrateRepository.findEuroCrate(Long.parseLong(id));
+		if (found.isEmpty()) return null;
+		EuroCrateDatabaseElement the = found.get();
+		the.setOperationCenter(de.entropia.logistiktracking.models.OperationCenter.fromGraphQl(oc));
+		the.setDeliveryState(de.entropia.logistiktracking.models.DeliveryState.fromGraphQl(deliveryState));
+		the.setInformation(info);
+		EuroCrateDatabaseElement updated = euroCrateDatabaseService.save(the);
+		return euroCrateConverter.toGraphQl(updated);
+	}
 
 	@SchemaMapping(typeName = DgsConstants.EUROCRATE.TYPE_NAME, field = DgsConstants.EUROCRATE.PackingList)
 	public PackingList getPackingList(EuroCrate crate) {

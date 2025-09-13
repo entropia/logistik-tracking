@@ -7,14 +7,14 @@ type Query {
 }
 
 type Mutation {
-    createEuroCrate(name: String!, oc: OperationCenter!, deliveryState: DeliveryState!, info: String): EuroCrate!
+    createEuroCrate(name: String!, oc: OperationCenter!, deliveryState: DeliveryState!, info: String!): EuroCrate!
     deleteEuroCrate(id: ID!): Boolean!
-    modifyEuroCrate(id: ID!, oc: OperationCenter, deliveryState: DeliveryState, info: String): EuroCrate!
+    modifyEuroCrate(id: ID!, oc: OperationCenter, deliveryState: DeliveryState, info: String!): EuroCrate
 
     createPackingList(name: String!): PackingList!
-    setPackingListDeliveryState(id: ID!, deliveryState: DeliveryState!): PackingList!
-    addCratesToPackingList(id: ID!, crateIds: [ID!]!): PackingList!
-    removeCratesFromPackingList(id: ID!, crateIds: [ID!]!): PackingList!
+    setPackingListDeliveryState(id: ID!, deliveryState: DeliveryState!): PackingList
+    addCratesToPackingList(id: ID!, crateIds: [ID!]!): PackingList
+    removeCratesFromPackingList(id: ID!, crateIds: [ID!]!): PackingList
     deletePackingList(id: ID!): Boolean!
 }
 
@@ -66,7 +66,7 @@ type PackingList {
 }
 
 type EuroCrate {
-    information: String
+    information: String!
     deliveryState: DeliveryState!
     operationCenter: OperationCenter!
     name: String!

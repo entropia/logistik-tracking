@@ -15,7 +15,7 @@ public class PackingListRepository {
 	private final PackingListDatabaseService packingListDatabaseService;
 
 	public List<PackingListDatabaseElement> findAllPackingLists() {
-		return packingListDatabaseService.findAll(Sort.by("packing_list_id").ascending()).stream()
+		return packingListDatabaseService.findAll(Sort.by("packingListId").ascending()).stream()
 				.toList();
 	}
 
