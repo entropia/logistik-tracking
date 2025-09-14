@@ -5,6 +5,7 @@
 </script>
 
 <h2 class="text-2xl mb-2 font-bold">Listen</h2>
+<a href="/lists/masseneintragung" class="link ">Masseneintragung</a>
 
 <table class="table table-auto" style="width: 100%">
     <thead>

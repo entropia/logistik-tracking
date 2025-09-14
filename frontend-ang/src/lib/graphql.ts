@@ -72,7 +72,22 @@ export const updateListPacking = graphql(`
 	mutation UpdatePacking($id: ID!, $newstate: DeliveryState!) {
 		setPackingListDeliveryState(id: $id, deliveryState: $newstate) {
 			packingListId
+			name
 			deliveryStatet
+            packedCrates {
+                internalId
+                name
+                operationCenter
+                deliveryState
+            }
+		}
+	}
+`)
+
+export const createCrate = graphql(`
+	mutation CreateCrate($name: String!, $deli: DeliveryState!, $info: String!, $oc: OperationCenter!) {
+		createEuroCrate(name: $name, deliveryState: $deli, info: $info, oc: $oc) {
+			internalId
 		}
 	}
 `)
@@ -102,12 +117,14 @@ export const addCratesToList = graphql(`
 	}
 `)
 
+import { PUBLIC_API_URL } from '$env/static/public';
+
 export async function execute<TResult, TVariables>(
 	query: TypedDocumentString<TResult, TVariables>,
 	fetchFn = window.fetch,
 	...[variables]: TVariables extends Record<string, never> ? [] : [TVariables]
 ) {
-	const response = await fetchFn('http://localhost:8080/graphql', {
+	const response = await fetchFn(PUBLIC_API_URL+'/graphql', {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',

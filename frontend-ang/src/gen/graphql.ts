@@ -36,14 +36,14 @@ export type EuroCrate = {
 
 export type Mutation = {
   __typename: 'Mutation';
-  addCratesToPackingList: PackingList;
+  addCratesToPackingList: Maybe<PackingList>;
   createEuroCrate: EuroCrate;
   createPackingList: PackingList;
   deleteEuroCrate: Scalars['Boolean']['output'];
   deletePackingList: Scalars['Boolean']['output'];
   modifyEuroCrate: Maybe<EuroCrate>;
-  removeCratesFromPackingList: PackingList;
-  setPackingListDeliveryState: PackingList;
+  removeCratesFromPackingList: Maybe<PackingList>;
+  setPackingListDeliveryState: Maybe<PackingList>;
 };
 
 
@@ -196,7 +196,17 @@ export type UpdatePackingMutationVariables = Exact<{
 }>;
 
 
-export type UpdatePackingMutation = { setPackingListDeliveryState: { __typename: 'PackingList', packingListId: string, deliveryStatet: DeliveryState } };
+export type UpdatePackingMutation = { setPackingListDeliveryState: { __typename: 'PackingList', packingListId: string, name: string, deliveryStatet: DeliveryState, packedCrates: Array<{ __typename: 'EuroCrate', internalId: string, name: string, operationCenter: OperationCenter, deliveryState: DeliveryState }> } | null };
+
+export type CreateCrateMutationVariables = Exact<{
+  name: Scalars['String']['input'];
+  deli: DeliveryState;
+  info: Scalars['String']['input'];
+  oc: OperationCenter;
+}>;
+
+
+export type CreateCrateMutation = { createEuroCrate: { __typename: 'EuroCrate', internalId: string } };
 
 export type RemoveCratesMutationVariables = Exact<{
   pl: Scalars['ID']['input'];
@@ -204,7 +214,7 @@ export type RemoveCratesMutationVariables = Exact<{
 }>;
 
 
-export type RemoveCratesMutation = { removeCratesFromPackingList: { __typename: 'PackingList', packedCrates: Array<{ __typename: 'EuroCrate', internalId: string, name: string, operationCenter: OperationCenter, deliveryState: DeliveryState }> } };
+export type RemoveCratesMutation = { removeCratesFromPackingList: { __typename: 'PackingList', packedCrates: Array<{ __typename: 'EuroCrate', internalId: string, name: string, operationCenter: OperationCenter, deliveryState: DeliveryState }> } | null };
 
 export type AddCratesMutationVariables = Exact<{
   pl: Scalars['ID']['input'];
@@ -212,7 +222,7 @@ export type AddCratesMutationVariables = Exact<{
 }>;
 
 
-export type AddCratesMutation = { addCratesToPackingList: { __typename: 'PackingList', packedCrates: Array<{ __typename: 'EuroCrate', internalId: string, name: string, operationCenter: OperationCenter, deliveryState: DeliveryState }> } };
+export type AddCratesMutation = { addCratesToPackingList: { __typename: 'PackingList', packedCrates: Array<{ __typename: 'EuroCrate', internalId: string, name: string, operationCenter: OperationCenter, deliveryState: DeliveryState }> } | null };
 
 export class TypedDocumentString<TResult, TVariables>
   extends String
@@ -298,10 +308,24 @@ export const UpdatePackingDocument = new TypedDocumentString(`
     mutation UpdatePacking($id: ID!, $newstate: DeliveryState!) {
   setPackingListDeliveryState(id: $id, deliveryState: $newstate) {
     packingListId
+    name
     deliveryStatet
+    packedCrates {
+      internalId
+      name
+      operationCenter
+      deliveryState
+    }
   }
 }
     `) as unknown as TypedDocumentString<UpdatePackingMutation, UpdatePackingMutationVariables>;
+export const CreateCrateDocument = new TypedDocumentString(`
+    mutation CreateCrate($name: String!, $deli: DeliveryState!, $info: String!, $oc: OperationCenter!) {
+  createEuroCrate(name: $name, deliveryState: $deli, info: $info, oc: $oc) {
+    internalId
+  }
+}
+    `) as unknown as TypedDocumentString<CreateCrateMutation, CreateCrateMutationVariables>;
 export const RemoveCratesDocument = new TypedDocumentString(`
     mutation RemoveCrates($pl: ID!, $crates: [ID!]!) {
   removeCratesFromPackingList(id: $pl, crateIds: $crates) {

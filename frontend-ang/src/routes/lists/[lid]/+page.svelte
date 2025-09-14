@@ -22,6 +22,7 @@
 		if (updated) {
 			// display new info
             current.deliveryStatet = updated.deliveryStatet
+			current.packedCrates = updated.packedCrates
 		}
 		progShowing = false;
 	}

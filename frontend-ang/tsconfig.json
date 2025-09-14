@@ -13,10 +13,10 @@
 		"verbatimModuleSyntax": false,
 		"noImplicitAny": false,
 		"plugins": [
-			{
-				"name": "@0no-co/graphqlsp",
-				"schema": "../src/main/resources/graphql/schema.graphqls"
-			}
+//			{
+//				"name": "@0no-co/graphqlsp",
+//				"schema": "../src/main/resources/graphql/schema.graphqls"
+//			}
 		]
 	}
 	// Path aliases are handled by https://svelte.dev/docs/kit/configuration#alias
