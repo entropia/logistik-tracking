@@ -1,0 +1,13 @@
+[Unit]
+Description=Tracking system for GPN LOC - Frontend
+Documentation=https://github.com/entropia/logistik-tracking
+Requires=network.target nginx.service logitrack.service
+
+[Service]
+Type=exec
+ExecStart=/usr/bin/node /opt/logitrack/frontend
+Restart=no
+SuccessExitStatus=0
+
+[Install]
+WantedBy=multi-user.target

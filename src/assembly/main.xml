@@ -7,10 +7,10 @@
         <format>dir</format>
     </formats>
     <fileSets>
-<!--        <fileSet>-->
-<!--            <outputDirectory>frontend</outputDirectory>-->
-<!--            <directory>frontend-ng/dist/frontend-ng/browser</directory>-->
-<!--        </fileSet>-->
+        <fileSet>
+            <outputDirectory>frontend</outputDirectory>
+            <directory>frontend-ang/build</directory>
+        </fileSet>
         <fileSet>
             <includes>
                 <include>start.sh</include>
@@ -27,6 +27,13 @@
     <files>
         <file>
             <source>src/assembly/logitrack.service</source>
+            <outputDirectory>bin</outputDirectory>
+            <!--            rw_r__r__ -->
+            <fileMode>0644</fileMode>
+            <filtered>true</filtered>
+        </file>
+        <file>
+            <source>src/assembly/logitrack_frontend.service</source>
             <outputDirectory>bin</outputDirectory>
             <!--            rw_r__r__ -->
             <fileMode>0644</fileMode>
