@@ -5,7 +5,10 @@
 </script>
 
 <h2 class="text-2xl mb-2 font-bold">Listen</h2>
-<a href="/lists/masseneintragung" class="link ">Masseneintragung</a>
+<div class="flex flex-row gap-5 m-5">
+    <a href="/lists/create" class="btn btn-info">Erstellen</a>
+    <a href="/lists/masseneintragung" class="btn btn-info">Masseneintragung</a>
+</div>
 
 <table class="table table-auto" style="width: 100%">
     <thead>

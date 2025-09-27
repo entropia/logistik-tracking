@@ -208,6 +208,13 @@ export type CreateCrateMutationVariables = Exact<{
 
 export type CreateCrateMutation = { createEuroCrate: { __typename: 'EuroCrate', internalId: string } };
 
+export type CreateListMutationVariables = Exact<{
+  name: Scalars['String']['input'];
+}>;
+
+
+export type CreateListMutation = { createPackingList: { __typename: 'PackingList', packingListId: string } };
+
 export type RemoveCratesMutationVariables = Exact<{
   pl: Scalars['ID']['input'];
   crates: Array<Scalars['ID']['input']> | Scalars['ID']['input'];
@@ -326,6 +333,13 @@ export const CreateCrateDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<CreateCrateMutation, CreateCrateMutationVariables>;
+export const CreateListDocument = new TypedDocumentString(`
+    mutation CreateList($name: String!) {
+  createPackingList(name: $name) {
+    packingListId
+  }
+}
+    `) as unknown as TypedDocumentString<CreateListMutation, CreateListMutationVariables>;
 export const RemoveCratesDocument = new TypedDocumentString(`
     mutation RemoveCrates($pl: ID!, $crates: [ID!]!) {
   removeCratesFromPackingList(id: $pl, crateIds: $crates) {

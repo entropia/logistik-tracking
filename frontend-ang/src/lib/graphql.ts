@@ -92,6 +92,14 @@ export const createCrate = graphql(`
 	}
 `)
 
+export const createList = graphql(`
+    mutation CreateList($name: String!) {
+        createPackingList(name: $name) {
+			packingListId
+        }
+    }
+`)
+
 export const removeCratesFromList = graphql(`
 	mutation RemoveCrates($pl: ID!, $crates: [ID!]!) {
 		removeCratesFromPackingList(id: $pl,crateIds: $crates) {

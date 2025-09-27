@@ -24,7 +24,11 @@
     if (ev.key === "L") id_input?.focus()
 }}></svelte:document>
 
-<form onsubmit={do_update} class="w-full max-w-2xl mb-5">
+<h2 class="text-2xl mb-2 font-bold">Masseneintragung</h2>
+<p>Hier kannst du viele Listen kontinuierlich auf einen bestimmten Status setzen.</p>
+<p>Am besten funktioniert das mit einem Barcodescanner. Wenn ein Barcode erkannt wird, wird er automatisch eingetragen.</p>
+
+<form onsubmit={do_update} class="w-full max-w-2xl mb-5 mt-5">
     <fieldset class="fieldset">
         <legend class="fieldset-legend">Neuer Status</legend>
         <select class="select w-full" bind:value={form_deliverystate} required>

@@ -22,6 +22,7 @@ type Documents = {
     "\n    mutation UpdateCrate($which: ID!, $oc: OperationCenter!, $deli: DeliveryState!, $info: String!) {\n        modifyEuroCrate(id: $which, oc: $oc, deliveryState: $deli, info: $info) {\n            internalId\n            operationCenter\n            deliveryState\n            information\n        }\n    }\n": typeof types.UpdateCrateDocument,
     "\n\tmutation UpdatePacking($id: ID!, $newstate: DeliveryState!) {\n\t\tsetPackingListDeliveryState(id: $id, deliveryState: $newstate) {\n\t\t\tpackingListId\n\t\t\tname\n\t\t\tdeliveryStatet\n            packedCrates {\n                internalId\n                name\n                operationCenter\n                deliveryState\n            }\n\t\t}\n\t}\n": typeof types.UpdatePackingDocument,
     "\n\tmutation CreateCrate($name: String!, $deli: DeliveryState!, $info: String!, $oc: OperationCenter!) {\n\t\tcreateEuroCrate(name: $name, deliveryState: $deli, info: $info, oc: $oc) {\n\t\t\tinternalId\n\t\t}\n\t}\n": typeof types.CreateCrateDocument,
+    "\n    mutation CreateList($name: String!) {\n        createPackingList(name: $name) {\n\t\t\tpackingListId\n        }\n    }\n": typeof types.CreateListDocument,
     "\n\tmutation RemoveCrates($pl: ID!, $crates: [ID!]!) {\n\t\tremoveCratesFromPackingList(id: $pl,crateIds: $crates) {\n\t\t\tpackedCrates {\n                internalId\n                name\n                operationCenter\n                deliveryState\n            }\n\t\t}\n\t}\n": typeof types.RemoveCratesDocument,
     "\n\tmutation AddCrates($pl: ID!, $crates: [ID!]!) {\n\t\taddCratesToPackingList(id: $pl,crateIds: $crates) {\n\t\t\tpackedCrates {\n                internalId\n                name\n                operationCenter\n                deliveryState\n            }\n\t\t}\n\t}\n": typeof types.AddCratesDocument,
 };
@@ -33,6 +34,7 @@ const documents: Documents = {
     "\n    mutation UpdateCrate($which: ID!, $oc: OperationCenter!, $deli: DeliveryState!, $info: String!) {\n        modifyEuroCrate(id: $which, oc: $oc, deliveryState: $deli, info: $info) {\n            internalId\n            operationCenter\n            deliveryState\n            information\n        }\n    }\n": types.UpdateCrateDocument,
     "\n\tmutation UpdatePacking($id: ID!, $newstate: DeliveryState!) {\n\t\tsetPackingListDeliveryState(id: $id, deliveryState: $newstate) {\n\t\t\tpackingListId\n\t\t\tname\n\t\t\tdeliveryStatet\n            packedCrates {\n                internalId\n                name\n                operationCenter\n                deliveryState\n            }\n\t\t}\n\t}\n": types.UpdatePackingDocument,
     "\n\tmutation CreateCrate($name: String!, $deli: DeliveryState!, $info: String!, $oc: OperationCenter!) {\n\t\tcreateEuroCrate(name: $name, deliveryState: $deli, info: $info, oc: $oc) {\n\t\t\tinternalId\n\t\t}\n\t}\n": types.CreateCrateDocument,
+    "\n    mutation CreateList($name: String!) {\n        createPackingList(name: $name) {\n\t\t\tpackingListId\n        }\n    }\n": types.CreateListDocument,
     "\n\tmutation RemoveCrates($pl: ID!, $crates: [ID!]!) {\n\t\tremoveCratesFromPackingList(id: $pl,crateIds: $crates) {\n\t\t\tpackedCrates {\n                internalId\n                name\n                operationCenter\n                deliveryState\n            }\n\t\t}\n\t}\n": types.RemoveCratesDocument,
     "\n\tmutation AddCrates($pl: ID!, $crates: [ID!]!) {\n\t\taddCratesToPackingList(id: $pl,crateIds: $crates) {\n\t\t\tpackedCrates {\n                internalId\n                name\n                operationCenter\n                deliveryState\n            }\n\t\t}\n\t}\n": types.AddCratesDocument,
 };
@@ -65,6 +67,10 @@ export function graphql(source: "\n\tmutation UpdatePacking($id: ID!, $newstate:
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n\tmutation CreateCrate($name: String!, $deli: DeliveryState!, $info: String!, $oc: OperationCenter!) {\n\t\tcreateEuroCrate(name: $name, deliveryState: $deli, info: $info, oc: $oc) {\n\t\t\tinternalId\n\t\t}\n\t}\n"): typeof import('./graphql').CreateCrateDocument;
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n    mutation CreateList($name: String!) {\n        createPackingList(name: $name) {\n\t\t\tpackingListId\n        }\n    }\n"): typeof import('./graphql').CreateListDocument;
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
