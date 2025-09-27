@@ -45,7 +45,14 @@ public class PackingListGraphQlController {
 		return managePackingListUseCase.findEuroCratesOfPackingList(Long.parseLong(crate.getPackingListId()));
 	}
 
-	// todo create
+	@MutationMapping(DgsConstants.MUTATION.CreatePackingList)
+	public PackingList createPackingList(
+			@Argument String name
+	) {
+		PackingListDatabaseElement dbel = new PackingListDatabaseElement(null, name, de.entropia.logistiktracking.models.DeliveryState.Packing, List.of());
+		PackingListDatabaseElement newElement = packingListDatabaseService.save(dbel);
+		return packingListConverter.toGraphQl(newElement);
+	}
 
 	@MutationMapping(DgsConstants.MUTATION.SetPackingListDeliveryState)
 	public PackingList setPackingListDeliveryState(
@@ -84,5 +91,9 @@ public class PackingListGraphQlController {
 		return getPackingListById(id);
 	}
 
-	// todo delete
+	@MutationMapping(DgsConstants.MUTATION.DeletePackingList)
+	public boolean deletePackingList(@Argument String id) {
+		packingListDatabaseService.deleteById(Long.valueOf(id));
+		return true; // just return true always, we dont really care anyway
+	}
 }

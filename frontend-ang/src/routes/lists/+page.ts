@@ -4,6 +4,6 @@ import {execute, getAllLists} from "$lib/graphql";
 
 export const load: PageLoad = async (event) => {
 	return {
-		lists: (await execute(getAllLists, event.fetch)).data!!
+		lists: (await execute(getAllLists, event.fetch)).data!!.getPackingLists
 	}
 }

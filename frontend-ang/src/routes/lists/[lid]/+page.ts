@@ -1,15 +1,16 @@
 import type { PageLoad } from './$types';
-import {execute, getListById} from "$lib/graphql";
+import {execute, getListByIdAndAlsoGetAllCrates} from "$lib/graphql";
 import {error} from "@sveltejs/kit";
 
 export const load: PageLoad = async (event) => {
-	let list = (await execute(getListById, event.fetch, {
+	let list = (await execute(getListByIdAndAlsoGetAllCrates, event.fetch, {
 		i: event.params.lid
-	})).data!!.getPackingListById;
-	if (!list) {
+	})).data!!;
+	if (!list.getPackingListById) {
 		error(404, "list not found");
 	}
 	return {
-		list: list
+		list: list.getPackingListById!!,
+		crates: list.getEuroCrates
 	}
 }

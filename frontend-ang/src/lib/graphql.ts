@@ -40,6 +40,27 @@ export const getListById = graphql(`
     }
 `)
 
+export const getListByIdAndAlsoGetAllCrates = graphql(`
+    query GetListByIdAndAlsoAllCrates($i: ID!) {
+        getPackingListById(id: $i) {
+            packingListId
+            name
+            deliveryStatet
+            packedCrates {
+                internalId
+                name
+                operationCenter
+                deliveryState
+            }
+        }
+		getEuroCrates {
+			internalId
+			operationCenter
+			name
+        }
+    }
+`);
+
 export const getSpecificCrate = graphql(`
     query GetCrateById($i: ID!) {
         getEuroCrateById(id: $i) {

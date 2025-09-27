@@ -2,6 +2,8 @@
 	import type { PageProps } from './$types';
 	import {DeliveryState} from "../../../gen/graphql";
 	import {addCratesToList, execute, removeCratesFromList, updateListPacking} from "$lib/graphql";
+	import * as bruh from "../../../components/SearchDropdown.svelte";
+	import SearchDropdown from "../../../components/SearchDropdown.svelte";
 
 	let {data}: PageProps = $props();
 
@@ -61,12 +63,20 @@
     }
 
 	let crate_id = $state<string>();
+	let all_crates = $derived(data.crates.map(v => ({ id: v.internalId, label: `${v.operationCenter}/${v.name}`, keywords: [v.internalId, v.name, v.operationCenter] }) as bruh.InputType<string>));
 
 	async function add_crate(ev: SubmitEvent) {
 		// jens war hier :)
 		ev.preventDefault()
 		await add(crate_id!!);
         (ev.target as HTMLFormElement).reset()
+    }
+
+	let the_form = $state<HTMLDialogElement | undefined>(undefined);
+
+	function fill_id(it: string) {
+		the_form?.close()
+        crate_id = it;
     }
 
 	let id_input = $state<HTMLInputElement>();
@@ -95,7 +105,7 @@
 
 <h3 class="text-xl mb-2 mt-2">Kisten:</h3>
 
-<form onsubmit={add_crate}>
+<form onsubmit={add_crate} class="flex flex-row gap-4 items-baseline">
     <fieldset class="fieldset">
         <legend class="fieldset-legend">Kisten-ID</legend>
         <div class="flex flex-row gap-4">
@@ -103,7 +113,23 @@
             <button type="submit" class="btn btn-active btn-success">+</button>
         </div>
     </fieldset>
+    <span>oder</span>
+    <div>
+        <!-- change popover-1 and --anchor-1 names. Use unique names for each dropdown -->
+        <button class="btn" type="button" onclick={() => the_form?.showModal()}>
+            Suchen
+        </button>
+    </div>
 </form>
+
+<dialog class="modal" popover bind:this={the_form}>
+    <div class="modal-box">
+        <SearchDropdown inputs={all_crates} selectedCallback={fill_id}></SearchDropdown>
+    </div>
+    <form method="dialog" class="modal-backdrop">
+        <button>close</button>
+    </form>
+</dialog>
 
 <table class="table table-auto" style="width: 100%">
     <thead>

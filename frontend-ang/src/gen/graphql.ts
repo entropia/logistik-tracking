@@ -173,6 +173,13 @@ export type GetListByIdQueryVariables = Exact<{
 
 export type GetListByIdQuery = { getPackingListById: { __typename: 'PackingList', packingListId: string, name: string, deliveryStatet: DeliveryState, packedCrates: Array<{ __typename: 'EuroCrate', internalId: string, name: string, operationCenter: OperationCenter, deliveryState: DeliveryState }> } | null };
 
+export type GetListByIdAndAlsoAllCratesQueryVariables = Exact<{
+  i: Scalars['ID']['input'];
+}>;
+
+
+export type GetListByIdAndAlsoAllCratesQuery = { getPackingListById: { __typename: 'PackingList', packingListId: string, name: string, deliveryStatet: DeliveryState, packedCrates: Array<{ __typename: 'EuroCrate', internalId: string, name: string, operationCenter: OperationCenter, deliveryState: DeliveryState }> } | null, getEuroCrates: Array<{ __typename: 'EuroCrate', internalId: string, operationCenter: OperationCenter, name: string }> };
+
 export type GetCrateByIdQueryVariables = Exact<{
   i: Scalars['ID']['input'];
 }>;
@@ -285,6 +292,26 @@ export const GetListByIdDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<GetListByIdQuery, GetListByIdQueryVariables>;
+export const GetListByIdAndAlsoAllCratesDocument = new TypedDocumentString(`
+    query GetListByIdAndAlsoAllCrates($i: ID!) {
+  getPackingListById(id: $i) {
+    packingListId
+    name
+    deliveryStatet
+    packedCrates {
+      internalId
+      name
+      operationCenter
+      deliveryState
+    }
+  }
+  getEuroCrates {
+    internalId
+    operationCenter
+    name
+  }
+}
+    `) as unknown as TypedDocumentString<GetListByIdAndAlsoAllCratesQuery, GetListByIdAndAlsoAllCratesQueryVariables>;
 export const GetCrateByIdDocument = new TypedDocumentString(`
     query GetCrateById($i: ID!) {
   getEuroCrateById(id: $i) {

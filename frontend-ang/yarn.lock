@@ -1391,6 +1391,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@m31coding/fuzzy-search@npm:^1.0.2":
+  version: 1.0.2
+  resolution: "@m31coding/fuzzy-search@npm:1.0.2"
+  checksum: 10c0/2eeecf8b715cb29467a4b04e2a7ce8c329726e4887fa69a1680a21d3462645383ef6f6e079e63e37d88b5526d1cdc9b526a1212e0a1805418325613a950b5627
+  languageName: node
+  linkType: hard
+
 "@napi-rs/wasm-runtime@npm:^0.2.12":
   version: 0.2.12
   resolution: "@napi-rs/wasm-runtime@npm:0.2.12"
@@ -2949,6 +2956,7 @@ __metadata:
     "@graphql-codegen/client-preset": "npm:^5.0.0"
     "@graphql-codegen/typescript": "npm:^5.0.0"
     "@graphql-codegen/typescript-operations": "npm:^5.0.0"
+    "@m31coding/fuzzy-search": "npm:^1.0.2"
     "@sveltejs/adapter-auto": "npm:^6.0.0"
     "@sveltejs/adapter-node": "npm:^5.3.1"
     "@sveltejs/adapter-static": "npm:^3.0.9"
