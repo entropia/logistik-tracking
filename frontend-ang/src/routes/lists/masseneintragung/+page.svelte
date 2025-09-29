@@ -1,6 +1,7 @@
 <script lang="ts">
     import {DeliveryState} from "../../../gen/graphql";
 	import {execute, updateListPacking} from "$lib/graphql";
+	import {prepare_id} from "$lib/id_parser";
 
 	let list_id = $state("");
 	let id_input = $state<HTMLInputElement>();
@@ -9,8 +10,7 @@
 
 	async function do_update(ev: SubmitEvent) {
 		ev.preventDefault()
-        let theid = list_id;
-		if (theid.startsWith("L")) theid = theid.substring(1);
+        let theid = prepare_id(list_id);
         let ret = await execute(updateListPacking, window.fetch, {
             id:theid,
             newstate: form_deliverystate
@@ -21,7 +21,7 @@
 </script>
 
 <svelte:document onkeydown={(ev: KeyboardEvent) => {
-    if (ev.key === "L") id_input?.focus()
+    if (ev.key === "L" || ev.key === "l") id_input?.focus()
 }}></svelte:document>
 
 <h2 class="text-2xl mb-2 font-bold">Masseneintragung</h2>
@@ -41,7 +41,7 @@
 
     <fieldset class="fieldset">
         <legend class="fieldset-legend">Listen-ID</legend>
-        <input type="text" class="input w-full" placeholder="ID hier" required pattern="L?\d+" bind:value={list_id} bind:this={id_input} />
+        <input type="text" class="input w-full" placeholder="ID hier" required pattern="[lL]?\d+" bind:value={list_id} bind:this={id_input} />
     </fieldset>
 
     <button type="submit" class="btn btn-active btn-success mt-2">Aktualisieren</button>

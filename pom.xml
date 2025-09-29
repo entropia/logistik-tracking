@@ -41,7 +41,7 @@
     <properties>
         <java.version>23</java.version>
 
-        <itext.version>9.1.0</itext.version>
+        <itext.version>9.3.0</itext.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 

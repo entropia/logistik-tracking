@@ -1,5 +1,6 @@
 package de.entropia.logistiktracking.graphql;
 
+import de.entropia.logistiktracking.JiraThings;
 import de.entropia.logistiktracking.domain.converter.EuroCrateConverter;
 import de.entropia.logistiktracking.domain.euro_crate.use_case.EuroCrateUseCase;
 import de.entropia.logistiktracking.domain.repository.EuroCrateRepository;
@@ -12,6 +13,7 @@ import de.entropia.logistiktracking.jpa.EuroCrateDatabaseElement;
 import de.entropia.logistiktracking.jpa.repo.EuroCrateDatabaseService;
 import de.entropia.logistiktracking.utility.Result;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
@@ -21,6 +23,7 @@ import org.springframework.stereotype.Controller;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Controller
 @AllArgsConstructor
 public class EuroCrateGraphQlController {
@@ -28,6 +31,7 @@ public class EuroCrateGraphQlController {
 	private final EuroCrateDatabaseService euroCrateDatabaseService;
 	private final EuroCrateConverter euroCrateConverter;
 	private final EuroCrateRepository euroCrateRepository;
+	private final JiraThings jira;
 
 	@QueryMapping(DgsConstants.QUERY.GetEuroCrates)
 	public List<EuroCrate> getEuroCrates() {
@@ -73,9 +77,17 @@ public class EuroCrateGraphQlController {
 		if (found.isEmpty()) return null;
 		EuroCrateDatabaseElement the = found.get();
 		the.setOperationCenter(de.entropia.logistiktracking.models.OperationCenter.fromGraphQl(oc));
+		DeliveryState oldStatus = the.getDeliveryState().graphQlEquiv;
 		the.setDeliveryState(de.entropia.logistiktracking.models.DeliveryState.fromGraphQl(deliveryState));
 		the.setInformation(info);
 		EuroCrateDatabaseElement updated = euroCrateDatabaseService.save(the);
+
+		if (oldStatus != deliveryState) {
+			// update ticket state or add note
+			// do last to flush changes to db first
+			jira.checkUpdateJiraStatus(updated);
+		}
+
 		return euroCrateConverter.toGraphQl(updated);
 	}
 

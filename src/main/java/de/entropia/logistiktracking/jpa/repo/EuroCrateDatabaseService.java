@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface EuroCrateDatabaseService extends JpaRepository<EuroCrateDatabaseElement, Long> {
@@ -22,4 +23,6 @@ public interface EuroCrateDatabaseService extends JpaRepository<EuroCrateDatabas
 	@Modifying
 	@Query("delete from EuroCrateDatabaseElement ec where ec.id = ?1")
 	int deleteItWithId(long id);
+
+	List<EuroCrateDatabaseElement> findAllByJiraIssue(String jiraIssue);
 }

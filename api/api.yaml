@@ -6,52 +6,6 @@ servers:
   - url: "http://localhost:8080/api"
     description: "Local development server."
 paths:
-  /euroCrate/{id}/print:
-    get:
-      operationId: printEuroCrate
-      summary: "Generate a printable document for the selected euroCrate."
-      security:
-        - springCookieAuth: [ ]
-      parameters:
-        - name: "id"
-          in: path
-          required: true
-          schema:
-            $ref: "#/components/schemas/EuroCrateId"
-      responses:
-        "200":
-          description: "Successfully generated the euroPallet document."
-          content:
-            application/pdf:
-              schema:
-                type: string
-                format: binary
-        "404":
-          description: "Selected euroPallet does not exist."
-
-  /packingList/{packingListId}/print:
-    get:
-      operationId: printPackingList
-      summary: "Generate a detailed DIN A4 printable document for the packing list."
-      parameters:
-        - name: "packingListId"
-          in: path
-          required: true
-          description: ID of the packing list
-          schema:
-            type: integer
-            format: int64
-      responses:
-        "200":
-          description: "Successfully generated the packing list document."
-          content:
-            application/pdf:
-              schema:
-                type: string
-                format: binary
-        "404":
-          description: "Selected packing list does not exist."
-
   /printMultiple:
     post:
       operationId: printMultipleThings
@@ -278,6 +232,7 @@ components:
             description: Type of the print
             enum:
               - "Crate"
+              - "List"
           id:
             type: integer
             format: int64

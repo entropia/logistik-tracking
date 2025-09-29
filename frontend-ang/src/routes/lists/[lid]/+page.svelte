@@ -4,6 +4,7 @@
 	import {addCratesToList, execute, removeCratesFromList, updateListPacking} from "$lib/graphql";
 	import * as bruh from "../../../components/SearchDropdown.svelte";
 	import SearchDropdown from "../../../components/SearchDropdown.svelte";
+	import {prepare_id} from "$lib/id_parser";
 
 	let {data}: PageProps = $props();
 
@@ -48,7 +49,7 @@
     }
 
 	async function add(id: string) {
-		if (id.startsWith("C")) id = id.substring(1)
+		id = prepare_id(id);
 		progShowing = true;
 		let resp = await execute(addCratesToList, fetch, {
 			pl: current.packingListId,
@@ -83,7 +84,7 @@
 </script>
 
 <svelte:document onkeydown={(ev: KeyboardEvent) => {
-    if (ev.key === "C") id_input?.focus()
+    if (ev.key === "C" || ev.key === "c") id_input?.focus()
 }}></svelte:document>
 
 <h2 class="text-2xl mb-2 font-bold">Liste {current.name} {#if progShowing}
@@ -109,7 +110,7 @@
     <fieldset class="fieldset">
         <legend class="fieldset-legend">Kisten-ID</legend>
         <div class="flex flex-row gap-4">
-            <input type="text" class="input" placeholder="ID hier" required pattern="C?\d+" bind:value={crate_id} bind:this={id_input} />
+            <input type="text" class="input" placeholder="ID hier" required pattern="[cC]?\d+" bind:value={crate_id} bind:this={id_input} />
             <button type="submit" class="btn btn-active btn-success">+</button>
         </div>
     </fieldset>

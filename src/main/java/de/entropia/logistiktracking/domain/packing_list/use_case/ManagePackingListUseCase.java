@@ -7,7 +7,6 @@ import de.entropia.logistiktracking.domain.repository.PackingListRepository;
 import de.entropia.logistiktracking.graphql.gen.types.EuroCrate;
 import de.entropia.logistiktracking.graphql.gen.types.PackingList;
 import de.entropia.logistiktracking.jpa.PackingListDatabaseElement;
-import de.entropia.logistiktracking.pdfGen.PackingListPdfGenerator;
 import de.entropia.logistiktracking.utility.Result;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -23,7 +22,6 @@ import java.util.Optional;
 public class ManagePackingListUseCase {
 	private final PackingListRepository packingListRepository;
 	private final PackingListConverter packingListConverter;
-	private final PackingListPdfGenerator packingListPdfGenerator;
 	private final EuroCrateConverter euroCrateConverter;
 
 	public List<PackingList> findAllPackingLists() {
@@ -50,37 +48,8 @@ public class ManagePackingListUseCase {
 		return new Result.Ok<>(packingListConverter.toGraphQl(packingList));
 	}
 
-	public Result<byte[], PrintPackingListError> printPackingList(long packingListId) {
-		Optional<PackingListDatabaseElement> euroPallet = packingListRepository.findDatabaseElement(packingListId);
-
-		if (euroPallet.isEmpty()) {
-			return new Result.Error<>(PrintPackingListError.ListNotFound);
-		}
-
-		Result<byte[], Void> pdfResult = packingListPdfGenerator.generatePdf(euroPallet.get());
-		return switch (pdfResult) {
-			case Result.Ok<byte[], Void>(byte[] content) -> new Result.Ok<>(content);
-			default -> new Result.Error<>(PrintPackingListError.FailedToGenerate);
-		};
-	}
-
-	public enum PackingListModError {
-		ConflictingCrates,
-		SomethingNotFound
-	}
-
-	public enum PrintPackingListError {
-		ListNotFound,
-		FailedToGenerate
-	}
-
 	public enum FindPackingListError {
 		BadArguments,
 		PackingListNotFound,
-	}
-
-	public enum CreateNewPackingListError {
-		TargetPalletNotFound,
-		BadArguments
 	}
 }

@@ -40,6 +40,9 @@ public class EuroCrateDatabaseElement {
 	@Column(name = "delivery_state", nullable = false)
 	private DeliveryState deliveryState;
 
+	@Column(name = "jira_issue")
+	private String jiraIssue;
+
 	public EuroCrateDatabaseElement(Long id, OperationCenter operationCenter, String name, String information, DeliveryState deliveryState) {
 		this.id = id;
 		this.operationCenter = operationCenter;
