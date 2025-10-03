@@ -9,9 +9,11 @@ import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.kernel.pdf.canvas.PdfCanvas;
 import com.itextpdf.layout.Canvas;
+import de.entropia.logistiktracking.auth.HasAuthority;
 import de.entropia.logistiktracking.jpa.repo.EuroCrateDatabaseService;
 import de.entropia.logistiktracking.jpa.repo.PackingListDatabaseService;
 import de.entropia.logistiktracking.openapi.api.PrintMultipleApi;
+import de.entropia.logistiktracking.openapi.model.AuthorityEnumDto;
 import de.entropia.logistiktracking.openapi.model.PrintMultipleDtoInner;
 import de.entropia.logistiktracking.printing.CrateElement;
 import de.entropia.logistiktracking.printing.LabelElement;
@@ -37,7 +39,7 @@ public class PrintMultipleRoute implements PrintMultipleApi {
 
 	@SneakyThrows
 	@Override
-//	@HasAuthority(AuthorityEnumDto.PRINT)
+	@HasAuthority(AuthorityEnumDto.PRINT)
 	public ResponseEntity<Resource> printMultipleThings(List<PrintMultipleDtoInner> printMultipleDtoInner) {
 		List<LabelElement> elements = printMultipleDtoInner.stream().map(this::resolve).toList();
 

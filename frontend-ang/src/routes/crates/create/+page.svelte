@@ -7,7 +7,8 @@
         name: "",
         oc: OperationCenter.Loc,
         deli: DeliveryState.Packing,
-        info: ""
+        info: "",
+        jira: ""
     });
 	async function handle_submit(event: SubmitEvent) {
 		event.preventDefault()
@@ -15,7 +16,8 @@
 			info: form_state.info,
             oc: form_state.oc,
             deli: form_state.deli,
-            name: form_state.name
+            name: form_state.name,
+            jira: form_state.jira
 		})
 		let updated = resp.data?.createEuroCrate
 		if (updated) {
@@ -46,6 +48,11 @@
                 <option>{oc}</option>
             {/each}
         </select>
+    </fieldset>
+
+    <fieldset class="fieldset">
+        <legend class="fieldset-legend">Jira Ticket</legend>
+        <input class="input" type="text" bind:value={form_state.jira} pattern="^LOC-\d+$" placeholder="LOC-...">
     </fieldset>
 
     <fieldset class="fieldset col-span-2">

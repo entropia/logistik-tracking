@@ -7,9 +7,9 @@ type Query {
 }
 
 type Mutation {
-    createEuroCrate(name: String!, oc: OperationCenter!, deliveryState: DeliveryState!, info: String!): EuroCrate!
+    createEuroCrate(name: String!, oc: OperationCenter!, deliveryState: DeliveryState!, info: String!, jiraIssue: String): EuroCrate!
     deleteEuroCrate(id: ID!): Boolean!
-    modifyEuroCrate(id: ID!, oc: OperationCenter, deliveryState: DeliveryState, info: String!): EuroCrate
+    modifyEuroCrate(id: ID!, oc: OperationCenter, deliveryState: DeliveryState, info: String, jiraIssue: String): EuroCrate
 
     createPackingList(name: String!): PackingList!
     setPackingListDeliveryState(id: ID!, deliveryState: DeliveryState!): PackingList
@@ -71,6 +71,8 @@ type EuroCrate {
     operationCenter: OperationCenter!
     name: String!
     internalId: ID!
+
+    jiraId: String
 
     packingList: PackingList
 

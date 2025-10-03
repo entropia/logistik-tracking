@@ -21,6 +21,7 @@ public class EuroCrateConverter {
 				.internalId(dbel.getId().toString())
 				// explicitly null, we map this later. we dont want to eager fetch
 				.packingList(null)
+				.jiraId(dbel.getJiraIssue())
 				.build();
 	}
 }

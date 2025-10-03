@@ -1,9 +1,9 @@
 package de.entropia.logistiktracking.auth;
 
+import de.entropia.logistiktracking.openapi.model.AuthorityEnumDto;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -24,8 +24,6 @@ import org.springframework.security.web.session.SessionInformationExpiredStrateg
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -39,6 +37,7 @@ public class AuthConfiguration {
 	public SecurityFilterChain securityFilterChain(HttpSecurity security) throws Exception {
 		return security
 				.authorizeHttpRequests(auth -> auth
+						.requestMatchers("/graphql").hasAuthority(AuthorityEnumDto.MANAGE_RESOURCES.getValue())
 						.anyRequest().permitAll() // per default allow everything, secure routes individually
 				)
 				.formLogin(fl -> {
@@ -49,7 +48,7 @@ public class AuthConfiguration {
 					handler.setTargetUrlParameter("redirect"); // ?redirect=/to/where/after/login
 					fl.successHandler(handler);
 
-					fl.failureUrl(frontendBaseUrl + "/#/login?loginFailed="); // ja das soll so, angular macht da sein eigenen scheiß
+					fl.failureUrl(frontendBaseUrl + "/users/login?loginFailed=");
 				})
 				.logout(it -> {
 					it.logoutSuccessUrl(frontendBaseUrl + "/");
@@ -100,10 +99,10 @@ public class AuthConfiguration {
 	UrlBasedCorsConfigurationSource apiConfigurationSource() {
 		System.out.println(frontendBaseUrl);
 		CorsConfiguration configuration = new CorsConfiguration();
-		configuration.setAllowedOrigins(List.of("*"));
+		configuration.setAllowedOrigins(List.of(frontendBaseUrl));
 		configuration.setAllowedMethods(List.of("GET", "POST", "OPTIONS", "PUT", "DELETE"));
 		configuration.setAllowedHeaders(List.of("Origin", "Content-Type", "Cookie"));
-//		configuration.setAllowCredentials(true);
+		configuration.setAllowCredentials(true);
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		source.registerCorsConfiguration("/**", configuration);
 		return source;

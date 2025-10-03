@@ -24,22 +24,6 @@ export const getAllLists = graphql(`
 	}
 `)
 
-export const getListById = graphql(`
-    query GetListById($i: ID!) {
-        getPackingListById(id: $i) {
-            packingListId
-            name
-            deliveryStatet
-			packedCrates {
-				internalId
-				name
-				operationCenter
-				deliveryState
-            }
-        }
-    }
-`)
-
 export const getListByIdAndAlsoGetAllCrates = graphql(`
     query GetListByIdAndAlsoAllCrates($i: ID!) {
         getPackingListById(id: $i) {
@@ -69,6 +53,7 @@ export const getSpecificCrate = graphql(`
             operationCenter
             deliveryState
             information
+			jiraId
 			packingList {
                 packingListId
                 name
@@ -79,12 +64,13 @@ export const getSpecificCrate = graphql(`
 `);
 
 export const updateCrate = graphql(`
-    mutation UpdateCrate($which: ID!, $oc: OperationCenter!, $deli: DeliveryState!, $info: String!) {
-        modifyEuroCrate(id: $which, oc: $oc, deliveryState: $deli, info: $info) {
+    mutation UpdateCrate($which: ID!, $oc: OperationCenter!, $deli: DeliveryState!, $info: String!, $jira: String) {
+        modifyEuroCrate(id: $which, oc: $oc, deliveryState: $deli, info: $info, jiraIssue: $jira) {
             internalId
             operationCenter
             deliveryState
             information
+			jiraId
         }
     }
 `);
@@ -106,8 +92,8 @@ export const updateListPacking = graphql(`
 `)
 
 export const createCrate = graphql(`
-	mutation CreateCrate($name: String!, $deli: DeliveryState!, $info: String!, $oc: OperationCenter!) {
-		createEuroCrate(name: $name, deliveryState: $deli, info: $info, oc: $oc) {
+	mutation CreateCrate($name: String!, $deli: DeliveryState!, $info: String!, $oc: OperationCenter!, $jira: String) {
+		createEuroCrate(name: $name, deliveryState: $deli, info: $info, oc: $oc, jiraIssue: $jira) {
 			internalId
 		}
 	}
@@ -162,10 +148,12 @@ export async function execute<TResult, TVariables>(
 		body: JSON.stringify({
 			query,
 			variables
-		})
+		}),
+		credentials: "include"
 	})
 
 	if (!response.ok) {
+		console.error(response)
 		throw new Error('Network response was not ok')
 	}
 

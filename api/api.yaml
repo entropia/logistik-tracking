@@ -282,7 +282,5 @@ components:
       # -> die namen hier müssen mit den java enum namen übereinstimmen, die caps sind
       enum:
         - 'MANAGE_USERS'
-        - 'CREATE_RESOURCES'
-        - 'MODIFY_RESOURCES'
-        - 'DELETE_RESOURCES'
+        - 'MANAGE_RESOURCES'
         - 'PRINT'

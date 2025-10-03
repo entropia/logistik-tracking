@@ -29,6 +29,7 @@ export type EuroCrate = {
   deliveryState: DeliveryState;
   information: Scalars['String']['output'];
   internalId: Scalars['ID']['output'];
+  jiraId: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
   operationCenter: OperationCenter;
   packingList: Maybe<PackingList>;
@@ -56,6 +57,7 @@ export type MutationAddCratesToPackingListArgs = {
 export type MutationCreateEuroCrateArgs = {
   deliveryState: DeliveryState;
   info: Scalars['String']['input'];
+  jiraIssue?: InputMaybe<Scalars['String']['input']>;
   name: Scalars['String']['input'];
   oc: OperationCenter;
 };
@@ -79,7 +81,8 @@ export type MutationDeletePackingListArgs = {
 export type MutationModifyEuroCrateArgs = {
   deliveryState?: InputMaybe<DeliveryState>;
   id: Scalars['ID']['input'];
-  info: Scalars['String']['input'];
+  info?: InputMaybe<Scalars['String']['input']>;
+  jiraIssue?: InputMaybe<Scalars['String']['input']>;
   oc?: InputMaybe<OperationCenter>;
 };
 
@@ -185,17 +188,18 @@ export type GetCrateByIdQueryVariables = Exact<{
 }>;
 
 
-export type GetCrateByIdQuery = { getEuroCrateById: { __typename: 'EuroCrate', internalId: string, name: string, operationCenter: OperationCenter, deliveryState: DeliveryState, information: string, packingList: { __typename: 'PackingList', packingListId: string, name: string, deliveryStatet: DeliveryState } | null } | null };
+export type GetCrateByIdQuery = { getEuroCrateById: { __typename: 'EuroCrate', internalId: string, name: string, operationCenter: OperationCenter, deliveryState: DeliveryState, information: string, jiraId: string | null, packingList: { __typename: 'PackingList', packingListId: string, name: string, deliveryStatet: DeliveryState } | null } | null };
 
 export type UpdateCrateMutationVariables = Exact<{
   which: Scalars['ID']['input'];
   oc: OperationCenter;
   deli: DeliveryState;
   info: Scalars['String']['input'];
+  jira?: InputMaybe<Scalars['String']['input']>;
 }>;
 
 
-export type UpdateCrateMutation = { modifyEuroCrate: { __typename: 'EuroCrate', internalId: string, operationCenter: OperationCenter, deliveryState: DeliveryState, information: string } | null };
+export type UpdateCrateMutation = { modifyEuroCrate: { __typename: 'EuroCrate', internalId: string, operationCenter: OperationCenter, deliveryState: DeliveryState, information: string, jiraId: string | null } | null };
 
 export type UpdatePackingMutationVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -210,6 +214,7 @@ export type CreateCrateMutationVariables = Exact<{
   deli: DeliveryState;
   info: Scalars['String']['input'];
   oc: OperationCenter;
+  jira?: InputMaybe<Scalars['String']['input']>;
 }>;
 
 
@@ -320,6 +325,7 @@ export const GetCrateByIdDocument = new TypedDocumentString(`
     operationCenter
     deliveryState
     information
+    jiraId
     packingList {
       packingListId
       name
@@ -329,12 +335,19 @@ export const GetCrateByIdDocument = new TypedDocumentString(`
 }
     `) as unknown as TypedDocumentString<GetCrateByIdQuery, GetCrateByIdQueryVariables>;
 export const UpdateCrateDocument = new TypedDocumentString(`
-    mutation UpdateCrate($which: ID!, $oc: OperationCenter!, $deli: DeliveryState!, $info: String!) {
-  modifyEuroCrate(id: $which, oc: $oc, deliveryState: $deli, info: $info) {
+    mutation UpdateCrate($which: ID!, $oc: OperationCenter!, $deli: DeliveryState!, $info: String!, $jira: String) {
+  modifyEuroCrate(
+    id: $which
+    oc: $oc
+    deliveryState: $deli
+    info: $info
+    jiraIssue: $jira
+  ) {
     internalId
     operationCenter
     deliveryState
     information
+    jiraId
   }
 }
     `) as unknown as TypedDocumentString<UpdateCrateMutation, UpdateCrateMutationVariables>;
@@ -354,8 +367,14 @@ export const UpdatePackingDocument = new TypedDocumentString(`
 }
     `) as unknown as TypedDocumentString<UpdatePackingMutation, UpdatePackingMutationVariables>;
 export const CreateCrateDocument = new TypedDocumentString(`
-    mutation CreateCrate($name: String!, $deli: DeliveryState!, $info: String!, $oc: OperationCenter!) {
-  createEuroCrate(name: $name, deliveryState: $deli, info: $info, oc: $oc) {
+    mutation CreateCrate($name: String!, $deli: DeliveryState!, $info: String!, $oc: OperationCenter!, $jira: String) {
+  createEuroCrate(
+    name: $name
+    deliveryState: $deli
+    info: $info
+    oc: $oc
+    jiraIssue: $jira
+  ) {
     internalId
   }
 }

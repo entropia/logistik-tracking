@@ -51,9 +51,10 @@ public class EuroCrateGraphQlController {
 			@Argument String name,
 			@Argument OperationCenter oc,
 			@Argument DeliveryState deliveryState,
-			@Argument String info) {
+			@Argument String info,
+			@Argument String jiraIssue) {
 		EuroCrateDatabaseElement dbel = new EuroCrateDatabaseElement(null, de.entropia.logistiktracking.models.OperationCenter.fromGraphQl(oc),
-				name,info, de.entropia.logistiktracking.models.DeliveryState.fromGraphQl(deliveryState));
+				name,info, de.entropia.logistiktracking.models.DeliveryState.fromGraphQl(deliveryState), jiraIssue);
 		EuroCrateDatabaseElement newElement = euroCrateRepository.createNewEuroCrate(dbel)
 				.orElseThrow(() -> new IllegalStateException("Crate with name and oc already exists"));
 		return euroCrateConverter.toGraphQl(newElement);
@@ -71,7 +72,8 @@ public class EuroCrateGraphQlController {
 			@Argument String id,
 			@Argument OperationCenter oc,
 			@Argument DeliveryState deliveryState,
-			@Argument String info
+			@Argument String info,
+			@Argument String jiraIssue
 	) {
 		Optional<EuroCrateDatabaseElement> found = euroCrateRepository.findEuroCrate(Long.parseLong(id));
 		if (found.isEmpty()) return null;
@@ -79,7 +81,7 @@ public class EuroCrateGraphQlController {
 		the.setOperationCenter(de.entropia.logistiktracking.models.OperationCenter.fromGraphQl(oc));
 		DeliveryState oldStatus = the.getDeliveryState().graphQlEquiv;
 		the.setDeliveryState(de.entropia.logistiktracking.models.DeliveryState.fromGraphQl(deliveryState));
-		the.setInformation(info);
+		the.setJiraIssue(jiraIssue);
 		EuroCrateDatabaseElement updated = euroCrateDatabaseService.save(the);
 
 		if (oldStatus != deliveryState) {

@@ -10,7 +10,8 @@
 	let the = $state({
         oc: current_state.operationCenter,
         status: current_state.deliveryState,
-        info: current_state.information
+        info: current_state.information,
+        jira: current_state.jiraId
     })
 
     let progShowing = $state(false);
@@ -22,7 +23,8 @@
 			    which: current_state.internalId,
             deli: the.status,
             info: the.info,
-            oc: the.oc
+            oc: the.oc,
+            jira: the.jira
             })
         let updated = resp.data?.modifyEuroCrate
         if (updated) {
@@ -30,6 +32,7 @@
             current_state.operationCenter = updated.operationCenter;
 			current_state.deliveryState = updated.deliveryState;
 			current_state.information = updated.information;
+			current_state.jiraId = updated.jiraId;
         }
 		progShowing = false;
     }
@@ -53,6 +56,11 @@
                 <option>{oc}</option>
             {/each}
         </select>
+    </fieldset>
+
+    <fieldset class="fieldset">
+        <legend class="fieldset-legend">Jira Ticket</legend>
+        <input class="input" type="text" bind:value={the.jira} pattern="^LOC-\d+$" placeholder="LOC-...">
     </fieldset>
 
     <fieldset class="fieldset col-span-2">

@@ -32,8 +32,6 @@ public class UserManagementRoute implements UsersApi {
 	private final UserDatabaseService userDatabaseService;
 	private final SessionManagement sessionManagement;
 
-	private final EntityManager em;
-
 	@Override
 	@PreAuthorize("isAuthenticated()")
 	public ResponseEntity<UserDto> getLoggedInUser() {
