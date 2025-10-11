@@ -10,7 +10,7 @@
     };
 
 	let {data}: PageProps = $props();
-	$inspect(data.lists);
+	// $inspect(data.lists);
 
 	const searcher = SearcherFactory.createDefaultSearcher<ListLike, string>();
 

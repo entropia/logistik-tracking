@@ -2,3 +2,7 @@
 @plugin "daisyui" {
     themes: nord --default, dark --prefersdark;
 }
+@plugin "@iconify/tailwind4" {
+    scale: 1; /*always em*/
+
+}

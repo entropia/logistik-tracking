@@ -31,8 +31,7 @@ public class PackingListDatabaseElement {
 	@Column(name = "delivery_state")
 	private DeliveryState deliveryState;
 
-	@OneToMany(fetch = FetchType.LAZY)
-	@JoinColumn(name = "packed_crates")
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "relevantList")
 	private List<EuroCrateDatabaseElement> packedCrates;
 
 	public PackingListDatabaseElement(Long packingListId, String name, DeliveryState deliveryState, List<EuroCrateDatabaseElement> packedCrates) {

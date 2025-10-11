@@ -20,6 +20,7 @@ import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.graphql.data.method.annotation.SchemaMapping;
 import org.springframework.stereotype.Controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -100,5 +101,18 @@ public class EuroCrateGraphQlController {
 			return bruh;
 		}
 		return null;
+	}
+
+	@QueryMapping(DgsConstants.QUERY.GetMultipleCratesById)
+	public EuroCrate[] getMultipleCratesById(@Argument List<String> id) {
+		List<EuroCrate> ecs = new ArrayList<>(id.size());
+		for (String s : id) {
+			long actualId = Long.parseLong(s);
+			Optional<EuroCrateDatabaseElement> byId = euroCrateDatabaseService.findById(actualId);
+			byId
+				  .map(euroCrateConverter::toGraphQl)
+					.ifPresent(ecs::add);
+		}
+		return ecs.toArray(EuroCrate[]::new);
 	}
 }

@@ -1,0 +1,4 @@
+[*.java]
+indent_size = 4
+indent_style = tab
+ij_continuation_indent_size = 6

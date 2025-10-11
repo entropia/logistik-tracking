@@ -43,6 +43,10 @@ public class EuroCrateDatabaseElement {
 	@Column(name = "jira_issue")
 	private String jiraIssue;
 
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "packed_crates")
+	private PackingListDatabaseElement relevantList;
+
 	public EuroCrateDatabaseElement(Long id, OperationCenter operationCenter, String name, String information, DeliveryState deliveryState, String jiraIssue) {
 		this.id = id;
 		this.operationCenter = operationCenter;

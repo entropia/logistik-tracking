@@ -2,18 +2,21 @@ package de.entropia.logistiktracking.web;
 
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.datamatrix.DataMatrixWriter;
+import com.itextpdf.io.font.constants.StandardFonts;
+import com.itextpdf.io.image.ImageData;
+import com.itextpdf.io.image.ImageDataFactory;
 import com.itextpdf.kernel.colors.ColorConstants;
+import com.itextpdf.kernel.font.PdfFont;
+import com.itextpdf.kernel.font.PdfFontFactory;
 import com.itextpdf.kernel.geom.PageSize;
 import com.itextpdf.kernel.geom.Rectangle;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.kernel.pdf.canvas.PdfCanvas;
 import com.itextpdf.layout.Canvas;
-import de.entropia.logistiktracking.auth.HasAuthority;
 import de.entropia.logistiktracking.jpa.repo.EuroCrateDatabaseService;
 import de.entropia.logistiktracking.jpa.repo.PackingListDatabaseService;
 import de.entropia.logistiktracking.openapi.api.PrintMultipleApi;
-import de.entropia.logistiktracking.openapi.model.AuthorityEnumDto;
 import de.entropia.logistiktracking.openapi.model.PrintMultipleDtoInner;
 import de.entropia.logistiktracking.printing.CrateElement;
 import de.entropia.logistiktracking.printing.LabelElement;
@@ -24,11 +27,13 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.io.ByteArrayOutputStream;
 import java.nio.ByteBuffer;
 import java.util.List;
+import java.util.Objects;
 
 @Controller
 @AllArgsConstructor
@@ -39,9 +44,14 @@ public class PrintMultipleRoute implements PrintMultipleApi {
 
 	@SneakyThrows
 	@Override
-	@HasAuthority(AuthorityEnumDto.PRINT)
+//	@HasAuthority(AuthorityEnumDto.PRINT)
+	@Transactional
 	public ResponseEntity<Resource> printMultipleThings(List<PrintMultipleDtoInner> printMultipleDtoInner) {
 		List<LabelElement> elements = printMultipleDtoInner.stream().map(this::resolve).toList();
+
+		ImageData entropiaLogo = ImageDataFactory.createPng(Objects.requireNonNull(getClass().getClassLoader().getResource("Entropia.png")));
+		ImageData locLogo = ImageDataFactory.createPng(Objects.requireNonNull(getClass().getClassLoader().getResource("LOC.png")));
+		PdfFont courierFont = PdfFontFactory.createFont(StandardFonts.COURIER);
 
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		float pageWidth = PageSize.A4.getWidth();
@@ -75,7 +85,7 @@ public class PrintMultipleRoute implements PrintMultipleApi {
 					// Put some content in each label
 					Canvas canvas = new Canvas(pdfc, labelRect);
 
-					elements.get(baseIndex + i).add(cw, canvas, labelRect);
+					elements.get(baseIndex + i).add(cw, canvas, labelRect, locLogo, entropiaLogo, courierFont);
 
 					canvas.close();
 				}
@@ -105,7 +115,7 @@ public class PrintMultipleRoute implements PrintMultipleApi {
 			case PrintMultipleDtoInner.TypeEnum.CRATE ->
 					new CrateElement(euroCrateDatabaseService.findById(it.getId()).orElseThrow());
 			case PrintMultipleDtoInner.TypeEnum.LIST ->
-					new ListElement(packingListDatabaseService.findById(it.getId()).orElseThrow());
+					new ListElement(packingListDatabaseService.findById(it.getId()).orElseThrow(), packingListDatabaseService);
 		};
 	}
 }

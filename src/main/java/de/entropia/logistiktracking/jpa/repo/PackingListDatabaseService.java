@@ -19,12 +19,12 @@ public interface PackingListDatabaseService extends JpaRepository<PackingListDat
 
 	@Modifying
 	@Query(value = "update public.euro_crate set packed_crates = ?1 where id in ?2",
-			nativeQuery = true)
+		  nativeQuery = true)
 	int addCrateToPackingListReassignIfAlreadyAssigned(long addTo, List<Long> ids);
 
 	@Modifying
 	@Query(value = "update public.euro_crate set packed_crates = null where id in ?2 and packed_crates = ?1",
-			nativeQuery = true)
+		  nativeQuery = true)
 	int removeCrateFromPackingList(long delFrom, List<Long> ids);
 
 	@Query("select pc.id from PackingListDatabaseElement e join e.packedCrates pc where e.packingListId = ?1 ")

@@ -65,7 +65,7 @@
 
     <fieldset class="fieldset col-span-2">
         <legend class="fieldset-legend">Information</legend>
-        <textarea class="textarea w-full" bind:value={the.info} placeholder="Information" required></textarea>
+        <textarea class="textarea w-full" bind:value={the.info} placeholder="Information"></textarea>
     </fieldset>
 
     <button class="btn btn-active btn-success" type="submit">Speichern

@@ -132,7 +132,26 @@ export const addCratesToList = graphql(`
 	}
 `)
 
+export const getCratesByIdMultiple = graphql(`
+    query GetMoreCrates($i: [ID!]!) {
+		getMultipleCratesById(id: $i) {
+            internalId
+			operationCenter
+			name
+			deliveryState
+		}
+    }
+`);
+
 import { PUBLIC_API_URL } from '$env/static/public';
+
+export class NetworkResponseNotOkError extends Error {
+	public resp: Response;
+	constructor(msg: string, response: Response) {
+		super(msg);
+		this.resp = response;
+	}
+}
 
 export async function execute<TResult, TVariables>(
 	query: TypedDocumentString<TResult, TVariables>,
@@ -154,7 +173,7 @@ export async function execute<TResult, TVariables>(
 
 	if (!response.ok) {
 		console.error(response)
-		throw new Error('Network response was not ok')
+		throw new NetworkResponseNotOkError('Network response was not ok', response);
 	}
 
 	return (await response.json()) as ExecutionResult<TResult>

@@ -1,6 +1,7 @@
 type Query {
     getEuroCrates: [EuroCrate!]!
     getEuroCrateById(id: ID!): EuroCrate
+    getMultipleCratesById(id: [ID!]!): [EuroCrate!]!
 
     getPackingLists: [PackingList!]!
     getPackingListById(id: ID!): PackingList

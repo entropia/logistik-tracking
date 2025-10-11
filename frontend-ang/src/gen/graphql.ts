@@ -145,6 +145,7 @@ export type Query = {
   __typename: 'Query';
   getEuroCrateById: Maybe<EuroCrate>;
   getEuroCrates: Array<EuroCrate>;
+  getMultipleCratesById: Array<EuroCrate>;
   getPackingListById: Maybe<PackingList>;
   getPackingLists: Array<PackingList>;
 };
@@ -152,6 +153,11 @@ export type Query = {
 
 export type QueryGetEuroCrateByIdArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+export type QueryGetMultipleCratesByIdArgs = {
+  id: Array<Scalars['ID']['input']>;
 };
 
 
@@ -168,13 +174,6 @@ export type GetAllListsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GetAllListsQuery = { getPackingLists: Array<{ __typename: 'PackingList', packingListId: string, name: string, deliveryStatet: DeliveryState }> };
-
-export type GetListByIdQueryVariables = Exact<{
-  i: Scalars['ID']['input'];
-}>;
-
-
-export type GetListByIdQuery = { getPackingListById: { __typename: 'PackingList', packingListId: string, name: string, deliveryStatet: DeliveryState, packedCrates: Array<{ __typename: 'EuroCrate', internalId: string, name: string, operationCenter: OperationCenter, deliveryState: DeliveryState }> } | null };
 
 export type GetListByIdAndAlsoAllCratesQueryVariables = Exact<{
   i: Scalars['ID']['input'];
@@ -243,6 +242,13 @@ export type AddCratesMutationVariables = Exact<{
 
 export type AddCratesMutation = { addCratesToPackingList: { __typename: 'PackingList', packedCrates: Array<{ __typename: 'EuroCrate', internalId: string, name: string, operationCenter: OperationCenter, deliveryState: DeliveryState }> } | null };
 
+export type GetMoreCratesQueryVariables = Exact<{
+  i: Array<Scalars['ID']['input']> | Scalars['ID']['input'];
+}>;
+
+
+export type GetMoreCratesQuery = { getMultipleCratesById: Array<{ __typename: 'EuroCrate', internalId: string, operationCenter: OperationCenter, name: string, deliveryState: DeliveryState }> };
+
 export class TypedDocumentString<TResult, TVariables>
   extends String
   implements DocumentTypeDecoration<TResult, TVariables>
@@ -282,21 +288,6 @@ export const GetAllListsDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<GetAllListsQuery, GetAllListsQueryVariables>;
-export const GetListByIdDocument = new TypedDocumentString(`
-    query GetListById($i: ID!) {
-  getPackingListById(id: $i) {
-    packingListId
-    name
-    deliveryStatet
-    packedCrates {
-      internalId
-      name
-      operationCenter
-      deliveryState
-    }
-  }
-}
-    `) as unknown as TypedDocumentString<GetListByIdQuery, GetListByIdQueryVariables>;
 export const GetListByIdAndAlsoAllCratesDocument = new TypedDocumentString(`
     query GetListByIdAndAlsoAllCrates($i: ID!) {
   getPackingListById(id: $i) {
@@ -410,3 +401,13 @@ export const AddCratesDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<AddCratesMutation, AddCratesMutationVariables>;
+export const GetMoreCratesDocument = new TypedDocumentString(`
+    query GetMoreCrates($i: [ID!]!) {
+  getMultipleCratesById(id: $i) {
+    internalId
+    operationCenter
+    name
+    deliveryState
+  }
+}
+    `) as unknown as TypedDocumentString<GetMoreCratesQuery, GetMoreCratesQueryVariables>;
