@@ -5,7 +5,8 @@ Requires=network.target nginx.service logitrack.service
 
 [Service]
 Type=exec
-ExecStart=/usr/bin/env HOST=127.0.0.1 PORT=8000 ORIGIN=https://lager.entropia.de /usr/bin/node /opt/logitrack/frontend
+ExecStart=/usr/bin/env -C /opt/logitrack/frontend HOST=127.0.0.1 PORT=8000 ORIGIN=https://lager.entropia.de /usr/bin/node /opt/logitrack/frontend
+User=logitrack
 Restart=no
 SuccessExitStatus=0
 

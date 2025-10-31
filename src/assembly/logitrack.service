@@ -5,6 +5,7 @@ Requires=network.target nginx.service
 
 [Service]
 Type=notify
+User=logitrack
 ExecStart=/opt/logitrack/bin/service_main.sh
 ExecStop=/opt/logitrack/bin/stop.sh
 Restart=no
