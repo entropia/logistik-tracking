@@ -83,6 +83,7 @@ public class EuroCrateGraphQlController {
 		DeliveryState oldStatus = the.getDeliveryState().graphQlEquiv;
 		the.setDeliveryState(de.entropia.logistiktracking.models.DeliveryState.fromGraphQl(deliveryState));
 		the.setJiraIssue(jiraIssue);
+		the.setInformation(info);
 		EuroCrateDatabaseElement updated = euroCrateDatabaseService.save(the);
 
 		if (oldStatus != deliveryState) {
