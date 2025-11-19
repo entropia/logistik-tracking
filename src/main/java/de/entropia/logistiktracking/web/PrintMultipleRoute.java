@@ -1,7 +1,7 @@
 package de.entropia.logistiktracking.web;
 
+import com.google.zxing.aztec.AztecWriter;
 import com.google.zxing.common.BitMatrix;
-import com.google.zxing.datamatrix.DataMatrixWriter;
 import com.itextpdf.io.font.constants.StandardFonts;
 import com.itextpdf.io.image.ImageData;
 import com.itextpdf.io.image.ImageDataFactory;
@@ -11,6 +11,7 @@ import com.itextpdf.kernel.font.PdfFontFactory;
 import com.itextpdf.kernel.geom.PageSize;
 import com.itextpdf.kernel.geom.Rectangle;
 import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfPage;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.kernel.pdf.canvas.PdfCanvas;
 import com.itextpdf.layout.Canvas;
@@ -54,13 +55,15 @@ public class PrintMultipleRoute implements PrintMultipleApi {
 		PdfFont courierFont = PdfFontFactory.createFont(StandardFonts.COURIER);
 
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		float pageWidth = PageSize.A4.getWidth();
-		float pageHeight = PageSize.A4.getHeight();
+		PageSize somewhatCompatiblePageSize = PageSize.A4;
+		float pageWidth = somewhatCompatiblePageSize.getWidth();
+		float pageHeight = somewhatCompatiblePageSize.getHeight();
 
-		DataMatrixWriter cw = new DataMatrixWriter();
+		AztecWriter cw = new AztecWriter();
 
 		try (PdfWriter pdfWriter = new PdfWriter(baos);
 			 PdfDocument pdf = new PdfDocument(pdfWriter)) {
+			pdf.setDefaultPageSize(somewhatCompatiblePageSize);
 			int cols = 2;
 			int rows = 4;
 
@@ -69,7 +72,8 @@ public class PrintMultipleRoute implements PrintMultipleApi {
 
 			for(int baseIndex = 0; baseIndex < elements.size(); baseIndex += 8) {
 				int inThisPartition = Math.min(elements.size() - baseIndex, 8);
-				PdfCanvas pdfc = new PdfCanvas(pdf.addNewPage());
+				PdfPage page = pdf.addNewPage();
+				PdfCanvas pdfc = new PdfCanvas(page);
 
 				for(int i = 0; i < inThisPartition; i++) {
 					int row = i / 2;

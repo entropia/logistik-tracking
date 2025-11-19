@@ -2,15 +2,20 @@
 	import {persisted} from "svelte-persisted-store";
 	import type {ShoppingCart} from "$lib/printing_shopping_cart";
 	import type {GetMoreCratesQuery} from "../../gen/graphql";
-	import {execute, getCratesByIdMultiple} from "$lib/graphql";
+	import {execute, getCratesByIdMultiple, getListsByIdMultiple} from "$lib/graphql";
 	import CratesDisplay from "../../components/CratesDisplay.svelte";
 	import {untrack} from "svelte";
+
+	interface Printable {
+		id: string;
+		label: string;
+    }
 
 	let printStore = persisted<ShoppingCart>('printShoppingCart', {
 		items: []
 	})
 
-    let theCache: Record<string, GetMoreCratesQuery["getMultipleCratesById"][0] | null> = $state({});
+    let theCache: Record<string, Printable | null> = $state({});
 
     $effect(() => {
 		$inspect.trace("whatthefuck");
@@ -27,15 +32,36 @@
 					theCache[theid] = null; // fetching it
 				}
             })
-			execute(getCratesByIdMultiple, window.fetch, {
-				i: idsToFetch.map(it => it.substring(1))
-			}).then(value => {
-                let intermediate = {}
-				for (let multipleCratesByIdElement of value.data!!.getMultipleCratesById) {
-					intermediate["C"+multipleCratesByIdElement.internalId] = multipleCratesByIdElement
-				}
-				Object.assign(theCache, intermediate)
-			}).catch(console.error)
+            let cratesFetch = idsToFetch.filter((v) => v.startsWith("C"))
+            let listsFetch = idsToFetch.filter((v) => v.startsWith("L"))
+			if (cratesFetch.length > 0) {
+				execute(getCratesByIdMultiple, window.fetch, {
+					i: cratesFetch.map(it => it.substring(1))
+				}).then(value => {
+					let intermediate: Record<string, Printable> = {}
+					for (let multipleCratesByIdElement of value.data!!.getMultipleCratesById) {
+						intermediate["C"+multipleCratesByIdElement.internalId] = {
+							id: "C"+multipleCratesByIdElement.internalId,
+                            label: multipleCratesByIdElement.operationCenter+"/"+multipleCratesByIdElement.name
+                        }
+					}
+					Object.assign(theCache, intermediate)
+				}).catch(console.error)
+            }
+			if (listsFetch.length > 0) {
+				execute(getListsByIdMultiple, window.fetch, {
+					i: listsFetch.map(it => it.substring(1))
+				}).then(value => {
+					let intermediate: Record<string, Printable> = {}
+					for (let element of value.data!!.getMultipleListsById) {
+						intermediate["L"+element.packingListId] = {
+							id: "L"+element.packingListId,
+                            label: element.name
+                        }
+					}
+					Object.assign(theCache, intermediate)
+				}).catch(console.error)
+            }
         }
     })
 
@@ -47,7 +73,7 @@
         fetch(PUBLIC_API_URL+"/api/printMultiple", {
 			method: "POST",
             credentials: "include",
-            body: JSON.stringify(theCrates.map(x => {return {type: "Crate", id: x.internalId}})),
+            body: JSON.stringify(theCrates.map(x => {return {type: x.id.charAt(0) == 'L' ? "List" : "Crate", id: x.id.substring(1)}})),
             headers: {
 				"Content-Type": "application/json"
             }
@@ -68,13 +94,46 @@
 			return it;
         })
     }
+
+	function toggle(internalId: string, it: ShoppingCart, targetState: boolean) {
+		let el = "C"+internalId;
+		let has = it.items.includes(el);
+		if (!targetState && has) it.items = it.items.filter(f => f != el)
+		else if (targetState && !has) it.items.push(el)
+		return it;
+	}
 </script>
 
 <button class="btn btn-success" disabled={theCrates.length === 0} onclick={printIt}>Drucken</button>
 <button class="btn btn-error" disabled={theCrates.length === 0} onclick={empty}>Leeren</button>
-<CratesDisplay crates={theCrates}></CratesDisplay>
 
-<!--{#each theCrates as bruh (bruh.internalId)}-->
-<!--<p>{bruh.name}</p>-->
-<!--{/each}-->
 
+<table class="table table-auto" style="width: 100%">
+    <thead>
+    <tr>
+        <th>Druck?</th>
+        <th>ID</th>
+        <th>Name</th>
+    </tr>
+    </thead>
+    <tbody>
+    {#each theCrates as crate (crate.id)}
+        <tr>
+            <td>
+                <input type="checkbox" class="checkbox" bind:checked={
+                () => $printStore.items.includes(crate.id),
+                (v) => {printStore.update(it => toggle(crate.id, it, v))}
+                }>
+            </td>
+            <td>{crate.id}</td>
+            <td>
+                {#if crate.id.startsWith("L")}
+                    <a class="link" href="/lists/{crate.id.substring(1)}">{crate.label}</a>
+                {:else}
+                    <a class="link" href="/crates/{crate.id.substring(1)}">{crate.label}</a>
+                {/if}
+            </td>
+        </tr>
+    {/each}
+    </tbody>
+</table>

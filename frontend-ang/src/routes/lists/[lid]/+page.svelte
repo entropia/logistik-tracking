@@ -116,7 +116,6 @@
     </fieldset>
     <span>oder</span>
     <div>
-        <!-- change popover-1 and --anchor-1 names. Use unique names for each dropdown -->
         <button class="btn" type="button" onclick={() => the_form?.showModal()}>
             Suchen
         </button>

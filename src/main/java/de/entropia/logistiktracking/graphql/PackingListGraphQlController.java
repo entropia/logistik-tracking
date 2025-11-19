@@ -18,6 +18,7 @@ import org.springframework.graphql.data.method.annotation.SchemaMapping;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -95,5 +96,18 @@ public class PackingListGraphQlController {
 	public boolean deletePackingList(@Argument String id) {
 		packingListDatabaseService.deleteById(Long.valueOf(id));
 		return true; // just return true always, we dont really care anyway
+	}
+
+	@QueryMapping(DgsConstants.QUERY.GetMultipleListsById)
+	public PackingList[] getMultipleCratesById(@Argument List<String> id) {
+		List<PackingList> ecs = new ArrayList<>(id.size());
+		for (String s : id) {
+			long actualId = Long.parseLong(s);
+			Optional<PackingListDatabaseElement> byId = packingListDatabaseService.findById(actualId);
+			byId
+				  .map(packingListConverter::toGraphQl)
+				  .ifPresent(ecs::add);
+		}
+		return ecs.toArray(PackingList[]::new);
 	}
 }

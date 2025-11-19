@@ -1,7 +1,9 @@
 <script lang="ts">
 	import type { PageProps } from './$types';
 	import {Query, SearcherFactory} from "@m31coding/fuzzy-search";
-	import {DeliveryState} from "../../gen/graphql";
+	import type {DeliveryState} from "../../gen/graphql";
+	import type {ShoppingCart} from "$lib/printing_shopping_cart";
+	import {persisted} from "svelte-persisted-store";
 
 	type ListLike = {
 		packingListId: string,
@@ -17,6 +19,18 @@
 	function filterCrates(oc: ListLike[], f: string): ListLike[] {
 		if (f == "") return oc;
 		return searcher.getMatches(new Query(f)).matches.toSorted((am, bm) => bm.quality - am.quality).map(it => it.entity);
+	}
+
+	let printStore = persisted<ShoppingCart>('printShoppingCart', {
+		items: []
+	})
+
+	function toggle(internalId: string, it: ShoppingCart, targetState: boolean) {
+		let el = "L"+internalId;
+		let has = it.items.includes(el);
+		if (!targetState && has) it.items = it.items.filter(f => f != el)
+		else if (targetState && !has) it.items.push(el)
+		return it;
 	}
 
 	let filter = $state("");
@@ -40,6 +54,7 @@
 <table class="table table-auto" style="width: 100%">
     <thead>
     <tr>
+        <th>Druck?</th>
         <th>ID</th>
         <th>Name</th>
         <th>Wo?</th>
@@ -48,6 +63,12 @@
     <tbody>
     {#each displayLists as lis (lis.packingListId)}
         <tr>
+            <td>
+                <input type="checkbox" class="checkbox" bind:checked={
+                () => $printStore.items.includes("L"+lis.packingListId),
+                (v) => {printStore.update(it => toggle(lis.packingListId, it, v))}
+                }>
+            </td>
             <td>{lis.packingListId}</td>
             <td>
                 <a class="link" href="/lists/{lis.packingListId}">{lis.name}</a>

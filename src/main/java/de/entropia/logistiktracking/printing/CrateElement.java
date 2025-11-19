@@ -1,6 +1,7 @@
 package de.entropia.logistiktracking.printing;
 
 import com.google.zxing.BarcodeFormat;
+import com.google.zxing.aztec.AztecWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.datamatrix.DataMatrixWriter;
 import com.itextpdf.io.image.ImageData;
@@ -9,6 +10,7 @@ import com.itextpdf.kernel.font.PdfFont;
 import com.itextpdf.kernel.geom.PageSize;
 import com.itextpdf.kernel.geom.Rectangle;
 import com.itextpdf.layout.Canvas;
+import com.itextpdf.layout.Style;
 import com.itextpdf.layout.element.*;
 import com.itextpdf.layout.properties.TabAlignment;
 import de.entropia.logistiktracking.jpa.EuroCrateDatabaseElement;
@@ -23,7 +25,7 @@ public class CrateElement implements LabelElement {
 		this.el = el;
 	}
 	@Override
-	public void add(DataMatrixWriter dmW, Canvas canvas, Rectangle bounds, ImageData locLogo, ImageData entropiaLogo, PdfFont monoFont) {
+	public void add(AztecWriter dmW, Canvas canvas, Rectangle bounds, ImageData locLogo, ImageData entropiaLogo, PdfFont monoFont) {
 		float pageWidth = PageSize.A4.getWidth();
 		float pageHeight = PageSize.A4.getHeight();
 		int cols = 2;
@@ -32,7 +34,7 @@ public class CrateElement implements LabelElement {
 		float labelHeight = pageHeight / rows;
 		int dim = (int) (labelHeight / 2);
 
-		BitMatrix bm = dmW.encode(String.format("C%09d", el.getId()), BarcodeFormat.DATA_MATRIX, dim, dim);
+		BitMatrix bm = dmW.encode(String.format("C%09d", el.getId()), BarcodeFormat.AZTEC, dim, dim);
 		byte[] data = convertToBlackWhiteRawData(bm);
 		ImageData test = ImageDataFactory.create(bm.getWidth(), bm.getHeight(), 1, 1, data, null);
 		Image image = new Image(test);
@@ -78,7 +80,7 @@ public class CrateElement implements LabelElement {
 			  .setFont(monoFont).addTabStops(new TabStop(60, TabAlignment.LEFT));
 		element.setFontSize(14);
 		element.setMargin(0);
-		element.add("Kiste\n\n");
+		element.add(new Text("CRATE").addStyle(new Style().setFontSize(30))).add("\n\n");
 		element.add("ID").add(new Tab()).add(el.getId().toString()).add("\n");
 		element.add("NAME").add(new Tab()).add("%s / %s".formatted(el.getOperationCenter(), el.getName()));
 		div.add(element);

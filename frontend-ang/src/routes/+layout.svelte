@@ -12,6 +12,8 @@
     </div>
     <div class="flex-none">
         <ul class="menu menu-horizontal px-1">
+
+            <li><a href="/druck">Drucken</a></li>
             <li><a href="/crates">Kisten</a></li>
             <li><a href="/lists">Listen</a></li>
 <!--            <li>-->

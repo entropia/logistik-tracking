@@ -5,6 +5,7 @@ type Query {
 
     getPackingLists: [PackingList!]!
     getPackingListById(id: ID!): PackingList
+    getMultipleListsById(id: [ID!]!): [PackingList!]!
 }
 
 type Mutation {

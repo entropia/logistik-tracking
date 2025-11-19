@@ -1,14 +1,15 @@
 package de.entropia.logistiktracking.printing;
 
 import com.google.zxing.BarcodeFormat;
+import com.google.zxing.aztec.AztecWriter;
 import com.google.zxing.common.BitMatrix;
-import com.google.zxing.datamatrix.DataMatrixWriter;
 import com.itextpdf.io.image.ImageData;
 import com.itextpdf.io.image.ImageDataFactory;
 import com.itextpdf.kernel.font.PdfFont;
 import com.itextpdf.kernel.geom.PageSize;
 import com.itextpdf.kernel.geom.Rectangle;
 import com.itextpdf.layout.Canvas;
+import com.itextpdf.layout.Style;
 import com.itextpdf.layout.element.*;
 import com.itextpdf.layout.properties.TabAlignment;
 import de.entropia.logistiktracking.jpa.PackingListDatabaseElement;
@@ -24,7 +25,7 @@ public class ListElement implements LabelElement {
 	private final PackingListDatabaseService dbs;
 
 	@Override
-	public void add(DataMatrixWriter dmW, Canvas canvas, Rectangle bounds, ImageData locLogo, ImageData entropiaLogo, PdfFont monoFont) {
+	public void add(AztecWriter dmW, Canvas canvas, Rectangle bounds, ImageData locLogo, ImageData entropiaLogo, PdfFont monoFont) {
 		float pageWidth = PageSize.A4.getWidth();
 		float pageHeight = PageSize.A4.getHeight();
 		int cols = 2;
@@ -33,7 +34,7 @@ public class ListElement implements LabelElement {
 		float labelHeight = pageHeight / rows;
 		int dim = (int) (labelHeight / 2);
 
-		BitMatrix bm = dmW.encode(String.format("L%09d", pl.getPackingListId()), BarcodeFormat.DATA_MATRIX, dim, dim);
+		BitMatrix bm = dmW.encode(String.format("L%09d", pl.getPackingListId()), BarcodeFormat.AZTEC, dim, dim);
 		byte[] data = convertToBlackWhiteRawData(bm);
 		ImageData test = ImageDataFactory.create(bm.getWidth(), bm.getHeight(), 1, 1, data, null);
 		Image image = new Image(test);
@@ -79,7 +80,7 @@ public class ListElement implements LabelElement {
 			  .setFont(monoFont).addTabStops(new TabStop(60, TabAlignment.LEFT));
 		element.setFontSize(14);
 		element.setMargin(0);
-		element.add("Liste\n\n");
+		element.add(new Text("LIST").addStyle(new Style().setFontSize(30))).add("\n\n");
 		element.add("ID").add(new Tab()).add(pl.getPackingListId().toString()).add("\n");
 		element.add("NAME").add(new Tab()).add("%s".formatted(pl.getName()));
 		div.add(element);

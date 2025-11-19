@@ -3,12 +3,17 @@
 	import {createCrate, execute} from "$lib/graphql";
 	import {goto} from "$app/navigation";
 
+	let create_multiple = $state(false);
+
+	let the_status = $state<HTMLParagraphElement | null>(null);
+	let the_name = $state<HTMLInputElement | null>(null);
+
 	let form_state = $state({
         name: "",
         oc: OperationCenter.Loc,
         deli: DeliveryState.Packing,
         info: "",
-        jira: ""
+        jira: undefined
     });
 	async function handle_submit(event: SubmitEvent) {
 		event.preventDefault()
@@ -17,11 +22,23 @@
             oc: form_state.oc,
             deli: form_state.deli,
             name: form_state.name,
-            jira: form_state.jira
+            jira: form_state.jira ? ("LOC-"+form_state.jira) : null
 		})
 		let updated = resp.data?.createEuroCrate
 		if (updated) {
-			await goto("/crates/"+updated.internalId);
+			if (!create_multiple) await goto("/crates/"+updated.internalId);
+			else {
+				if (the_status) {
+					the_status.textContent = `Kiste ${form_state.oc} / ${form_state.name} erstellt: ${updated.internalId}`;
+					// reset geht hier leider nicht weil die checkbox in der form ist und damit auch zurückgesetzt wird
+					form_state.name = ""
+                    form_state.oc = OperationCenter.Loc;
+					form_state.deli = DeliveryState.Packing;
+					form_state.info = "";
+					form_state.jira = undefined;
+                    the_name?.focus()
+                }
+            }
 		}
 	}
 </script>
@@ -38,7 +55,7 @@
     </fieldset>
     <fieldset class="fieldset">
         <legend class="fieldset-legend">Name</legend>
-        <input class="input" type="text" bind:value={form_state.name} required>
+        <input class="input" type="text" bind:value={form_state.name} bind:this={the_name} required>
     </fieldset>
 
     <fieldset class="fieldset">
@@ -52,7 +69,10 @@
 
     <fieldset class="fieldset">
         <legend class="fieldset-legend">Jira Ticket</legend>
-        <input class="input" type="text" bind:value={form_state.jira} pattern="^LOC-\d+$" placeholder="LOC-...">
+        <label class="input">
+            LOC-
+            <input class="grow" type="number" bind:value={form_state.jira} min="1" placeholder="1234">
+        </label>
     </fieldset>
 
     <fieldset class="fieldset col-span-2">
@@ -61,4 +81,11 @@
     </fieldset>
 
     <button class="btn btn-active btn-success" type="submit">Speichern</button>
+
+    <label class="label">
+        <input type="checkbox" bind:checked={create_multiple}>
+        Mehrere erstellen
+    </label>
+
+    <p bind:this={the_status}></p>
 </form>

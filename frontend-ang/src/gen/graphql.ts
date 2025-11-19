@@ -146,6 +146,7 @@ export type Query = {
   getEuroCrateById: Maybe<EuroCrate>;
   getEuroCrates: Array<EuroCrate>;
   getMultipleCratesById: Array<EuroCrate>;
+  getMultipleListsById: Array<PackingList>;
   getPackingListById: Maybe<PackingList>;
   getPackingLists: Array<PackingList>;
 };
@@ -157,6 +158,11 @@ export type QueryGetEuroCrateByIdArgs = {
 
 
 export type QueryGetMultipleCratesByIdArgs = {
+  id: Array<Scalars['ID']['input']>;
+};
+
+
+export type QueryGetMultipleListsByIdArgs = {
   id: Array<Scalars['ID']['input']>;
 };
 
@@ -248,6 +254,13 @@ export type GetMoreCratesQueryVariables = Exact<{
 
 
 export type GetMoreCratesQuery = { getMultipleCratesById: Array<{ __typename: 'EuroCrate', internalId: string, operationCenter: OperationCenter, name: string, deliveryState: DeliveryState }> };
+
+export type GetMoreListsQueryVariables = Exact<{
+  i: Array<Scalars['ID']['input']> | Scalars['ID']['input'];
+}>;
+
+
+export type GetMoreListsQuery = { getMultipleListsById: Array<{ __typename: 'PackingList', packingListId: string, name: string }> };
 
 export class TypedDocumentString<TResult, TVariables>
   extends String
@@ -411,3 +424,11 @@ export const GetMoreCratesDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<GetMoreCratesQuery, GetMoreCratesQueryVariables>;
+export const GetMoreListsDocument = new TypedDocumentString(`
+    query GetMoreLists($i: [ID!]!) {
+  getMultipleListsById(id: $i) {
+    packingListId
+    name
+  }
+}
+    `) as unknown as TypedDocumentString<GetMoreListsQuery, GetMoreListsQueryVariables>;

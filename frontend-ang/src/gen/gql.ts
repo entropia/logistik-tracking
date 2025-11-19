@@ -26,6 +26,7 @@ type Documents = {
     "\n\tmutation RemoveCrates($pl: ID!, $crates: [ID!]!) {\n\t\tremoveCratesFromPackingList(id: $pl,crateIds: $crates) {\n\t\t\tpackedCrates {\n                internalId\n                name\n                operationCenter\n                deliveryState\n            }\n\t\t}\n\t}\n": typeof types.RemoveCratesDocument,
     "\n\tmutation AddCrates($pl: ID!, $crates: [ID!]!) {\n\t\taddCratesToPackingList(id: $pl,crateIds: $crates) {\n\t\t\tpackedCrates {\n                internalId\n                name\n                operationCenter\n                deliveryState\n            }\n\t\t}\n\t}\n": typeof types.AddCratesDocument,
     "\n    query GetMoreCrates($i: [ID!]!) {\n\t\tgetMultipleCratesById(id: $i) {\n            internalId\n\t\t\toperationCenter\n\t\t\tname\n\t\t\tdeliveryState\n\t\t}\n    }\n": typeof types.GetMoreCratesDocument,
+    "\n\tquery GetMoreLists($i: [ID!]!) {\n\t\tgetMultipleListsById(id: $i) {\n\t\t\tpackingListId\n\t\t\tname\n\t\t}\n\t}\n": typeof types.GetMoreListsDocument,
 };
 const documents: Documents = {
     "\n    query GetAllCratesAllFields {\n        getEuroCrates {\n            internalId\n\t\t\tname\n\t\t\toperationCenter\n\t\t\tdeliveryState\n\t\t\tinformation\n        }\n    }\n": types.GetAllCratesAllFieldsDocument,
@@ -39,6 +40,7 @@ const documents: Documents = {
     "\n\tmutation RemoveCrates($pl: ID!, $crates: [ID!]!) {\n\t\tremoveCratesFromPackingList(id: $pl,crateIds: $crates) {\n\t\t\tpackedCrates {\n                internalId\n                name\n                operationCenter\n                deliveryState\n            }\n\t\t}\n\t}\n": types.RemoveCratesDocument,
     "\n\tmutation AddCrates($pl: ID!, $crates: [ID!]!) {\n\t\taddCratesToPackingList(id: $pl,crateIds: $crates) {\n\t\t\tpackedCrates {\n                internalId\n                name\n                operationCenter\n                deliveryState\n            }\n\t\t}\n\t}\n": types.AddCratesDocument,
     "\n    query GetMoreCrates($i: [ID!]!) {\n\t\tgetMultipleCratesById(id: $i) {\n            internalId\n\t\t\toperationCenter\n\t\t\tname\n\t\t\tdeliveryState\n\t\t}\n    }\n": types.GetMoreCratesDocument,
+    "\n\tquery GetMoreLists($i: [ID!]!) {\n\t\tgetMultipleListsById(id: $i) {\n\t\t\tpackingListId\n\t\t\tname\n\t\t}\n\t}\n": types.GetMoreListsDocument,
 };
 
 /**
@@ -85,6 +87,10 @@ export function graphql(source: "\n\tmutation AddCrates($pl: ID!, $crates: [ID!]
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n    query GetMoreCrates($i: [ID!]!) {\n\t\tgetMultipleCratesById(id: $i) {\n            internalId\n\t\t\toperationCenter\n\t\t\tname\n\t\t\tdeliveryState\n\t\t}\n    }\n"): typeof import('./graphql').GetMoreCratesDocument;
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n\tquery GetMoreLists($i: [ID!]!) {\n\t\tgetMultipleListsById(id: $i) {\n\t\t\tpackingListId\n\t\t\tname\n\t\t}\n\t}\n"): typeof import('./graphql').GetMoreListsDocument;
 
 
 export function graphql(source: string) {

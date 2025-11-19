@@ -18,11 +18,11 @@
 </script>
 
 <h2 class="text-2xl mb-2 font-bold">Liste erstellen</h2>
-<form onsubmit={handle_submit} class="w-full max-w-2xl gap-4 mb-5">
-    <fieldset class="fieldset">
+<form onsubmit={handle_submit} class="grid grid-cols-2 grid-rows-1 w-full max-w-2xl gap-4 mb-5">
+    <fieldset class="fieldset col-span-1">
         <legend class="fieldset-legend">Name</legend>
-        <input class="input" type="text" bind:value={form_state.name} required>
+        <input class="input w-full" type="text" bind:value={form_state.name} required>
     </fieldset>
 
-    <button class="btn btn-active btn-success" type="submit">Speichern</button>
+    <button class="btn btn-active btn-success col-start-1" type="submit">Speichern</button>
 </form>

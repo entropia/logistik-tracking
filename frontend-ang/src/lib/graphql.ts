@@ -143,6 +143,15 @@ export const getCratesByIdMultiple = graphql(`
     }
 `);
 
+export const getListsByIdMultiple = graphql(`
+	query GetMoreLists($i: [ID!]!) {
+		getMultipleListsById(id: $i) {
+			packingListId
+			name
+		}
+	}
+`)
+
 import { PUBLIC_API_URL } from '$env/static/public';
 
 export class NetworkResponseNotOkError extends Error {

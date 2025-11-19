@@ -1,7 +1,13 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="LogistikTrackingApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
     <option name="ACTIVE_PROFILES" value="entw" />
-    <module name="logistikTracking" />
+    <option name="envFilePaths">
+      <option value="$PROJECT_DIR$/localdev.env" />
+    </option>
+    <module name="logistik-tracking" />
+    <selectedOptions>
+      <option name="environmentVariables" />
+    </selectedOptions>
     <option name="SPRING_BOOT_MAIN_CLASS" value="de.entropia.logistiktracking.LogistikTrackingApplication" />
     <option name="VM_PARAMETERS" value="-Dxr.util-logging.loggingEnabled=true" />
     <method v="2">
