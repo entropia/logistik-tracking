@@ -17,6 +17,8 @@ import java.time.LocalDate;
 @Getter
 @Table(name = "euro_crate", uniqueConstraints = {
 		@UniqueConstraint(columnNames = {"operation_center", "name"})
+}, indexes = {
+	  @Index(columnList="jira_issue")
 })
 @DynamicUpdate
 public class EuroCrateDatabaseElement {

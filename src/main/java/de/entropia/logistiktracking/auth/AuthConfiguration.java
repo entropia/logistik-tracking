@@ -13,6 +13,7 @@ import org.springframework.security.core.annotation.AnnotationTemplateExpression
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.session.SessionRegistryImpl;
+import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
@@ -93,7 +94,7 @@ public class AuthConfiguration {
 
 	@Bean
 	public PasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
+		return new Argon2PasswordEncoder(16, 32, 1, 19456, 2);
 	}
 
 	UrlBasedCorsConfigurationSource apiConfigurationSource() {

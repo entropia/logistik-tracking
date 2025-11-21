@@ -7,7 +7,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Optional;
 
 @Component
 @AllArgsConstructor
@@ -17,10 +16,6 @@ public class PackingListRepository {
 	public List<PackingListDatabaseElement> findAllPackingLists() {
 		return packingListDatabaseService.findAll(Sort.by("packingListId").ascending()).stream()
 				.toList();
-	}
-
-	public Optional<PackingListDatabaseElement> findDatabaseElement(long humanReadableId) {
-		return packingListDatabaseService.findById(humanReadableId);
 	}
 
 }

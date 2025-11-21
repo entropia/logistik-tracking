@@ -65,19 +65,14 @@
         }
     })
 
-	import { PUBLIC_API_URL } from '$env/static/public';
+	import {printMultiple} from "$lib/http_api";
 
     let theCrates = $derived($printStore.items.map(it => theCache[it]).filter(v => !!v))
     // $inspect(theCrates)
 	function printIt() {
-        fetch(PUBLIC_API_URL+"/api/printMultiple", {
-			method: "POST",
-            credentials: "include",
-            body: JSON.stringify(theCrates.map(x => {return {type: x.id.charAt(0) == 'L' ? "List" : "Crate", id: x.id.substring(1)}})),
-            headers: {
-				"Content-Type": "application/json"
-            }
-        }).then(it => it.blob())
+
+		printMultiple(theCrates.map(x => {return {type: x.id.charAt(0) == 'L' ? "List" : "Crate", id: (x.id.substring(1))}}))
+            .then(it => it.blob())
             .then(it => {
                 let theOU = URL.createObjectURL(it)
                 let opened = window.open(theOU, "_blank")

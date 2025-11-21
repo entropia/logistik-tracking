@@ -12,11 +12,6 @@ import java.util.Optional;
 
 
 public interface PackingListDatabaseService extends JpaRepository<PackingListDatabaseElement, Long> {
-
-	@Modifying
-	@Query("update PackingListDatabaseElement p set p.deliveryState = ?2 where p.packingListId = ?1")
-	int setDeliveryStateOf(long id, DeliveryState state);
-
 	@Modifying
 	@Query(value = "update public.euro_crate set packed_crates = ?1 where id in ?2",
 		  nativeQuery = true)
@@ -27,11 +22,6 @@ public interface PackingListDatabaseService extends JpaRepository<PackingListDat
 		  nativeQuery = true)
 	int removeCrateFromPackingList(long delFrom, List<Long> ids);
 
-	@Query("select pc.id from PackingListDatabaseElement e join e.packedCrates pc where e.packingListId = ?1 ")
-	long[] getAllCratesForId(long id);
-
 
 	Optional<PackingListDatabaseElement> getByPackedCratesContains(EuroCrateDatabaseElement dbEl);
-
-	int deleteByPackingListId(long packingListId);
 }

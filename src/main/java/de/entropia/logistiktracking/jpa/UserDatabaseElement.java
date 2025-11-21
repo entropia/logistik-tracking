@@ -28,10 +28,10 @@ public class UserDatabaseElement {
 	@Version
 	private Long version;
 
-	@Column(name = "hashed_pw", nullable = false, length = 72) // 72 = max length für bcrypt
+	@Column(name = "hashed_pw", nullable = false)
 	private String hashedPw;
 
-	@ElementCollection(targetClass = String.class, fetch = FetchType.EAGER)
+	@ElementCollection(targetClass = AuthorityEnumDto.class, fetch = FetchType.EAGER)
 	@CollectionTable(name = "logitrack_authority", joinColumns = @JoinColumn(name = "owning_user"))
 	@Getter
 	private List<AuthorityEnumDto> roles = new ArrayList<>();

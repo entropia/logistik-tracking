@@ -6,8 +6,8 @@ import de.entropia.logistiktracking.graphql.gen.types.EuroCrate;
 import de.entropia.logistiktracking.graphql.gen.types.PackingList;
 import de.entropia.logistiktracking.jpa.EuroCrateDatabaseElement;
 import de.entropia.logistiktracking.jpa.PackingListDatabaseElement;
+import de.entropia.logistiktracking.jpa.repo.EuroCrateDatabaseService;
 import de.entropia.logistiktracking.jpa.repo.PackingListDatabaseService;
-import de.entropia.logistiktracking.utility.Result;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -23,6 +23,7 @@ public class EuroCrateUseCase {
 	private final EuroCrateRepository euroCrateRepository;
 	private final PackingListDatabaseService packingListDatabaseService;
 	private final PackingListConverter packingListConverter;
+	private final EuroCrateDatabaseService euroCrateDatabaseService;
 
 	public List<EuroCrate> findAllEuroCrates() {
 		return euroCrateRepository
@@ -32,22 +33,12 @@ public class EuroCrateUseCase {
 				.toList();
 	}
 
-	public Result<PackingList, FindRelatedPackingListError> getPackingListsOfCrate(long id) {
-		Optional<EuroCrateDatabaseElement> euroCrate = euroCrateRepository.findDatabaseElement(id);
-		if (euroCrate.isEmpty()) return new Result.Error<>(FindRelatedPackingListError.CrateNotFound);
+	public PackingList getPackingListsOfCrate(long id) {
+		Optional<EuroCrateDatabaseElement> euroCrate = euroCrateDatabaseService.findById(id);
+		if (euroCrate.isEmpty()) throw new IllegalStateException("crate not found");
 		EuroCrateDatabaseElement ec = euroCrate.get();
 
 		Optional<PackingListDatabaseElement> result = packingListDatabaseService.getByPackedCratesContains(ec);
-		if (result.isEmpty()) {
-			return new Result.Error<>(FindRelatedPackingListError.NoPackingList);
-		}
-
-		return new Result.Ok<>(packingListConverter.toGraphQl(result.get()));
+		return result.map(packingListConverter::toGraphQl).orElse(null);
 	}
-
-	public enum FindRelatedPackingListError {
-		CrateNotFound,
-		NoPackingList
-	}
-
 }

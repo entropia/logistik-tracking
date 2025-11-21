@@ -5,6 +5,7 @@
 	import * as bruh from "../../../components/SearchDropdown.svelte";
 	import SearchDropdown from "../../../components/SearchDropdown.svelte";
 	import {prepare_id} from "$lib/id_parser";
+	import {printMultiple} from "$lib/http_api";
 
 	let {data}: PageProps = $props();
 
@@ -81,6 +82,24 @@
     }
 
 	let id_input = $state<HTMLInputElement>();
+
+	function printThisList() {
+		printMultiple([
+			{id: current.packingListId, type: "List"},
+            ...current.packedCrates.map(it => {
+				return {type: "Crate", id: it.internalId}
+			})
+        ])
+			.then(it => it.blob())
+			.then(it => {
+				let theOU = URL.createObjectURL(it)
+				let opened = window.open(theOU, "_blank")
+				if (!opened) {
+					alert("Konnte kein Fenster öffnen! Bitte erlaube für diese Webseite popups.")
+				}
+				URL.revokeObjectURL(theOU)
+			})
+	}
 </script>
 
 <svelte:document onkeydown={(ev: KeyboardEvent) => {
@@ -90,6 +109,11 @@
 <h2 class="text-2xl mb-2 font-bold">Liste {current.name} {#if progShowing}
     <span class="loading loading-spinner loading-sm"></span>
 {/if}</h2>
+<button class="btn btn-active" onclick={printThisList}>
+    <span class="icon-[material-symbols--print]" style="width: 24px; height: 24px;"></span>
+    Liste Drucken
+</button>
+
 <form onsubmit={handle_submit} class="w-full max-w-2xl mb-5">
     <fieldset class="fieldset">
         <legend class="fieldset-legend">Status</legend>
@@ -117,6 +141,7 @@
     <span>oder</span>
     <div>
         <button class="btn" type="button" onclick={() => the_form?.showModal()}>
+            <span class="icon-[material-symbols--search]" style="width: 24px; height: 24px;"></span>
             Suchen
         </button>
     </div>
@@ -151,7 +176,10 @@
             </td>
             <td>{crate.deliveryState}</td>
             <td>
-                <button class="btn btn-error btn-sm" onclick={(ev) => run_del(ev, crate.internalId)}>Delete</button>
+                <button class="btn btn-error btn-sm" onclick={(ev) => run_del(ev, crate.internalId)}>
+                    <span class="icon-[material-symbols--delete]" style="width: 24px; height: 24px;"></span>
+                    Delete
+                </button>
             </td>
         </tr>
     {/each}

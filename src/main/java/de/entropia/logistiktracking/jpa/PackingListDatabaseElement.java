@@ -28,7 +28,7 @@ public class PackingListDatabaseElement {
 	@Column(name = "name", nullable = false)
 	private String name;
 
-	@Column(name = "delivery_state")
+	@Column(name = "delivery_state", nullable = false)
 	private DeliveryState deliveryState;
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "relevantList")
