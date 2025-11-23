@@ -41,7 +41,7 @@
     <form action="{target}" method="POST" class="flex flex-col gap-2">
         <label class="input w-full">
             <span class="icon-[material-symbols--person]" style:width="24px" style:height="24px"></span>
-            <input name="username" placeholder="Nutzername" required class="grow">
+            <input name="username" placeholder="Nutzername" required class="grow" autofocus>
         </label>
         <label class="input w-full">
             <span class="icon-[material-symbols--lock]" style:width="24px" style:height="24px"></span>
