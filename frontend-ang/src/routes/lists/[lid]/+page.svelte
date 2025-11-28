@@ -5,7 +5,7 @@
 	import * as bruh from "../../../components/SearchDropdown.svelte";
 	import SearchDropdown from "../../../components/SearchDropdown.svelte";
 	import {prepare_id} from "$lib/id_parser";
-	import {printMultiple} from "$lib/http_api";
+	import {client} from "$lib/http_api";
 
 	let {data}: PageProps = $props();
 
@@ -84,13 +84,16 @@
 	let id_input = $state<HTMLInputElement>();
 
 	function printThisList() {
-		printMultiple([
-			{id: current.packingListId, type: "List"},
-            ...current.packedCrates.map(it => {
-				return {type: "Crate", id: it.internalId}
-			})
-        ])
-			.then(it => it.blob())
+		client.POST("/printMultiple", {
+			body: [
+				{id: parseInt(current.packingListId), type: "List"},
+				...current.packedCrates.map<{type: "Crate", id: number}>(it => {
+					return {type: "Crate", id: parseInt(it.internalId)}
+				})
+			],
+			parseAs: "stream"
+        })
+			.then(it => it.response.blob())
 			.then(it => {
 				let theOU = URL.createObjectURL(it)
 				let opened = window.open(theOU, "_blank")

@@ -1,9 +1,7 @@
 <script lang="ts">
 	import {persisted} from "svelte-persisted-store";
 	import type {ShoppingCart} from "$lib/printing_shopping_cart";
-	import type {GetMoreCratesQuery} from "../../gen/graphql";
 	import {execute, getCratesByIdMultiple, getListsByIdMultiple} from "$lib/graphql";
-	import CratesDisplay from "../../components/CratesDisplay.svelte";
 	import {untrack} from "svelte";
 
 	interface Printable {
@@ -65,14 +63,17 @@
         }
     })
 
-	import {printMultiple} from "$lib/http_api";
+	import {client} from "$lib/http_api";
 
     let theCrates = $derived($printStore.items.map(it => theCache[it]).filter(v => !!v))
     // $inspect(theCrates)
 	function printIt() {
 
-		printMultiple(theCrates.map(x => {return {type: x.id.charAt(0) == 'L' ? "List" : "Crate", id: (x.id.substring(1))}}))
-            .then(it => it.blob())
+		client.POST("/printMultiple", {
+			body: theCrates.map(x => {return {type: x.id.charAt(0) == 'L' ? "List" : "Crate", id: parseInt(x.id.substring(1))}}),
+            parseAs: "stream"
+		})
+            .then(it => it.response.blob())
             .then(it => {
                 let theOU = URL.createObjectURL(it)
                 let opened = window.open(theOU, "_blank")

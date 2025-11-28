@@ -79,11 +79,11 @@ export type MutationDeletePackingListArgs = {
 
 
 export type MutationModifyEuroCrateArgs = {
-  deliveryState?: InputMaybe<DeliveryState>;
+  deliveryState: DeliveryState;
   id: Scalars['ID']['input'];
-  info?: InputMaybe<Scalars['String']['input']>;
+  info: Scalars['String']['input'];
   jiraIssue?: InputMaybe<Scalars['String']['input']>;
-  oc?: InputMaybe<OperationCenter>;
+  oc: OperationCenter;
 };
 
 
