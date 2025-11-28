@@ -28,7 +28,7 @@
 <p>Hier kannst du viele Listen kontinuierlich auf einen bestimmten Status setzen.</p>
 <p>Am besten funktioniert das mit einem Barcodescanner. Wenn ein Barcode erkannt wird, wird er automatisch eingetragen.</p>
 <p>Wenn du nur eine bestimmte Liste ändern willst bist du <a class="link" href="/lists">woanders</a> besser aufgehoben.</p>
-
+<!--todo: fix for shadcn-->
 <form onsubmit={do_update} class="w-full max-w-2xl mb-5 mt-5">
     <fieldset class="fieldset">
         <legend class="fieldset-legend">Neuer Status</legend>

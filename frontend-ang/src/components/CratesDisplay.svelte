@@ -3,6 +3,9 @@
 	import {Query, SearcherFactory} from '@m31coding/fuzzy-search';
 	import {persisted} from "svelte-persisted-store";
 	import type {ShoppingCart} from "$lib/printing_shopping_cart";
+	import {Input} from "$lib/components/ui/input/index";
+	import * as Table from "$lib/components/ui/table";
+	import {Checkbox} from "$lib/components/ui/checkbox/index";
 
 	type CrateLike = {
 		deliveryState: DeliveryState;
@@ -41,33 +44,36 @@
 	}
 </script>
 
-<input bind:value={filter} type="text" class="input" placeholder="Suchen...">
-<table class="table table-auto" style="width: 100%">
-    <thead>
-    <tr>
-        <th>Druck?</th>
-        <th>ID</th>
-        <th>OC</th>
-        <th>Name</th>
-        <th>Wo?</th>
-    </tr>
-    </thead>
-    <tbody>
-    {#each displayCrates as crate (crate.internalId)}
-        <tr>
-            <td>
-                <input type="checkbox" class="checkbox" bind:checked={
+<Input bind:value={filter} type="text" class="input w-full max-w-200" placeholder="Suchen..." ></Input>
+<Table.Root class="w-full mt-5">
+    <Table.Header>
+        <Table.Row>
+<!--            w-0 für fit -->
+            <Table.Head class="w-0">Druck?</Table.Head>
+            <Table.Head>ID</Table.Head>
+            <Table.Head>OC</Table.Head>
+            <Table.Head>Name</Table.Head>
+            <Table.Head>Wo?</Table.Head>
+        </Table.Row>
+    </Table.Header>
+    <Table.Body>
+        {#each displayCrates as crate (crate.internalId)}
+            <Table.Row>
+                <Table.Cell>
+                    <Checkbox bind:checked={
                 () => $printStore.items.includes("C"+crate.internalId),
                 (v) => {printStore.update(it => toggle(crate.internalId, it, v))}
                 }>
-            </td>
-            <td>{crate.internalId}</td>
-            <td>{crate.operationCenter}</td>
-            <td>
-                <a class="link" href="/crates/{crate.internalId}">{crate.name}</a>
-            </td>
-            <td>{crate.deliveryState}</td>
-        </tr>
-    {/each}
-    </tbody>
-</table>
+
+                    </Checkbox>
+                </Table.Cell>
+                <Table.Cell>{crate.internalId}</Table.Cell>
+                <Table.Cell>{crate.operationCenter}</Table.Cell>
+                <Table.Cell>
+                    <a class="underline hover:text-blue-500" href="/crates/{crate.internalId}">{crate.name}</a>
+                </Table.Cell>
+                <Table.Cell>{crate.deliveryState}</Table.Cell>
+            </Table.Row>
+        {/each}
+    </Table.Body>
+</Table.Root>

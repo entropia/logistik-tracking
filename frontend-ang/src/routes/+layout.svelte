@@ -3,38 +3,36 @@
 
     import "../app.css";
 	import UserMenu from "../components/UserMenu.svelte";
+	import {Button} from "$lib/components/ui/button";
 
 	let { children } = $props();
-
-	import Dropdown from "../components/Dropdown.svelte";
-
-	let showTooltip = $state(false);
 </script>
 
-<div class="navbar bg-base-100 shadow-lg mb-2">
+<div class="flex flex-row p-2 border-b-primary border-l-transparent border-r-transparent border-t-transparent border-2">
     <div class="flex-1">
-        <a class="btn btn-ghost text-xl" href="/">Logitrack</a>
+        <Button variant="ghost" href="/" class="text-xl">Logitrack</Button>
     </div>
     <div class="flex-none">
-        <ul class="menu menu-horizontal px-1">
+        <ul class="flex flex-row gap-2">
 
-            <li><a href="/druck">Drucken</a></li>
-            <li><a href="/crates">Kisten</a></li>
-            <li><a href="/lists">Listen</a></li>
-            <li>
-                <Dropdown bind:showTooltip={showTooltip}>
-                    {#snippet trigger(flRef)}
-                        <button use:flRef aria-label="account" onclick={() => showTooltip = true}>
-                            <svg style="width: 21px; height: 21px" class="icon-[material-symbols--account-circle]"></svg>
-                        </button>
-                    {/snippet}
-                    {#snippet body()}
-                        <ul class="dropdown menu w-52 rounded-box bg-base-100 shadow-sm">
-                            <UserMenu></UserMenu>
-                        </ul>
-                    {/snippet}
-                </Dropdown>
-            </li>
+            <li><Button variant="ghost" href="/druck">Drucken</Button></li>
+            <li><Button variant="ghost" href="/crates">Kisten</Button></li>
+            <li><Button variant="ghost" href="/lists">Listen</Button></li>
+<!--            todo: user menu dropdown -->
+<!--            <li>-->
+<!--                <Dropdown bind:showTooltip={showTooltip}>-->
+<!--                    {#snippet trigger(flRef)}-->
+<!--                        <button use:flRef aria-label="account" onclick={() => showTooltip = true}>-->
+<!--                            <svg style="width: 21px; height: 21px" class="icon-[material-symbols&#45;&#45;account-circle]"></svg>-->
+<!--                        </button>-->
+<!--                    {/snippet}-->
+<!--                    {#snippet body()}-->
+<!--                        <ul class="dropdown menu w-52 rounded-box bg-base-100 shadow-sm">-->
+<!--                            <UserMenu></UserMenu>-->
+<!--                        </ul>-->
+<!--                    {/snippet}-->
+<!--                </Dropdown>-->
+<!--            </li>-->
 <!--            <li>-->
 <!--                <details>-->
 <!--                    <summary>Parent</summary>-->
@@ -51,6 +49,6 @@
 <!--<svelte:head>-->
 <!--	<link rel="icon" href={favicon} />-->
 <!--</svelte:head>-->
-<div class="m-2">
+<div class="m-4">
     {@render children?.()}
 </div>

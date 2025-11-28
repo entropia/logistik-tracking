@@ -103,7 +103,7 @@
 <button class="btn btn-success" disabled={theCrates.length === 0} onclick={printIt}>Drucken</button>
 <button class="btn btn-error" disabled={theCrates.length === 0} onclick={empty}>Leeren</button>
 
-
+<!--todo: fix for shadcn-->
 <table class="table table-auto" style="width: 100%">
     <thead>
     <tr>

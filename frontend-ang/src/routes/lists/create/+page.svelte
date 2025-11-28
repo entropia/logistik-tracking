@@ -16,7 +16,7 @@
 		}
 	}
 </script>
-
+<!--todo: fix for shadcn-->
 <h2 class="text-2xl mb-2 font-bold">Liste erstellen</h2>
 <form onsubmit={handle_submit} class="grid grid-cols-2 grid-rows-1 w-full max-w-2xl gap-4 mb-5">
     <fieldset class="fieldset col-span-1">

@@ -17,7 +17,7 @@
 		target += "?redirect="+encodeURIComponent(redirUrl.href);
     }
 </script>
-
+<!--todo: fix for shadcn-->
 <div class="relative w-full sm:w-max sm:absolute sm:left-1/2 sm:top-1/2 sm:-translate-1/2 flex flex-col gap-2">
     {#if redirUrlWarning != null}
 

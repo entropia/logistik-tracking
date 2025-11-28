@@ -104,7 +104,7 @@
 			})
 	}
 </script>
-
+<!--todo: fix for shadcn-->
 <svelte:document onkeydown={(ev: KeyboardEvent) => {
     if (ev.key === "C" || ev.key === "c") id_input?.focus()
 }}></svelte:document>
