@@ -47,7 +47,7 @@
 	});
 	let displayLists = $derived(filterCrates(data.lists, filter));
 </script>
-<!--todo: fix for shadcn-->
+
 <h2 class="text-2xl mb-2 font-bold">Listen</h2>
 <div class="flex flex-row gap-5 m-5">
     <Button href="/lists/create">
@@ -82,7 +82,7 @@
                 </Table.Cell>
                 <Table.Cell>{crate.packingListId}</Table.Cell>
                 <Table.Cell>
-                    <a class="underline hover:text-blue-500" href="/lists/{crate.packingListId}">{crate.name}</a>
+                    <a class="link" href="/lists/{crate.packingListId}">{crate.name}</a>
                 </Table.Cell>
                 <Table.Cell>{crate.deliveryStatet}</Table.Cell>
             </Table.Row>

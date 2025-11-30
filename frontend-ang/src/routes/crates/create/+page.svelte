@@ -1,11 +1,19 @@
 <script lang="ts">
 	import {DeliveryState, OperationCenter} from "../../../gen/graphql";
 	import {createCrate, execute} from "$lib/graphql";
+	import * as Field from "$lib/components/ui/field";
+	import * as Select from "$lib/components/ui/select";
+	import * as InputGroup from "$lib/components/ui/input-group";
 	import {goto} from "$app/navigation";
+	import {Input} from "$lib/components/ui/input";
+	import {Textarea} from "$lib/components/ui/textarea";
+	import {Button} from "$lib/components/ui/button";
+	import {Checkbox} from "$lib/components/ui/checkbox";
+	import {Label} from "$lib/components/ui/label";
+	import {toast} from "svelte-sonner";
 
 	let create_multiple = $state(false);
 
-	let the_status = $state<HTMLParagraphElement | null>(null);
 	let the_name = $state<HTMLInputElement | null>(null);
 
 	let form_state = $state({
@@ -17,6 +25,7 @@
     });
 	async function handle_submit(event: SubmitEvent) {
 		event.preventDefault()
+		const creatingId = toast.loading("Kiste wird erstellt...")
 		let resp = await execute(createCrate, fetch, {
 			info: form_state.info,
             oc: form_state.oc,
@@ -26,68 +35,72 @@
 		})
 		let updated = resp.data?.createEuroCrate
 		if (updated) {
+			toast.dismiss(creatingId)
+			toast.success(`Kiste ${form_state.oc} / ${form_state.name} erstellt: ${updated.internalId}`)
 			if (!create_multiple) await goto("/crates/"+updated.internalId);
 			else {
-				if (the_status) {
-					the_status.textContent = `Kiste ${form_state.oc} / ${form_state.name} erstellt: ${updated.internalId}`;
-					// reset geht hier leider nicht weil die checkbox in der form ist und damit auch zurückgesetzt wird
-					form_state.name = ""
-                    form_state.oc = OperationCenter.Loc;
-					form_state.deli = DeliveryState.Packing;
-					form_state.info = "";
-					form_state.jira = undefined;
-                    the_name?.focus()
-                }
+				// reset geht hier leider nicht weil die checkbox in der form ist und damit auch zurückgesetzt wird
+				form_state.name = ""
+				form_state.oc = OperationCenter.Loc;
+				form_state.deli = DeliveryState.Packing;
+				form_state.info = "";
+				form_state.jira = undefined;
+				the_name?.focus()
             }
 		}
 	}
 </script>
 
-<!--todo: fix for shadcn-->
+<h2 class="text-2xl mb-5 font-bold">Box erstellen</h2>
+<form onsubmit={handle_submit} class="w-full max-w-3xl mb-5 flex flex-col gap-5">
+    <Field.Group class="grid grid-cols-1 md:grid-cols-2">
+        <Field.Field>
+            <Field.Label for="operationcenter">Operation Center</Field.Label>
+            <Select.Root type="single" bind:value={form_state.oc}>
+                <Select.Trigger id="operationcenter">{form_state.oc}</Select.Trigger>
+                <Select.Content>
+                    {#each Object.values(OperationCenter) as oc}
+                        <Select.Item value={oc}>{oc}</Select.Item>
+                    {/each}
+                </Select.Content>
+            </Select.Root>
+        </Field.Field>
+        <Field.Field>
+            <Field.Label for="name">Name</Field.Label>
+            <Input type="text" id="name" bind:value={form_state.name} bind:ref={the_name} required></Input>
+        </Field.Field>
+        <Field.Field>
+            <Field.Label for="status">Status</Field.Label>
+            <Select.Root type="single" bind:value={form_state.deli}>
+                <Select.Trigger id="status">{form_state.deli}</Select.Trigger>
+                <Select.Content>
+                    {#each Object.values(DeliveryState) as oc}
+                        <Select.Item value={oc}>{oc}</Select.Item>
+                    {/each}
+                </Select.Content>
+            </Select.Root>
+        </Field.Field>
+        <Field.Field>
+            <Field.Label for="ticket">Jira Ticket</Field.Label>
+            <InputGroup.Root>
+                <InputGroup.Input type="number" bind:value={form_state.jira} min="1" placeholder="1234" id="ticket" class="!ps-1" />
+                <InputGroup.Addon>
+                    <InputGroup.Text>LOC-</InputGroup.Text>
+                </InputGroup.Addon>
+            </InputGroup.Root>
+        </Field.Field>
+        <Field.Field class="md:col-span-2">
+            <Field.Label for="infos">Informationen</Field.Label>
+            <Textarea bind:value={form_state.info} placeholder="Information"></Textarea>
+        </Field.Field>
+    </Field.Group>
 
-<h2 class="text-2xl mb-2 font-bold">Box erstellen</h2>
-<form onsubmit={handle_submit} class="grid grid-cols-2 grid-rows-1 w-full max-w-2xl gap-4 mb-5">
-    <fieldset class="fieldset">
-        <legend class="fieldset-legend">Operation Center</legend>
-        <select class="select w-full" bind:value={form_state.oc} required>
-            {#each Object.values(OperationCenter) as oc}
-                <option>{oc}</option>
-            {/each}
-        </select>
-    </fieldset>
-    <fieldset class="fieldset">
-        <legend class="fieldset-legend">Name</legend>
-        <input class="input" type="text" bind:value={form_state.name} bind:this={the_name} required>
-    </fieldset>
+    <div class="flex flex-row gap-5">
+        <Button type="submit">Speichern</Button>
 
-    <fieldset class="fieldset">
-        <legend class="fieldset-legend">Status</legend>
-        <select class="select w-full" bind:value={form_state.deli} required>
-            {#each Object.values(DeliveryState) as oc}
-                <option>{oc}</option>
-            {/each}
-        </select>
-    </fieldset>
-
-    <fieldset class="fieldset">
-        <legend class="fieldset-legend">Jira Ticket</legend>
-        <label class="input">
-            LOC-
-            <input class="grow" type="number" bind:value={form_state.jira} min="1" placeholder="1234">
-        </label>
-    </fieldset>
-
-    <fieldset class="fieldset col-span-2">
-        <legend class="fieldset-legend">Information</legend>
-        <textarea class="textarea w-full" bind:value={form_state.info} placeholder="Information"></textarea>
-    </fieldset>
-
-    <button class="btn btn-active btn-success" type="submit">Speichern</button>
-
-    <label class="label">
-        <input type="checkbox" bind:checked={create_multiple}>
-        Mehrere erstellen
-    </label>
-
-    <p bind:this={the_status}></p>
+        <div class="flex items-center gap-3">
+            <Checkbox id="makeMultiple" bind:checked={create_multiple} />
+            <Label for="makeMultiple">Mehrere erstellen</Label>
+        </div>
+    </div>
 </form>

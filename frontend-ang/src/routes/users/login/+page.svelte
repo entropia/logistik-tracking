@@ -1,6 +1,12 @@
 <script lang="ts">
 	import { PUBLIC_API_URL } from '$env/static/public';
 	import {page} from "$app/state";
+	import {Info as InfoIcon, CircleAlert} from "@lucide/svelte";
+	import * as Alert from "$lib/components/ui/alert";
+	import * as Field from "$lib/components/ui/field";
+	import {Input} from "$lib/components/ui/input";
+	import {Button} from "$lib/components/ui/button";
+
 	let message = page.url.searchParams.get("message");
 	let redir = page.url.searchParams.get("redirect");
 	let redirUrl: URL | null = null;
@@ -17,39 +23,39 @@
 		target += "?redirect="+encodeURIComponent(redirUrl.href);
     }
 </script>
-<!--todo: fix for shadcn-->
-<div class="relative w-full sm:w-max sm:absolute sm:left-1/2 sm:top-1/2 sm:-translate-1/2 flex flex-col gap-2">
-    {#if redirUrlWarning != null}
 
-            <div role="alert" class="alert alert-error">
-                <span class="icon-[material-symbols--warning-rounded]" style:width="48px" style:height="48px"></span>
-                <div>
-                    <h3 class="font-bold">Die Redirect URL ist nicht auf dieser Seite!</h3>
-                    <p class="m-4"><code>{redirUrlWarning}</code></p>
-                    <p>Du wirst auf / weitergeleitet.</p>
-                    <p>Es könnte sein, dass jemand versucht, dich zu phishen!</p>
-                </div>
-            </div>
+<div class="relative w-full md:w-md md:absolute md:left-1/2 md:top-1/2 md:-translate-1/2 flex flex-col gap-5">
+    {#if redirUrlWarning != null}
+        <Alert.Root variant="destructive">
+            <CircleAlert />
+            <Alert.Title>Die Redirect URL ist nicht auf dieser Seite!</Alert.Title>
+            <Alert.Description>
+                <p class="m-4"><code>{redirUrlWarning}</code></p>
+                <p>Du wirst auf / weitergeleitet.</p>
+                <p>Es könnte sein, dass jemand versucht, dich zu phishen!</p>
+            </Alert.Description>
+        </Alert.Root>
     {/if}
     {#if message != null}
-        <div role="alert" class="alert alert-info">
-            <span class="icon-[material-symbols--info-rounded]" style:width="24px" style:height="24px"></span>
-            <span>{message}</span>
-        </div>
+        <Alert.Root>
+            <InfoIcon></InfoIcon>
+            <Alert.Description>{message}</Alert.Description>
+        </Alert.Root>
     {/if}
 
     <form action="{target}" method="POST" class="flex flex-col gap-2">
-        <label class="input w-full">
-            <span class="icon-[material-symbols--person]" style:width="24px" style:height="24px"></span>
-            <input name="username" placeholder="Nutzername" required class="grow" autofocus>
-        </label>
-        <label class="input w-full">
-            <span class="icon-[material-symbols--lock]" style:width="24px" style:height="24px"></span>
-            <input name="password" placeholder="Passwort" required class="grow" type="password">
-        </label>
-        <button class="btn btn-success w-full" type="submit">
-            Anmelden
-            <span class="icon-[material-symbols--arrow-forward-rounded]" style:width="24px" style:height="24px"></span>
-        </button>
+        <Field.Group class="gap-5">
+            <Field.Field class="grow">
+                <Field.Label for="uname">Nutzername</Field.Label>
+                <Input id="uname" name="username" placeholder="Nutzername" required autofocus></Input>
+            </Field.Field>
+            <Field.Field class="grow">
+                <Field.Label for="passwd">Passwort</Field.Label>
+                <Input id="passwd" name="password" placeholder="Passwort" type="password" required autofocus></Input>
+            </Field.Field>
+            <Field.Field class="grow">
+                <Button type="submit">Anmelden</Button>
+            </Field.Field>
+        </Field.Group>
     </form>
 </div>

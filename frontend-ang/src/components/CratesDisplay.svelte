@@ -70,7 +70,7 @@
                 <Table.Cell>{crate.internalId}</Table.Cell>
                 <Table.Cell>{crate.operationCenter}</Table.Cell>
                 <Table.Cell>
-                    <a class="underline hover:text-blue-500" href="/crates/{crate.internalId}">{crate.name}</a>
+                    <a class="link" href="/crates/{crate.internalId}">{crate.name}</a>
                 </Table.Cell>
                 <Table.Cell>{crate.deliveryState}</Table.Cell>
             </Table.Row>

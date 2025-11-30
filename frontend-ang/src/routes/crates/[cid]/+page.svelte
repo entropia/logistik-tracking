@@ -1,7 +1,15 @@
 <script lang="ts">
 	import type { PageProps } from './$types';
+	import * as Field from "$lib/components/ui/field";
+	import * as Select from "$lib/components/ui/select";
+	import * as InputGroup from "$lib/components/ui/input-group";
 	import {DeliveryState, OperationCenter} from "../../../gen/graphql";
 	import {execute, updateCrate} from "$lib/graphql";
+	import {Input} from "$lib/components/ui/input";
+	import {Textarea} from "$lib/components/ui/textarea";
+	import {Button} from "$lib/components/ui/button";
+	import {Label} from "$lib/components/ui/label";
+	import {toast} from "svelte-sonner";
 
 	let {data}: PageProps = $props();
 
@@ -11,20 +19,17 @@
         oc: current_state.operationCenter,
         status: current_state.deliveryState,
         info: current_state.information,
-        jira: current_state.jiraId
+        jira: current_state.jiraId ? parseInt(current_state.jiraId.substring(4)) : undefined
     })
-
-    let progShowing = $state(false);
 
     async function handle_submit(event: SubmitEvent) {
 		event.preventDefault()
-        progShowing = true;
         let resp = await execute(updateCrate, fetch, {
 			    which: current_state.internalId,
             deli: the.status,
             info: the.info,
             oc: the.oc,
-            jira: the.jira
+            jira: the.jira ? "LOC-"+the.jira : undefined
             })
         let updated = resp.data?.modifyEuroCrate
         if (updated) {
@@ -33,47 +38,56 @@
 			current_state.deliveryState = updated.deliveryState;
 			current_state.information = updated.information;
 			current_state.jiraId = updated.jiraId;
+			toast.success("Kiste Aktualisiert!")
         }
-		progShowing = false;
     }
 </script>
 
-<!--todo: fix for shadcn-->
+<h2 class="text-2xl mb-5 font-bold">Box {current_state.operationCenter} / {current_state.name}</h2>
 
-<h2 class="text-2xl mb-2 font-bold">Box {current_state.operationCenter} / {current_state.name}</h2>
-<form onsubmit={handle_submit} class="grid grid-cols-2 grid-rows-1 w-full max-w-2xl gap-4 mb-5">
-    <fieldset class="fieldset">
-        <legend class="fieldset-legend">Operation Center</legend>
-        <select class="select w-full" bind:value={the.oc} required>
-            {#each Object.values(OperationCenter) as oc}
-                <option>{oc}</option>
-            {/each}
-        </select>
-    </fieldset>
+<form onsubmit={handle_submit} class="w-full max-w-3xl mb-5 flex flex-col gap-5">
+    <Field.Group class="grid grid-cols-1 md:grid-cols-2">
+        <Field.Field>
+            <Field.Label for="operationcenter">Operation Center</Field.Label>
+            <Select.Root type="single" bind:value={the.oc}>
+                <Select.Trigger id="operationcenter">{the.oc}</Select.Trigger>
+                <Select.Content>
+                    {#each Object.values(OperationCenter) as oc}
+                        <Select.Item value={oc}>{oc}</Select.Item>
+                    {/each}
+                </Select.Content>
+            </Select.Root>
+        </Field.Field>
+        <Field.Field>
+            <Field.Label for="status">Status</Field.Label>
+            <Select.Root type="single" bind:value={the.status}>
+                <Select.Trigger id="status">{the.status}</Select.Trigger>
+                <Select.Content>
+                    {#each Object.values(DeliveryState) as oc}
+                        <Select.Item value={oc}>{oc}</Select.Item>
+                    {/each}
+                </Select.Content>
+            </Select.Root>
+        </Field.Field>
+        <Field.Field>
+            <Field.Label for="ticket">Jira Ticket</Field.Label>
+            <InputGroup.Root>
+                <InputGroup.Input type="number" bind:value={the.jira} min="1" placeholder="1234" id="ticket" class="!ps-1" />
+                <InputGroup.Addon>
+                    <InputGroup.Text>LOC-</InputGroup.Text>
+                </InputGroup.Addon>
+            </InputGroup.Root>
+        </Field.Field>
+        <Field.Field class="md:col-span-2">
+            <Field.Label for="infos">Informationen</Field.Label>
+            <Textarea bind:value={the.info} placeholder="Information"></Textarea>
+        </Field.Field>
+    </Field.Group>
 
-    <fieldset class="fieldset">
-        <legend class="fieldset-legend">Status</legend>
-        <select class="select w-full" bind:value={the.status} required>
-            {#each Object.values(DeliveryState) as oc}
-                <option>{oc}</option>
-            {/each}
-        </select>
-    </fieldset>
 
-    <fieldset class="fieldset">
-        <legend class="fieldset-legend">Jira Ticket</legend>
-        <input class="input" type="text" bind:value={the.jira} pattern="^LOC-\d+$" placeholder="LOC-...">
-    </fieldset>
-
-    <fieldset class="fieldset col-span-2">
-        <legend class="fieldset-legend">Information</legend>
-        <textarea class="textarea w-full" bind:value={the.info} placeholder="Information"></textarea>
-    </fieldset>
-
-    <button class="btn btn-active btn-success" type="submit">Speichern
-        {#if progShowing}
-            <span class="loading loading-spinner loading-sm"></span>
-            {/if}</button>
+    <div class="flex flex-row gap-5">
+        <Button type="submit">Speichern</Button>
+    </div>
 </form>
 
 {#if current_state.packingList}
