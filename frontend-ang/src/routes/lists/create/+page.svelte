@@ -1,6 +1,9 @@
 <script lang="ts">
 	import {createList, execute} from "$lib/graphql";
 	import {goto} from "$app/navigation";
+	import * as Field from "$lib/components/ui/field";
+	import {Input} from "$lib/components/ui/input";
+	import {Button} from "$lib/components/ui/button";
 
 	let form_state = $state({
         name: ""
@@ -17,12 +20,18 @@
 	}
 </script>
 <!--todo: fix for shadcn-->
-<h2 class="text-2xl mb-2 font-bold">Liste erstellen</h2>
-<form onsubmit={handle_submit} class="grid grid-cols-2 grid-rows-1 w-full max-w-2xl gap-4 mb-5">
-    <fieldset class="fieldset col-span-1">
-        <legend class="fieldset-legend">Name</legend>
-        <input class="input w-full" type="text" bind:value={form_state.name} required>
-    </fieldset>
-
-    <button class="btn btn-active btn-success col-start-1" type="submit">Speichern</button>
+<h2 class="text-2xl mb-5 font-bold">Liste erstellen</h2>
+<form onsubmit={handle_submit} class="w-full max-w-md">
+    <Field.Set>
+        <Field.Group>
+            <Field.Field>
+                <Field.Label for="name">Name</Field.Label>
+                <Input id="name" type="text" placeholder="Name der Liste..." bind:value={form_state.name} required />
+                <Field.Description>Beschreibender Name der Liste</Field.Description>
+            </Field.Field>
+        </Field.Group>
+        <Field.Field>
+            <Button type="submit">Speichern</Button>
+        </Field.Field>
+    </Field.Set>
 </form>

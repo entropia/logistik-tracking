@@ -68,7 +68,7 @@ public class PackingListGraphQlController {
 		packingListDatabaseElement.setDeliveryState(mapped);
 
 		for (EuroCrateDatabaseElement packedCrate : packingListDatabaseElement.getPackedCrates()) {
-			if (packedCrate.getDeliveryState() != mapped) {
+			if (packedCrate.getDeliveryState() != mapped && packedCrate.getJiraIssue() != null && !packedCrate.getJiraIssue().isBlank()) {
 				jiraThings.checkUpdateJiraStatus(packedCrate);
 			}
 			packedCrate.setDeliveryState(mapped);

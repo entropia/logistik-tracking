@@ -1,11 +1,19 @@
 <script lang="ts">
-	import type { PageProps } from './$types';
+	import type {PageProps} from './$types';
 	import {DeliveryState} from "../../../gen/graphql";
 	import {addCratesToList, execute, removeCratesFromList, updateListPacking} from "$lib/graphql";
-	import * as bruh from "../../../components/SearchDropdown.svelte";
-	import SearchDropdown from "../../../components/SearchDropdown.svelte";
 	import {prepare_id} from "$lib/id_parser";
 	import {client} from "$lib/http_api";
+	import {Button} from "$lib/components/ui/button";
+	import * as Field from "$lib/components/ui/field";
+	import * as Select from "$lib/components/ui/select";
+	import * as Command from "$lib/components/ui/command";
+	import * as Popover from "$lib/components/ui/popover";
+	import * as Table from "$lib/components/ui/table";
+	import {toast} from "svelte-sonner";
+	import {Input} from "$lib/components/ui/input";
+	import {tick} from "svelte";
+	import {ChevronsUpDown, Plus as PlusIcon} from "@lucide/svelte";
 
 	let {data}: PageProps = $props();
 
@@ -13,30 +21,26 @@
 
 	let form_deliverystate = $state(current.deliveryStatet);
 
-	let progShowing = $state(false);
-
 	async function handle_submit(event: SubmitEvent) {
 		event.preventDefault()
-		progShowing = true;
 		let resp = await execute(updateListPacking, fetch, {
 			id: current.packingListId,
-            newstate: form_deliverystate
+			newstate: form_deliverystate
 		})
 		let updated = resp.data?.setPackingListDeliveryState
 		if (updated) {
 			// display new info
-            current.deliveryStatet = updated.deliveryStatet
+			current.deliveryStatet = updated.deliveryStatet
 			current.packedCrates = updated.packedCrates
 		}
-		progShowing = false;
+		toast.success("Liste gespeichert")
 	}
 
 	async function run_del(ev: MouseEvent, id: string) {
 		(ev.currentTarget as Element).setAttribute("disabled", "true")
-		progShowing = true;
 		let resp = await execute(removeCratesFromList, fetch, {
 			pl: current.packingListId,
-            crates: [id]
+			crates: [id]
 		})
 		let updated = resp.data?.removeCratesFromPackingList
 		if (updated) {
@@ -45,13 +49,12 @@
 		} else {
 			// something went wrong
 			(ev.currentTarget as Element).removeAttribute("disabled")
-        }
-		progShowing = false;
-    }
+		}
+		toast.success("Kiste entfernt")
+	}
 
 	async function add(id: string) {
 		id = prepare_id(id);
-		progShowing = true;
 		let resp = await execute(addCratesToList, fetch, {
 			pl: current.packingListId,
 			crates: [id]
@@ -61,38 +64,31 @@
 			// display new info
 			current.packedCrates = updated.packedCrates
 		}
-		progShowing = false;
-    }
+		toast.success("Kiste hinzugefügt")
+	}
 
 	let crate_id = $state<string>();
-	let all_crates = $derived(data.crates.map(v => ({ id: v.internalId, label: `${v.operationCenter}/${v.name}`, keywords: [v.internalId, v.name, v.operationCenter] }) as bruh.InputType<string>));
 
 	async function add_crate(ev: SubmitEvent) {
 		// jens war hier :)
 		ev.preventDefault()
 		await add(crate_id!!);
-        (ev.target as HTMLFormElement).reset()
-    }
+		(ev.target as HTMLFormElement).reset()
+	}
 
-	let the_form = $state<HTMLDialogElement | undefined>(undefined);
 
-	function fill_id(it: string) {
-		the_form?.close()
-        crate_id = it;
-    }
-
-	let id_input = $state<HTMLInputElement>();
+	let id_input = $state<HTMLInputElement | null>(null);
 
 	function printThisList() {
 		client.POST("/printMultiple", {
 			body: [
 				{id: parseInt(current.packingListId), type: "List"},
-				...current.packedCrates.map<{type: "Crate", id: number}>(it => {
+				...current.packedCrates.map<{ type: "Crate", id: number }>(it => {
 					return {type: "Crate", id: parseInt(it.internalId)}
 				})
 			],
 			parseAs: "stream"
-        })
+		})
 			.then(it => it.response.blob())
 			.then(it => {
 				let theOU = URL.createObjectURL(it)
@@ -103,88 +99,130 @@
 				URL.revokeObjectURL(theOU)
 			})
 	}
+
+	let open = $state(false);
+	let triggerRef = $state<HTMLButtonElement>(null!);
+
+	// We want to refocus the trigger button when the user selects
+	// an item from the list so users can continue navigating the
+	// rest of the form with the keyboard.
+	function closeAndFocusTrigger() {
+		open = false;
+		tick().then(() => {
+			triggerRef.focus();
+		});
+	}
 </script>
-<!--todo: fix for shadcn-->
+
 <svelte:document onkeydown={(ev: KeyboardEvent) => {
     if (ev.key === "C" || ev.key === "c") id_input?.focus()
 }}></svelte:document>
 
-<h2 class="text-2xl mb-2 font-bold">Liste {current.name} {#if progShowing}
-    <span class="loading loading-spinner loading-sm"></span>
-{/if}</h2>
-<button class="btn btn-active" onclick={printThisList}>
-    <span class="icon-[material-symbols--print]" style="width: 24px; height: 24px;"></span>
-    Liste Drucken
-</button>
+<h2 class="text-2xl mb-5 font-bold">Liste {current.name}</h2>
+<Button onclick={printThisList} class="mb-5">
+	Liste Drucken
+</Button>
 
-<form onsubmit={handle_submit} class="w-full max-w-2xl mb-5">
-    <fieldset class="fieldset">
-        <legend class="fieldset-legend">Status</legend>
-        <div class="flex flex-row gap-4">
-            <select class="select w-full" bind:value={form_deliverystate} required>
-                {#each Object.values(DeliveryState) as oc}
-                    <option>{oc}</option>
-                {/each}
-            </select>
-            <button type="submit" class="btn btn-active btn-success">Speichern</button>
-        </div>
-    </fieldset>
+<form onsubmit={handle_submit} class="w-full max-w-md mb-5">
+	<Field.Set>
+		<Field.Field>
+			<Field.Label for="status">Status</Field.Label>
+			<Select.Root type="single" bind:value={form_deliverystate} required>
+				<Select.Trigger id="deliverystate">
+					{form_deliverystate}
+				</Select.Trigger>
+				<Select.Content>
+					{#each Object.values(DeliveryState) as oc}
+						<Select.Item value={oc} label={oc}/>
+					{/each}
+				</Select.Content>
+			</Select.Root>
+		</Field.Field>
+		<Field.Field>
+			<Button type="submit">Speichern</Button>
+		</Field.Field>
+	</Field.Set>
 </form>
 
 <h3 class="text-xl mb-2 mt-2">Kisten:</h3>
 
-<form onsubmit={add_crate} class="flex flex-row gap-4 items-baseline">
-    <fieldset class="fieldset">
-        <legend class="fieldset-legend">Kisten-ID</legend>
-        <div class="flex flex-row gap-4">
-            <input type="text" class="input" placeholder="ID hier" required pattern="[cC]?\d+" bind:value={crate_id} bind:this={id_input} />
-            <button type="submit" class="btn btn-active btn-success">+</button>
-        </div>
-    </fieldset>
-    <span>oder</span>
-    <div>
-        <button class="btn" type="button" onclick={() => the_form?.showModal()}>
-            <span class="icon-[material-symbols--search]" style="width: 24px; height: 24px;"></span>
-            Suchen
-        </button>
-    </div>
+<form onsubmit={add_crate} class="flex flex-row flex-wrap gap-4 items-baseline w-full max-w-xl">
+	<Field.Field orientation="horizontal" class="flex-1 min-w-[200px]">
+		<Input type="text" class="input" placeholder="Kisten-ID" required pattern="[cC]?\d+" bind:value={crate_id}
+			   bind:ref={id_input}></Input>
+		<Button type="submit">
+			<PlusIcon/>
+		</Button>
+	</Field.Field>
+	<span class="flex-0">oder</span>
+	<div class="flex-0">
+		<Popover.Root bind:open>
+			<Popover.Trigger bind:ref={triggerRef}>
+				{#snippet child({props})}
+					<Button
+						{...props}
+						variant="outline"
+						class="w-[200px] justify-between"
+						role="combobox"
+						aria-expanded={open}
+					>
+						Kiste Suchen
+						<ChevronsUpDown class="opacity-50"/>
+					</Button>
+				{/snippet}
+			</Popover.Trigger>
+			<Popover.Content class="w-[200px] p-0">
+				<Command.Root>
+					<Command.Input placeholder="Kiste suchen..."/>
+					<Command.List>
+						<Command.Empty>¯\_(ツ)_/¯</Command.Empty>
+						<Command.Group value="crates">
+							{#each data.crates as crate (crate.internalId)}
+								<Command.Item
+									value="{crate.operationCenter}/{crate.name}"
+									onSelect={() => {
+										closeAndFocusTrigger();
+										add(crate.internalId)
+                                    }}
+									disabled={current.packedCrates.some(it => it.internalId === crate.internalId)}
+								>
+									{crate.operationCenter} / {crate.name}
+								</Command.Item>
+							{/each}
+						</Command.Group>
+					</Command.List>
+				</Command.Root>
+			</Popover.Content>
+		</Popover.Root>
+	</div>
 </form>
 
-<dialog class="modal" popover bind:this={the_form}>
-    <div class="modal-box">
-        <SearchDropdown inputs={all_crates} selectedCallback={fill_id}></SearchDropdown>
-    </div>
-    <form method="dialog" class="modal-backdrop">
-        <button>close</button>
-    </form>
-</dialog>
-
-<table class="table table-auto" style="width: 100%">
-    <thead>
-    <tr>
-        <th>ID</th>
-        <th>OC</th>
-        <th>Name</th>
-        <th>Wo?</th>
-        <th></th>
-    </tr>
-    </thead>
-    <tbody>
-    {#each current.packedCrates as crate (crate.internalId)}
-        <tr>
-            <td>{crate.internalId}</td>
-            <td>{crate.operationCenter}</td>
-            <td>
-                <a class="link" href="/crates/{crate.internalId}">{crate.name}</a>
-            </td>
-            <td>{crate.deliveryState}</td>
-            <td>
-                <button class="btn btn-error btn-sm" onclick={(ev) => run_del(ev, crate.internalId)}>
-                    <span class="icon-[material-symbols--delete]" style="width: 24px; height: 24px;"></span>
-                    Delete
-                </button>
-            </td>
-        </tr>
-    {/each}
-    </tbody>
-</table>
+<Table.Root class="w-full mt-5">
+	<Table.Header>
+		<Table.Row>
+			<!--            w-0 für fit -->
+			<Table.Head>ID</Table.Head>
+			<Table.Head>OC</Table.Head>
+			<Table.Head>Name</Table.Head>
+			<Table.Head>Wo?</Table.Head>
+			<Table.Head class="w-0"></Table.Head>
+		</Table.Row>
+	</Table.Header>
+	<Table.Body>
+		{#each current.packedCrates as crate (crate.internalId)}
+			<Table.Row>
+				<Table.Cell>{crate.internalId}</Table.Cell>
+				<Table.Cell>{crate.operationCenter}</Table.Cell>
+				<Table.Cell>
+					<a class="underline hover:text-blue-500" href="/lists/{crate.internalId}">{crate.name}</a>
+				</Table.Cell>
+				<Table.Cell>{crate.deliveryState}</Table.Cell>
+				<Table.Cell>
+					<Button size="sm" variant="destructive" onclick={(ev) => run_del(ev, crate.internalId)}>
+						Entf.
+					</Button>
+				</Table.Cell>
+			</Table.Row>
+		{/each}
+	</Table.Body>
+</Table.Root>

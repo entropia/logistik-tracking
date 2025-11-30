@@ -4,9 +4,14 @@
     import "../app.css";
 	import UserMenu from "../components/UserMenu.svelte";
 	import {Button} from "$lib/components/ui/button";
+	import {Toaster} from "$lib/components/ui/sonner";
+	import {ModeWatcher} from "mode-watcher";
 
 	let { children } = $props();
 </script>
+
+<ModeWatcher />
+<Toaster position="top-center" />
 
 <div class="flex flex-row p-2 border-b-primary border-l-transparent border-r-transparent border-t-transparent border-2">
     <div class="flex-1">

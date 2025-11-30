@@ -4,6 +4,10 @@
 	import type {DeliveryState} from "../../gen/graphql";
 	import type {ShoppingCart} from "$lib/printing_shopping_cart";
 	import {persisted} from "svelte-persisted-store";
+	import {Button} from "$lib/components/ui/button";
+	import {Input} from "$lib/components/ui/input";
+	import * as Table from "$lib/components/ui/table";
+	import {Checkbox} from "$lib/components/ui/checkbox";
 
 	type ListLike = {
 		packingListId: string,
@@ -46,44 +50,42 @@
 <!--todo: fix for shadcn-->
 <h2 class="text-2xl mb-2 font-bold">Listen</h2>
 <div class="flex flex-row gap-5 m-5">
-    <a href="/lists/create" class="btn btn-info">
-        <span class="icon-[material-symbols--add]" style="width: 24px; height: 24px;"></span>
+    <Button href="/lists/create">
         Erstellen
-    </a>
-    <a href="/lists/masseneintragung" class="btn btn-info">Masseneintragung</a>
+    </Button>
+    <Button href="/lists/masseneintragung" variant="secondary">
+        Masseneintragung
+    </Button>
 </div>
 
-<input bind:value={filter} type="text" class="input" placeholder="Suchen..." maxlength="20">
-<table class="table table-auto" style="width: 100%">
-    <thead>
-    <tr>
-        <th>Druck?</th>
-        <th>ID</th>
-        <th>Name</th>
-        <th>Wo?</th>
-    </tr>
-    </thead>
-    <tbody>
-    {#each displayLists as lis (lis.packingListId)}
-        <tr>
-            <td>
-                <input type="checkbox" class="checkbox" bind:checked={
-                () => $printStore.items.includes("L"+lis.packingListId),
-                (v) => {printStore.update(it => toggle(lis.packingListId, it, v))}
+<Input bind:value={filter} type="text" class="input w-full max-w-200" placeholder="Suchen..." ></Input>
+<Table.Root class="w-full mt-5">
+    <Table.Header>
+        <Table.Row>
+            <!--            w-0 für fit -->
+            <Table.Head class="w-0">Druck?</Table.Head>
+            <Table.Head>ID</Table.Head>
+            <Table.Head>Name</Table.Head>
+            <Table.Head>Wo?</Table.Head>
+        </Table.Row>
+    </Table.Header>
+    <Table.Body>
+        {#each displayLists as crate (crate.packingListId)}
+            <Table.Row>
+                <Table.Cell>
+                    <Checkbox bind:checked={
+                () => $printStore.items.includes("C"+crate.packingListId),
+                (v) => {printStore.update(it => toggle(crate.packingListId, it, v))}
                 }>
-            </td>
-            <td>{lis.packingListId}</td>
-            <td>
-                <a class="link" href="/lists/{lis.packingListId}">{lis.name}</a>
-            </td>
-            <td>{lis.deliveryStatet}</td>
-        </tr>
-<!--        <p>Crate {crate.internalId}: {crate.name}</p>-->
-    {/each}
-    </tbody>
-</table>
 
-<!--<p>Count crates: {data.crates.getEuroCrates.length}</p>-->
-<!--{#each data.crates.getEuroCrates as crate (crate.internalId)}-->
-<!--    <p>Crate {crate.internalId}: {crate.name}</p>-->
-<!--{/each}-->
+                    </Checkbox>
+                </Table.Cell>
+                <Table.Cell>{crate.packingListId}</Table.Cell>
+                <Table.Cell>
+                    <a class="underline hover:text-blue-500" href="/lists/{crate.packingListId}">{crate.name}</a>
+                </Table.Cell>
+                <Table.Cell>{crate.deliveryStatet}</Table.Cell>
+            </Table.Row>
+        {/each}
+    </Table.Body>
+</Table.Root>
