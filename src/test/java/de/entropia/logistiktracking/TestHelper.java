@@ -15,7 +15,6 @@ public class TestHelper {
         em.createQuery("delete from UserDatabaseElement ").executeUpdate();
         em.createQuery("DELETE FROM EuroCrateDatabaseElement").executeUpdate();
         em.createQuery("DELETE FROM PackingListDatabaseElement").executeUpdate();
-        em.createQuery("DELETE FROM EuroPalletDatabaseElement").executeUpdate();
     }
 
     public <T> T saveNew(T t) {
