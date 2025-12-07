@@ -8,6 +8,8 @@
 	import {Input} from "$lib/components/ui/input";
 	import * as Table from "$lib/components/ui/table";
 	import {Checkbox} from "$lib/components/ui/checkbox";
+    import { Plus, SearchIcon, SquareStack } from '@lucide/svelte';
+    import * as InputGroup from '$lib/components/ui/input-group';
 
 	type ListLike = {
 		packingListId: string,
@@ -39,7 +41,7 @@
 
 	let filter = $state("");
 	$effect(() => {
-		console.log("reindexing crates")
+		console.log("reindexing lists")
 		searcher.indexEntities(data.lists, x => x.packingListId, x => [
 			x.name, x.deliveryStatet, x.packingListId
 		])
@@ -51,15 +53,22 @@
 <h2 class="text-2xl mb-2 font-bold">Listen</h2>
 <div class="flex flex-row gap-5 m-5">
     <Button href="/lists/create">
+		<Plus />
         Erstellen
     </Button>
     <Button href="/lists/masseneintragung" variant="secondary">
+		<SquareStack />
         Masseneintragung
     </Button>
 </div>
 
-<Input bind:value={filter} type="text" class="input w-full max-w-200" placeholder="Suchen..." ></Input>
-<Table.Root class="w-full mt-5">
+<InputGroup.Root class="w-full max-w-[400px]">
+    <InputGroup.Input bind:value={filter} type="text" placeholder="Suchen..." />
+    <InputGroup.Addon>
+        <SearchIcon />
+    </InputGroup.Addon>
+</InputGroup.Root>
+<Table.Root class="w-full mt-2">
     <Table.Header>
         <Table.Row>
             <!--            w-0 für fit -->
@@ -74,7 +83,7 @@
             <Table.Row>
                 <Table.Cell>
                     <Checkbox bind:checked={
-                () => $printStore.items.includes("C"+crate.packingListId),
+                () => $printStore.items.includes("L"+crate.packingListId),
                 (v) => {printStore.update(it => toggle(crate.packingListId, it, v))}
                 }>
 

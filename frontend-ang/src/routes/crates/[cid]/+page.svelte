@@ -1,15 +1,14 @@
 <script lang="ts">
 	import type { PageProps } from './$types';
 	import * as Field from "$lib/components/ui/field";
-	import * as Select from "$lib/components/ui/select";
 	import * as InputGroup from "$lib/components/ui/input-group";
-	import {DeliveryState, OperationCenter} from "../../../gen/graphql";
 	import {execute, updateCrate} from "$lib/graphql";
-	import {Input} from "$lib/components/ui/input";
 	import {Textarea} from "$lib/components/ui/textarea";
 	import {Button} from "$lib/components/ui/button";
-	import {Label} from "$lib/components/ui/label";
 	import {toast} from "svelte-sonner";
+	import OperationCenterDropdown from "$lib/components/ours/OperationCenterDropdown.svelte";
+	import DeliveryStateDropdown from "$lib/components/ours/DeliveryStateDropdown.svelte";
+    import { Save } from '@lucide/svelte';
 
 	let {data}: PageProps = $props();
 
@@ -49,25 +48,11 @@
     <Field.Group class="grid grid-cols-1 md:grid-cols-2">
         <Field.Field>
             <Field.Label for="operationcenter">Operation Center</Field.Label>
-            <Select.Root type="single" bind:value={the.oc}>
-                <Select.Trigger id="operationcenter">{the.oc}</Select.Trigger>
-                <Select.Content>
-                    {#each Object.values(OperationCenter) as oc}
-                        <Select.Item value={oc}>{oc}</Select.Item>
-                    {/each}
-                </Select.Content>
-            </Select.Root>
+            <OperationCenterDropdown id="operationcenter" bind:value={the.oc}></OperationCenterDropdown>
         </Field.Field>
         <Field.Field>
             <Field.Label for="status">Status</Field.Label>
-            <Select.Root type="single" bind:value={the.status}>
-                <Select.Trigger id="status">{the.status}</Select.Trigger>
-                <Select.Content>
-                    {#each Object.values(DeliveryState) as oc}
-                        <Select.Item value={oc}>{oc}</Select.Item>
-                    {/each}
-                </Select.Content>
-            </Select.Root>
+            <DeliveryStateDropdown id="status" bind:value={the.status}></DeliveryStateDropdown>
         </Field.Field>
         <Field.Field>
             <Field.Label for="ticket">Jira Ticket</Field.Label>
@@ -86,12 +71,17 @@
 
 
     <div class="flex flex-row gap-5">
-        <Button type="submit">Speichern</Button>
+        <Button type="submit">
+            <Save />
+            Speichern
+        </Button>
     </div>
 </form>
 
 {#if current_state.packingList}
-    <a class="text-xl mt-4 mb-2 link font-medium" href="/lists/{current_state.packingList.packingListId}">Zugehörige Liste {current_state.packingList.packingListId}</a>
+    <a class="text-xl mt-4 mb-2 link font-medium" href="/lists/{current_state.packingList.packingListId}">
+        Zugehörige Liste {current_state.packingList.packingListId}
+    </a>
     <p>Name: {current_state.packingList.name}</p>
     <p>Status: {current_state.packingList.deliveryStatet}</p>
 {/if}

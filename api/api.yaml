@@ -118,10 +118,8 @@ paths:
                   type: array
                   items:
                     $ref: "#/components/schemas/AuthorityEnumDto"
-                hashedPassword:
-                  description: New BCrypt hashed password
-                  maxLength: 72
-                  example: $2a$10$cSa230uf6gXphAxdaFuzHuZ3nlxeCPVm1XUlwKuP1BP2BcnnkJI4S
+                password:
+                  description: New Password
                   type: string
                 active:
                   description: New active status
@@ -155,13 +153,13 @@ paths:
                 - $ref: "#/components/schemas/UserDto"
                 - type: object
                   properties:
-                    hashedPassword:
+                    password:
                       description: BCrypt hashed password
                       maxLength: 72
                       example: $2a$10$cSa230uf6gXphAxdaFuzHuZ3nlxeCPVm1XUlwKuP1BP2BcnnkJI4S
                       type: string
                   required:
-                    - hashedPassword
+                    - password
       responses:
         200:
           description: User created

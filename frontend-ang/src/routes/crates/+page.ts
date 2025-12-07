@@ -1,6 +1,6 @@
 import type { PageLoad } from './$types';
 import {execute, getAllCratesAllFields, NetworkResponseNotOkError} from "$lib/graphql";
-import {handleAuthError} from "$lib/auth_errors";
+import {handleAuthError} from "$lib/auth_util";
 import {GetAllCratesAllFieldsQuery} from "../../gen/graphql";
 
 

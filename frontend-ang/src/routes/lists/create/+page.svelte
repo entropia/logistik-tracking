@@ -4,6 +4,7 @@
 	import * as Field from "$lib/components/ui/field";
 	import {Input} from "$lib/components/ui/input";
 	import {Button} from "$lib/components/ui/button";
+    import { Save } from "@lucide/svelte";
 
 	let form_state = $state({
         name: ""
@@ -27,11 +28,13 @@
             <Field.Field>
                 <Field.Label for="name">Name</Field.Label>
                 <Input id="name" type="text" placeholder="Name der Liste..." bind:value={form_state.name} required />
-                <Field.Description>Beschreibender Name der Liste</Field.Description>
             </Field.Field>
         </Field.Group>
         <Field.Field>
-            <Button type="submit">Speichern</Button>
+            <Button type="submit">
+				<Save />
+				Speichern
+			</Button>
         </Field.Field>
     </Field.Set>
 </form>

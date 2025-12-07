@@ -10,13 +10,13 @@ import de.entropia.logistiktracking.openapi.model.AuthorityEnumDto;
 import de.entropia.logistiktracking.openapi.model.CreateUserRequest;
 import de.entropia.logistiktracking.openapi.model.ModifyUserRequest;
 import de.entropia.logistiktracking.openapi.model.UserDto;
-import jakarta.persistence.EntityManager;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,6 +31,7 @@ import java.util.Optional;
 public class UserManagementRoute implements UsersApi {
 	private final UserDatabaseService userDatabaseService;
 	private final SessionManagement sessionManagement;
+	private final PasswordEncoder pe;
 
 	@Override
 	@PreAuthorize("isAuthenticated()")
@@ -65,7 +66,7 @@ public class UserManagementRoute implements UsersApi {
 		UserDatabaseElement theUser = byId.get();
 
 		modifyUserRequest.getActive().ifPresent(theUser::setEnabled);
-		modifyUserRequest.getHashedPassword().ifPresent(theUser::setHashedPw);
+		modifyUserRequest.getPassword().map(pe::encode).ifPresent(theUser::setHashedPw);
 
 		List<AuthorityEnumDto> newAuthorities = modifyUserRequest.getAuthorities();
 		if (!newAuthorities.isEmpty()) {
@@ -103,7 +104,7 @@ public class UserManagementRoute implements UsersApi {
 			return ResponseEntity.badRequest().build();
 		}
 
-		UserDatabaseElement uae = new UserDatabaseElement(createUserRequest.getUsername(), createUserRequest.getHashedPassword(), createUserRequest.getAuthorities(), true);
+		UserDatabaseElement uae = new UserDatabaseElement(createUserRequest.getUsername(), pe.encode(createUserRequest.getPassword()), createUserRequest.getAuthorities(), true);
 		UserDatabaseElement save = userDatabaseService.save(uae);
 
 		return ResponseEntity.ok(save.toDto());

@@ -1,7 +1,7 @@
 import type { PageLoad } from './$types';
 import {execute, getSpecificCrate, NetworkResponseNotOkError} from "$lib/graphql";
 import {error} from "@sveltejs/kit";
-import {handleAuthError} from "$lib/auth_errors";
+import {handleAuthError} from "$lib/auth_util";
 import {GetCrateByIdQuery} from "../../../gen/graphql";
 
 export const load: PageLoad = async (event) => {

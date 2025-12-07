@@ -2,10 +2,10 @@
 	// import favicon from '$lib/assets/favicon.svg';
 
     import "../app.css";
-	import UserMenu from "../components/UserMenu.svelte";
 	import {Button} from "$lib/components/ui/button";
 	import {Toaster} from "$lib/components/ui/sonner";
 	import {ModeWatcher} from "mode-watcher";
+	import UserDropdown from "$lib/components/ours/UserDropdown.svelte";
 
 	let { children } = $props();
 </script>
@@ -23,6 +23,7 @@
             <li><Button variant="ghost" href="/druck">Drucken</Button></li>
             <li><Button variant="ghost" href="/crates">Kisten</Button></li>
             <li><Button variant="ghost" href="/lists">Listen</Button></li>
+            <li><UserDropdown></UserDropdown></li>
 <!--            todo: user menu dropdown -->
 <!--            <li>-->
 <!--                <Dropdown bind:showTooltip={showTooltip}>-->

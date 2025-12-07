@@ -1,12 +1,10 @@
 <script lang="ts">
 	import type {PageProps} from './$types';
-	import {DeliveryState} from "../../../gen/graphql";
 	import {addCratesToList, execute, removeCratesFromList, updateListPacking} from "$lib/graphql";
 	import {prepare_id} from "$lib/id_parser";
 	import {client} from "$lib/http_api";
 	import {Button} from "$lib/components/ui/button";
 	import * as Field from "$lib/components/ui/field";
-	import * as Select from "$lib/components/ui/select";
 	import * as Command from "$lib/components/ui/command";
 	import * as Popover from "$lib/components/ui/popover";
 	import * as Table from "$lib/components/ui/table";
@@ -14,6 +12,7 @@
 	import {Input} from "$lib/components/ui/input";
 	import {tick} from "svelte";
 	import {ChevronsUpDown, Plus as PlusIcon} from "@lucide/svelte";
+	import DeliveryStateDropdown from "$lib/components/ours/DeliveryStateDropdown.svelte";
 
 	let {data}: PageProps = $props();
 
@@ -127,16 +126,7 @@
 	<Field.Set>
 		<Field.Field>
 			<Field.Label for="status">Status</Field.Label>
-			<Select.Root type="single" bind:value={form_deliverystate} required>
-				<Select.Trigger id="deliverystate">
-					{form_deliverystate}
-				</Select.Trigger>
-				<Select.Content>
-					{#each Object.values(DeliveryState) as oc}
-						<Select.Item value={oc} label={oc}/>
-					{/each}
-				</Select.Content>
-			</Select.Root>
+            <DeliveryStateDropdown id="status" bind:value={form_deliverystate}></DeliveryStateDropdown>
 		</Field.Field>
 		<Field.Field>
 			<Button type="submit">Speichern</Button>

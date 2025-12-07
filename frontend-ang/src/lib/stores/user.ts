@@ -1,7 +1,7 @@
 // stores/user.js
 import { writable } from 'svelte/store';
 import {client} from "$lib/http_api";
-import {components} from "../gen/openapi";
+import {components} from "$lib/../gen/openapi";
 
 
 

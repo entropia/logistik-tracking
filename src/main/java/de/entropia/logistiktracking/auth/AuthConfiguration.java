@@ -14,7 +14,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
@@ -22,11 +21,11 @@ import org.springframework.security.web.authentication.DelegatingAuthenticationE
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.security.web.session.SessionInformationExpiredStrategy;
-import org.springframework.security.web.util.matcher.RequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcherEntry;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.util.LinkedHashMap;
+import java.util.ArrayList;
 import java.util.List;
 
 @Configuration
@@ -60,15 +59,16 @@ public class AuthConfiguration {
 				.exceptionHandling(it -> {
 					// wenn wir keine session haben sind wir nicht angemeldet; 401 unauth
 					// ansonsten haben wir eine session und wir haben trotzdem einen sec fehler; 403 forbidden
-					LinkedHashMap<RequestMatcher, AuthenticationEntryPoint> aep = new LinkedHashMap<>();
-					aep.put(req -> {
-						if (req.getSession(false) == null) return true;
-						Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-						return authentication == null || authentication instanceof AnonymousAuthenticationToken;
-					}, new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED));
-					aep.put(_ -> true, new HttpStatusEntryPoint(HttpStatus.FORBIDDEN));
+					List<RequestMatcherEntry<AuthenticationEntryPoint>> l = new ArrayList<>();
+					l.add(new RequestMatcherEntry<>(
+						  req -> {
+							  if (req.getSession(false) == null) return true;
+							  Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+							  return authentication == null || authentication instanceof AnonymousAuthenticationToken;
+						  }, new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)
+					));
 
-					it.authenticationEntryPoint(new DelegatingAuthenticationEntryPoint(aep));
+					it.authenticationEntryPoint(new DelegatingAuthenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.FORBIDDEN), l));
 				})
 				.sessionManagement(it -> it
 						.maximumSessions(32) // placeholder, das müssen wir eig nicht limitieren

@@ -1,12 +1,12 @@
 <script lang="ts">
-	import {DeliveryState, OperationCenter} from "../../../gen/graphql";
+	import {DeliveryState} from "$lib/../gen/graphql";
 	import {execute, updateListPacking} from "$lib/graphql";
 	import {prepare_id} from "$lib/id_parser";
 	import * as Field from "$lib/components/ui/field";
-	import * as Select from "$lib/components/ui/select";
 	import * as InputGroup from "$lib/components/ui/input-group";
-	import {Input} from "$lib/components/ui/input";
 	import {Button} from "$lib/components/ui/button";
+	import DeliveryStateDropdown from "$lib/components/ours/DeliveryStateDropdown.svelte";
+    import { QrCode } from "@lucide/svelte";
 
 	let list_id = $state("");
 	let id_input = $state<HTMLInputElement>(null!);
@@ -37,19 +37,17 @@
 <form onsubmit={do_update} class="w-full max-w-2xl mb-5 mt-5">
     <Field.Group>
         <Field.Field>
-            <Field.Label for="operationcenter">Neuer Status</Field.Label>
-            <Select.Root type="single" bind:value={form_deliverystate}>
-                <Select.Trigger id="operationcenter">{form_deliverystate}</Select.Trigger>
-                <Select.Content>
-                    {#each Object.values(OperationCenter) as oc}
-                        <Select.Item value={oc}>{oc}</Select.Item>
-                    {/each}
-                </Select.Content>
-            </Select.Root>
+            <Field.Label for="status">Neuer Status</Field.Label>
+            <DeliveryStateDropdown id="status" bind:value={form_deliverystate}></DeliveryStateDropdown>
         </Field.Field>
         <Field.Field>
-            <Field.Label for="lid">Listen-ID</Field.Label>
-            <Input type="text" placeholder="ID hier" required pattern="[lL]?\d+" bind:value={list_id} bind:ref={id_input}></Input>
+            <Field.Label for="lid">Listen-ID (L...)</Field.Label>
+            <InputGroup.Root>
+                <InputGroup.Input type="text" placeholder="ID hier" required pattern="[lL]?\d+" bind:value={list_id} bind:ref={id_input} />
+                <InputGroup.Addon>
+                    <QrCode />
+                </InputGroup.Addon>
+            </InputGroup.Root>
         </Field.Field>
         <Button type="submit">Aktualisieren</Button>
     </Field.Group>

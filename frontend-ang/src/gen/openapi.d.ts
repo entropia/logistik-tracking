@@ -323,11 +323,8 @@ export interface operations {
                 "application/json": {
                     /** @description New authorities */
                     authorities?: components["schemas"]["AuthorityEnumDto"][];
-                    /**
-                     * @description New BCrypt hashed password
-                     * @example $2a$10$cSa230uf6gXphAxdaFuzHuZ3nlxeCPVm1XUlwKuP1BP2BcnnkJI4S
-                     */
-                    hashedPassword?: string;
+                    /** @description New Password */
+                    password?: string;
                     /** @description New active status */
                     active?: boolean;
                     /** @description Username to modify */
@@ -373,7 +370,7 @@ export interface operations {
                      * @description BCrypt hashed password
                      * @example $2a$10$cSa230uf6gXphAxdaFuzHuZ3nlxeCPVm1XUlwKuP1BP2BcnnkJI4S
                      */
-                    hashedPassword: string;
+                    password: string;
                 };
             };
         };

@@ -11,6 +11,9 @@
 	import {Checkbox} from "$lib/components/ui/checkbox";
 	import {Label} from "$lib/components/ui/label";
 	import {toast} from "svelte-sonner";
+	import OperationCenterDropdown from "$lib/components/ours/OperationCenterDropdown.svelte";
+	import DeliveryStateDropdown from "$lib/components/ours/DeliveryStateDropdown.svelte";
+    import { Save } from "@lucide/svelte";
 
 	let create_multiple = $state(false);
 
@@ -56,14 +59,7 @@
     <Field.Group class="grid grid-cols-1 md:grid-cols-2">
         <Field.Field>
             <Field.Label for="operationcenter">Operation Center</Field.Label>
-            <Select.Root type="single" bind:value={form_state.oc}>
-                <Select.Trigger id="operationcenter">{form_state.oc}</Select.Trigger>
-                <Select.Content>
-                    {#each Object.values(OperationCenter) as oc}
-                        <Select.Item value={oc}>{oc}</Select.Item>
-                    {/each}
-                </Select.Content>
-            </Select.Root>
+            <OperationCenterDropdown id="operationcenter" bind:value={form_state.oc}></OperationCenterDropdown>
         </Field.Field>
         <Field.Field>
             <Field.Label for="name">Name</Field.Label>
@@ -71,14 +67,7 @@
         </Field.Field>
         <Field.Field>
             <Field.Label for="status">Status</Field.Label>
-            <Select.Root type="single" bind:value={form_state.deli}>
-                <Select.Trigger id="status">{form_state.deli}</Select.Trigger>
-                <Select.Content>
-                    {#each Object.values(DeliveryState) as oc}
-                        <Select.Item value={oc}>{oc}</Select.Item>
-                    {/each}
-                </Select.Content>
-            </Select.Root>
+            <DeliveryStateDropdown id="status" bind:value={form_state.deli}></DeliveryStateDropdown>
         </Field.Field>
         <Field.Field>
             <Field.Label for="ticket">Jira Ticket</Field.Label>
@@ -96,7 +85,10 @@
     </Field.Group>
 
     <div class="flex flex-row gap-5">
-        <Button type="submit">Speichern</Button>
+        <Button type="submit">
+            <Save />
+            Speichern
+        </Button>
 
         <div class="flex items-center gap-3">
             <Checkbox id="makeMultiple" bind:checked={create_multiple} />

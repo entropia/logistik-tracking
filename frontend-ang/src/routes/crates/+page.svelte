@@ -1,7 +1,8 @@
 <script lang="ts">
 	import type { PageProps } from './$types';
-	import CratesDisplay from "../../components/CratesDisplay.svelte";
 	import {Button} from "$lib/components/ui/button/index";
+	import CratesDisplay from "$lib/components/ours/CratesDisplay.svelte";
+    import { Plus } from '@lucide/svelte';
 
 	let {data}: PageProps = $props();
 
@@ -10,6 +11,7 @@
 <h2 class="text-2xl mb-2 font-bold">Kisten</h2>
 <div class="flex flex-row gap-5 m-5 text-inherit">
     <Button href="/crates/create">
+		<Plus />
         Erstellen
     </Button>
 </div>
