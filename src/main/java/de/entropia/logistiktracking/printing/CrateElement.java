@@ -32,13 +32,13 @@ public class CrateElement implements LabelElement {
 		int rows = 4;
 		float labelWidth = pageWidth / cols;
 		float labelHeight = pageHeight / rows;
-		int dim = (int) (labelHeight / 2);
+		int dim = (int) (labelHeight - 80f);
 
 		BitMatrix bm = dmW.encode(String.format("C%09d", el.getId()), BarcodeFormat.AZTEC, dim, dim);
 		byte[] data = convertToBlackWhiteRawData(bm);
 		ImageData test = ImageDataFactory.create(bm.getWidth(), bm.getHeight(), 1, 1, data, null);
 		Image image = new Image(test);
-		image.setFixedPosition(bounds.getLeft() + bounds.getWidth() - 5 - dim, bounds.getBottom() + bounds.getHeight() - 5 - dim);
+		image.setFixedPosition(bounds.getLeft() + bounds.getWidth() - 20 - dim, bounds.getBottom() + bounds.getHeight() - 40 - dim);
 
 		float widthOfTheEntropiaLogo = 184;
 		float widthOfTheLocLogo = 243;
@@ -80,9 +80,11 @@ public class CrateElement implements LabelElement {
 			  .setFont(monoFont).addTabStops(new TabStop(60, TabAlignment.LEFT));
 		element.setFontSize(14);
 		element.setMargin(0);
-		element.add(new Text("CRATE").addStyle(new Style().setFontSize(30))).add("\n\n");
+		element.add(new Text("CRATE").addStyle(new Style().setFontSize(30))).add("\n");
 		element.add("ID").add(new Tab()).add(el.getId().toString()).add("\n");
-		element.add("NAME").add(new Tab()).add("%s / %s".formatted(el.getOperationCenter(), el.getName()));
+		element.add("OC").add(new Tab()).add(el.getOperationCenter().getName()).add("\n");
+		element.add("NAME").add(new Tab()).add(el.getName());
+		element.setMaxWidth(bounds.getWidth()-20-dim-5-5);
 		div.add(element);
 
 		canvas.add(div);

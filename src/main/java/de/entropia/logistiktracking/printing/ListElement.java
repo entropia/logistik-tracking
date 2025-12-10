@@ -22,7 +22,6 @@ import static de.entropia.logistiktracking.web.PrintMultipleRoute.convertToBlack
 public class ListElement implements LabelElement {
 
 	private final PackingListDatabaseElement pl;
-	private final PackingListDatabaseService dbs;
 
 	@Override
 	public void add(AztecWriter dmW, Canvas canvas, Rectangle bounds, ImageData locLogo, ImageData entropiaLogo, PdfFont monoFont) {
@@ -32,13 +31,13 @@ public class ListElement implements LabelElement {
 		int rows = 4;
 		float labelWidth = pageWidth / cols;
 		float labelHeight = pageHeight / rows;
-		int dim = (int) (labelHeight / 2);
+		int dim = (int) (labelHeight - 80f);
 
 		BitMatrix bm = dmW.encode(String.format("L%09d", pl.getPackingListId()), BarcodeFormat.AZTEC, dim, dim);
 		byte[] data = convertToBlackWhiteRawData(bm);
 		ImageData test = ImageDataFactory.create(bm.getWidth(), bm.getHeight(), 1, 1, data, null);
 		Image image = new Image(test);
-		image.setFixedPosition(bounds.getLeft() + bounds.getWidth() - 5 - dim, bounds.getBottom() + bounds.getHeight() - 5 - dim);
+		image.setFixedPosition(bounds.getLeft() + bounds.getWidth() - 20 - dim, bounds.getBottom() + bounds.getHeight() - 40 - dim);
 
 		float widthOfTheEntropiaLogo = 184;
 		float widthOfTheLocLogo = 243;
@@ -80,9 +79,10 @@ public class ListElement implements LabelElement {
 			  .setFont(monoFont).addTabStops(new TabStop(60, TabAlignment.LEFT));
 		element.setFontSize(14);
 		element.setMargin(0);
-		element.add(new Text("LIST").addStyle(new Style().setFontSize(30))).add("\n\n");
+		element.add(new Text("LIST").addStyle(new Style().setFontSize(30))).add("\n");
 		element.add("ID").add(new Tab()).add(pl.getPackingListId().toString()).add("\n");
 		element.add("NAME").add(new Tab()).add("%s".formatted(pl.getName()));
+		element.setMaxWidth(bounds.getWidth()-20-dim-5-5);
 		div.add(element);
 
 		canvas.add(div);
