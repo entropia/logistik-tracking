@@ -1,17 +1,17 @@
 package de.entropia.logistiktracking.domain.euro_crate.use_case;
 
 import de.entropia.logistiktracking.domain.converter.*;
-import de.entropia.logistiktracking.domain.repository.EuroCrateRepository;
 import de.entropia.logistiktracking.graphql.gen.types.EuroCrate;
 import de.entropia.logistiktracking.graphql.gen.types.PackingList;
-import de.entropia.logistiktracking.jpa.EuroCrateDatabaseElement;
-import de.entropia.logistiktracking.jpa.PackingListDatabaseElement;
+import de.entropia.logistiktracking.jooq.tables.records.EuroCrateRecord;
+import de.entropia.logistiktracking.jooq.tables.records.PackingListRecord;
 import de.entropia.logistiktracking.jpa.repo.EuroCrateDatabaseService;
 import de.entropia.logistiktracking.jpa.repo.PackingListDatabaseService;
-import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,25 +20,25 @@ import java.util.Optional;
 @Transactional
 public class EuroCrateUseCase {
 	private final EuroCrateConverter euroCrateConverter;
-	private final EuroCrateRepository euroCrateRepository;
 	private final PackingListDatabaseService packingListDatabaseService;
 	private final PackingListConverter packingListConverter;
 	private final EuroCrateDatabaseService euroCrateDatabaseService;
 
 	public List<EuroCrate> findAllEuroCrates() {
-		return euroCrateRepository
-				.findAllEuroCrates()
-				.stream()
+		return Arrays.stream(euroCrateDatabaseService
+					.getAll())
 				.map(euroCrateConverter::toGraphQl)
 				.toList();
 	}
 
 	public PackingList getPackingListsOfCrate(long id) {
-		Optional<EuroCrateDatabaseElement> euroCrate = euroCrateDatabaseService.findById(id);
+		Optional<EuroCrateRecord> euroCrate = euroCrateDatabaseService.getById(id);
 		if (euroCrate.isEmpty()) throw new IllegalStateException("crate not found");
-		EuroCrateDatabaseElement ec = euroCrate.get();
+		EuroCrateRecord ec = euroCrate.get();
 
-		Optional<PackingListDatabaseElement> result = packingListDatabaseService.getByPackedCratesContains(ec);
-		return result.map(packingListConverter::toGraphQl).orElse(null);
+		return Optional.ofNullable(ec.getOwningList())
+			  .flatMap(packingListDatabaseService::getById)
+			  .map(packingListConverter::toGraphQl)
+			  .orElse(null);
 	}
 }

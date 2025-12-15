@@ -6,7 +6,8 @@ import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.atlassian.jira.rest.client.api.domain.Transition;
 import com.atlassian.jira.rest.client.api.domain.input.TransitionInput;
 import com.google.common.collect.Iterables;
-import de.entropia.logistiktracking.jpa.EuroCrateDatabaseElement;
+import de.entropia.logistiktracking.jooq.enums.DeliveryState;
+import de.entropia.logistiktracking.jooq.tables.records.EuroCrateRecord;
 import de.entropia.logistiktracking.jpa.repo.EuroCrateDatabaseService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,10 +32,10 @@ public class JiraThings {
 	private final EuroCrateDatabaseService euroCrateDatabaseService;
 
 	@Async
-	public void checkUpdateJiraStatus(EuroCrateDatabaseElement ticketThatWasChanged) {
-		List<EuroCrateDatabaseElement> allByJiraIssue = euroCrateDatabaseService.findAllByJiraIssue(ticketThatWasChanged.getJiraIssue());
+	public void checkUpdateJiraStatus(EuroCrateRecord ticketThatWasChanged) {
+		List<EuroCrateRecord> allByJiraIssue = List.of(euroCrateDatabaseService.getAllByJiraIssue(ticketThatWasChanged.getJiraIssue()));
 		assert !allByJiraIssue.isEmpty() : "keine boxen die dem jira issue entsprechen?";
-		de.entropia.logistiktracking.models.DeliveryState targetDeliveryState = ticketThatWasChanged.getDeliveryState();
+		DeliveryState targetDeliveryState = ticketThatWasChanged.getDeliveryState();
 		String issue = ticketThatWasChanged.getJiraIssue();
 		Issue issueInstance = jrc.getIssueClient().getIssue(issue).claim();
 		 log.info("Resolved issue key {} for crate {}: {}", issue, ticketThatWasChanged.getId(), issueInstance.getCommentsUri());

@@ -1,7 +1,7 @@
 package de.entropia.logistiktracking.domain.converter;
 
 import de.entropia.logistiktracking.graphql.gen.types.EuroCrate;
-import de.entropia.logistiktracking.jpa.EuroCrateDatabaseElement;
+import de.entropia.logistiktracking.jooq.tables.records.EuroCrateRecord;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -12,7 +12,7 @@ public class EuroCrateConverter {
 	private final OperationCenterConverter operationCenterConverter;
 	private final DeliveryStateConverter deliveryStateConverter;
 
-	public EuroCrate toGraphQl(EuroCrateDatabaseElement dbel) {
+	public EuroCrate toGraphQl(EuroCrateRecord dbel) {
 		return EuroCrate.newBuilder()
 				.information(dbel.getInformation())
 				.deliveryState(deliveryStateConverter.toGraphql(dbel.getDeliveryState()))

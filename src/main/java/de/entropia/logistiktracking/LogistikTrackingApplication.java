@@ -1,5 +1,6 @@
 package de.entropia.logistiktracking;
 
+import org.jooq.conf.Settings;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -7,12 +8,14 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.filter.CommonsRequestLoggingFilter;
 
 @SpringBootApplication
 @EnableWebSecurity
 @EnableMethodSecurity
 @EnableAsync
+@EnableTransactionManagement
 public class LogistikTrackingApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(LogistikTrackingApplication.class, args);
@@ -27,5 +30,10 @@ public class LogistikTrackingApplication {
 		filter.setIncludePayload(false);
 		filter.setIncludeHeaders(false);
 		return filter;
+	}
+
+	@Bean
+	Settings jooqS() {
+		return new Settings().withMapRecordComponentParameterNames(true);
 	}
 }

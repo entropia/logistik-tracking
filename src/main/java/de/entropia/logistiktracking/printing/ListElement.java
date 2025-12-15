@@ -12,8 +12,7 @@ import com.itextpdf.layout.Canvas;
 import com.itextpdf.layout.Style;
 import com.itextpdf.layout.element.*;
 import com.itextpdf.layout.properties.TabAlignment;
-import de.entropia.logistiktracking.jpa.PackingListDatabaseElement;
-import de.entropia.logistiktracking.jpa.repo.PackingListDatabaseService;
+import de.entropia.logistiktracking.jooq.tables.records.PackingListRecord;
 import lombok.AllArgsConstructor;
 
 import static de.entropia.logistiktracking.web.PrintMultipleRoute.convertToBlackWhiteRawData;
@@ -21,7 +20,7 @@ import static de.entropia.logistiktracking.web.PrintMultipleRoute.convertToBlack
 @AllArgsConstructor
 public class ListElement implements LabelElement {
 
-	private final PackingListDatabaseElement pl;
+	private final PackingListRecord pl;
 
 	@Override
 	public void add(AztecWriter dmW, Canvas canvas, Rectangle bounds, ImageData locLogo, ImageData entropiaLogo, PdfFont monoFont) {
@@ -33,7 +32,7 @@ public class ListElement implements LabelElement {
 		float labelHeight = pageHeight / rows;
 		int dim = (int) (labelHeight - 80f);
 
-		BitMatrix bm = dmW.encode(String.format("L%09d", pl.getPackingListId()), BarcodeFormat.AZTEC, dim, dim);
+		BitMatrix bm = dmW.encode(String.format("L%09d", pl.getId()), BarcodeFormat.AZTEC, dim, dim);
 		byte[] data = convertToBlackWhiteRawData(bm);
 		ImageData test = ImageDataFactory.create(bm.getWidth(), bm.getHeight(), 1, 1, data, null);
 		Image image = new Image(test);
@@ -80,7 +79,7 @@ public class ListElement implements LabelElement {
 		element.setFontSize(14);
 		element.setMargin(0);
 		element.add(new Text("LIST").addStyle(new Style().setFontSize(30))).add("\n");
-		element.add("ID").add(new Tab()).add(pl.getPackingListId().toString()).add("\n");
+		element.add("ID").add(new Tab()).add(pl.getId().toString()).add("\n");
 		element.add("NAME").add(new Tab()).add("%s".formatted(pl.getName()));
 		element.setMaxWidth(bounds.getWidth()-20-dim-5-5);
 		div.add(element);

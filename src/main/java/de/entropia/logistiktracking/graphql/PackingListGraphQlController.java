@@ -1,15 +1,16 @@
 package de.entropia.logistiktracking.graphql;
 
 import de.entropia.logistiktracking.JiraThings;
+import de.entropia.logistiktracking.domain.converter.DeliveryStateConverter;
 import de.entropia.logistiktracking.domain.converter.PackingListConverter;
 import de.entropia.logistiktracking.domain.packing_list.use_case.ManagePackingListUseCase;
-import de.entropia.logistiktracking.domain.repository.PackingListRepository;
 import de.entropia.logistiktracking.graphql.gen.DgsConstants;
 import de.entropia.logistiktracking.graphql.gen.types.DeliveryState;
 import de.entropia.logistiktracking.graphql.gen.types.EuroCrate;
 import de.entropia.logistiktracking.graphql.gen.types.PackingList;
-import de.entropia.logistiktracking.jpa.EuroCrateDatabaseElement;
-import de.entropia.logistiktracking.jpa.PackingListDatabaseElement;
+import de.entropia.logistiktracking.jooq.tables.records.EuroCrateRecord;
+import de.entropia.logistiktracking.jooq.tables.records.PackingListRecord;
+import de.entropia.logistiktracking.jpa.repo.EuroCrateDatabaseService;
 import de.entropia.logistiktracking.jpa.repo.PackingListDatabaseService;
 import lombok.AllArgsConstructor;
 import org.springframework.graphql.data.method.annotation.Argument;
@@ -30,6 +31,8 @@ public class PackingListGraphQlController {
 	private final PackingListDatabaseService packingListDatabaseService;
 	private final PackingListConverter packingListConverter;
 	private final JiraThings jiraThings;
+	private final DeliveryStateConverter deliveryStateConverter;
+	private final EuroCrateDatabaseService euroCrateDatabaseService;
 
 	@QueryMapping(DgsConstants.QUERY.GetPackingLists)
 	public List<PackingList> getPackingLists() {
@@ -50,8 +53,8 @@ public class PackingListGraphQlController {
 	public PackingList createPackingList(
 		  @Argument String name
 	) {
-		PackingListDatabaseElement dbel = new PackingListDatabaseElement(null, name, de.entropia.logistiktracking.models.DeliveryState.Packing, List.of());
-		PackingListDatabaseElement newElement = packingListDatabaseService.save(dbel);
+		PackingListRecord dbel = new PackingListRecord(null, de.entropia.logistiktracking.jooq.enums.DeliveryState.Packing, name);
+		PackingListRecord newElement = packingListDatabaseService.save(dbel);
 		return packingListConverter.toGraphQl(newElement);
 	}
 
@@ -60,21 +63,23 @@ public class PackingListGraphQlController {
 		  @Argument String id,
 		  @Argument DeliveryState deliveryState
 	) {
-		Optional<PackingListDatabaseElement> byId = packingListDatabaseService.findById(Long.parseLong(id));
+		Optional<PackingListRecord> byId = packingListDatabaseService.getById(Long.parseLong(id));
 		if (byId.isEmpty()) return null;
-		PackingListDatabaseElement packingListDatabaseElement = byId.get();
+		PackingListRecord packingListDatabaseElement = byId.get();
 
-		de.entropia.logistiktracking.models.DeliveryState mapped = de.entropia.logistiktracking.models.DeliveryState.fromGraphQl(deliveryState);
+		de.entropia.logistiktracking.jooq.enums.DeliveryState mapped = deliveryStateConverter.fromGraphql(deliveryState);
 		packingListDatabaseElement.setDeliveryState(mapped);
 
-		for (EuroCrateDatabaseElement packedCrate : packingListDatabaseElement.getPackedCrates()) {
-			if (packedCrate.getDeliveryState() != mapped && packedCrate.getJiraIssue() != null && !packedCrate.getJiraIssue().isBlank()) {
-				jiraThings.checkUpdateJiraStatus(packedCrate);
+		EuroCrateRecord[] byOwningList = euroCrateDatabaseService.getByOwningList(packingListDatabaseElement.getId());
+
+		for (EuroCrateRecord euroCrateRecord : byOwningList) {
+			if (euroCrateRecord.getDeliveryState() != mapped && euroCrateRecord.getJiraIssue() != null && !euroCrateRecord.getJiraIssue().isBlank()) {
+				jiraThings.checkUpdateJiraStatus(euroCrateRecord);
 			}
-			packedCrate.setDeliveryState(mapped);
+			euroCrateRecord.setDeliveryState(mapped);
 		}
 
-		PackingListDatabaseElement res = packingListDatabaseService.save(packingListDatabaseElement);
+		PackingListRecord res = packingListDatabaseService.update(packingListDatabaseElement);
 		return packingListConverter.toGraphQl(res);
 	}
 
@@ -84,7 +89,7 @@ public class PackingListGraphQlController {
 		  @Argument String id,
 		  @Argument List<String> crateIds
 	) {
-		packingListDatabaseService.addCrateToPackingListReassignIfAlreadyAssigned(Long.parseLong(id), crateIds.stream().map(Long::parseLong).toList());
+		euroCrateDatabaseService.joinPackingList(Long.parseLong(id), crateIds.stream().map(Long::parseLong).toList());
 		return getPackingListById(id);
 	}
 
@@ -94,13 +99,13 @@ public class PackingListGraphQlController {
 		  @Argument String id,
 		  @Argument List<String> crateIds
 	) {
-		packingListDatabaseService.removeCrateFromPackingList(Long.parseLong(id), crateIds.stream().map(Long::parseLong).toList());
+		euroCrateDatabaseService.leavePackingList(Long.parseLong(id), crateIds.stream().map(Long::parseLong).toList());
 		return getPackingListById(id);
 	}
 
 	@MutationMapping(DgsConstants.MUTATION.DeletePackingList)
 	public boolean deletePackingList(@Argument String id) {
-		packingListDatabaseService.deleteById(Long.valueOf(id));
+		packingListDatabaseService.deleteById(Long.parseLong(id));
 		return true; // just return true always, we dont really care anyway
 	}
 
@@ -109,7 +114,7 @@ public class PackingListGraphQlController {
 		List<PackingList> ecs = new ArrayList<>(id.size());
 		for (String s : id) {
 			long actualId = Long.parseLong(s);
-			Optional<PackingListDatabaseElement> byId = packingListDatabaseService.findById(actualId);
+			Optional<PackingListRecord> byId = packingListDatabaseService.getById(actualId);
 			byId
 				  .map(packingListConverter::toGraphQl)
 				  .ifPresent(ecs::add);

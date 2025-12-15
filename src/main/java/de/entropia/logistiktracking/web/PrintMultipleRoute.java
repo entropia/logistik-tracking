@@ -116,9 +116,9 @@ public class PrintMultipleRoute implements PrintMultipleApi {
 	private LabelElement resolve(PrintMultipleDtoInner it) {
 		return switch (it.getType()) {
 			case PrintMultipleDtoInner.TypeEnum.CRATE ->
-					new CrateElement(euroCrateDatabaseService.findById(it.getId()).orElseThrow());
+					new CrateElement(euroCrateDatabaseService.getById(it.getId()).orElseThrow());
 			case PrintMultipleDtoInner.TypeEnum.LIST ->
-					new ListElement(packingListDatabaseService.findById(it.getId()).orElseThrow());
+					new ListElement(packingListDatabaseService.getById(it.getId()).orElseThrow());
 		};
 	}
 }

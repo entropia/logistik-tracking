@@ -1,14 +1,16 @@
 package de.entropia.logistiktracking.graphql;
 
 import de.entropia.logistiktracking.JiraThings;
+import de.entropia.logistiktracking.domain.converter.DeliveryStateConverter;
 import de.entropia.logistiktracking.domain.converter.EuroCrateConverter;
+import de.entropia.logistiktracking.domain.converter.OperationCenterConverter;
 import de.entropia.logistiktracking.domain.euro_crate.use_case.EuroCrateUseCase;
 import de.entropia.logistiktracking.graphql.gen.DgsConstants;
 import de.entropia.logistiktracking.graphql.gen.types.DeliveryState;
 import de.entropia.logistiktracking.graphql.gen.types.EuroCrate;
 import de.entropia.logistiktracking.graphql.gen.types.OperationCenter;
 import de.entropia.logistiktracking.graphql.gen.types.PackingList;
-import de.entropia.logistiktracking.jpa.EuroCrateDatabaseElement;
+import de.entropia.logistiktracking.jooq.tables.records.EuroCrateRecord;
 import de.entropia.logistiktracking.jpa.repo.EuroCrateDatabaseService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +32,8 @@ public class EuroCrateGraphQlController {
 	private final EuroCrateDatabaseService euroCrateDatabaseService;
 	private final EuroCrateConverter euroCrateConverter;
 	private final JiraThings jira;
+	private final OperationCenterConverter operationCenterConverter;
+	private final DeliveryStateConverter deliveryStateConverter;
 
 	@QueryMapping(DgsConstants.QUERY.GetEuroCrates)
 	public List<EuroCrate> getEuroCrates() {
@@ -39,9 +43,7 @@ public class EuroCrateGraphQlController {
 	@QueryMapping(DgsConstants.QUERY.GetEuroCrateById)
 	public EuroCrate getEuroCrateById(@Argument String id) {
 		long actualId = Long.parseLong(id);
-		Optional<EuroCrateDatabaseElement> byId = euroCrateDatabaseService.findById(actualId);
-		return byId.map(euroCrateConverter::toGraphQl)
-			  .orElse(null);
+		return euroCrateDatabaseService.getById(actualId).map(euroCrateConverter::toGraphQl).orElse(null);
 	}
 
 	@MutationMapping(DgsConstants.MUTATION.CreateEuroCrate)
@@ -51,17 +53,16 @@ public class EuroCrateGraphQlController {
 		  @Argument DeliveryState deliveryState,
 		  @Argument String info,
 		  @Argument String jiraIssue) {
-		EuroCrateDatabaseElement dbel = new EuroCrateDatabaseElement(null, de.entropia.logistiktracking.models.OperationCenter.fromGraphQl(oc),
-			  name, info, de.entropia.logistiktracking.models.DeliveryState.fromGraphQl(deliveryState), jiraIssue);
-		EuroCrateDatabaseElement newElement = euroCrateDatabaseService.save(
-			  dbel
+		EuroCrateRecord euroCrateRecord = new EuroCrateRecord(null, deliveryStateConverter.fromGraphql(deliveryState), info, jiraIssue, name, operationCenterConverter.fromGraphql(oc), null);
+		EuroCrateRecord returned = euroCrateDatabaseService.save(
+			  euroCrateRecord
 		);
-		return euroCrateConverter.toGraphQl(newElement);
+		return euroCrateConverter.toGraphQl(returned);
 	}
 
 	@MutationMapping(DgsConstants.MUTATION.DeleteEuroCrate)
 	public boolean deleteEuroCrate(@Argument String id) {
-		euroCrateDatabaseService.deleteById(Long.valueOf(id));
+		euroCrateDatabaseService.deleteById(Long.parseLong(id));
 		return true; // just return true always, we dont really care anyway
 	}
 
@@ -73,17 +74,17 @@ public class EuroCrateGraphQlController {
 		  @Argument String info,
 		  @Argument String jiraIssue
 	) {
-		Optional<EuroCrateDatabaseElement> found = euroCrateDatabaseService.findById(Long.parseLong(id));
+		Optional<EuroCrateRecord> found = euroCrateDatabaseService.getById(Long.parseLong(id));
 		if (found.isEmpty()) return null;
 
-		EuroCrateDatabaseElement the = found.get();
-		the.setOperationCenter(de.entropia.logistiktracking.models.OperationCenter.fromGraphQl(oc));
+		EuroCrateRecord the = found.get();
+		the.setOperationCenter(operationCenterConverter.fromGraphql(oc));
 		the.setJiraIssue(jiraIssue);
 		the.setInformation(info);
-		DeliveryState oldStatus = the.getDeliveryState().graphQlEquiv;
-		the.setDeliveryState(de.entropia.logistiktracking.models.DeliveryState.fromGraphQl(deliveryState));
+		DeliveryState oldStatus = deliveryStateConverter.toGraphql(the.getDeliveryState());
+		the.setDeliveryState(deliveryStateConverter.fromGraphql(deliveryState));
 
-		EuroCrateDatabaseElement updated = euroCrateDatabaseService.save(the);
+		EuroCrateRecord updated = euroCrateDatabaseService.update(the);
 
 		if (oldStatus != deliveryState) {
 			// update ticket state or add note
@@ -104,7 +105,7 @@ public class EuroCrateGraphQlController {
 		List<EuroCrate> ecs = new ArrayList<>(id.size());
 		for (String s : id) {
 			long actualId = Long.parseLong(s);
-			Optional<EuroCrateDatabaseElement> byId = euroCrateDatabaseService.findById(actualId);
+			Optional<EuroCrateRecord> byId = euroCrateDatabaseService.getById(actualId);
 			byId
 				  .map(euroCrateConverter::toGraphQl)
 				  .ifPresent(ecs::add);

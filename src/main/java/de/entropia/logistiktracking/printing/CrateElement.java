@@ -3,7 +3,6 @@ package de.entropia.logistiktracking.printing;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.aztec.AztecWriter;
 import com.google.zxing.common.BitMatrix;
-import com.google.zxing.datamatrix.DataMatrixWriter;
 import com.itextpdf.io.image.ImageData;
 import com.itextpdf.io.image.ImageDataFactory;
 import com.itextpdf.kernel.font.PdfFont;
@@ -13,17 +12,16 @@ import com.itextpdf.layout.Canvas;
 import com.itextpdf.layout.Style;
 import com.itextpdf.layout.element.*;
 import com.itextpdf.layout.properties.TabAlignment;
-import de.entropia.logistiktracking.jpa.EuroCrateDatabaseElement;
+import de.entropia.logistiktracking.jooq.tables.records.EuroCrateRecord;
+import lombok.AllArgsConstructor;
 
 import static de.entropia.logistiktracking.web.PrintMultipleRoute.convertToBlackWhiteRawData;
 
+@AllArgsConstructor
 public class CrateElement implements LabelElement {
 
-	private final EuroCrateDatabaseElement el;
+	private final EuroCrateRecord el;
 
-	public CrateElement(EuroCrateDatabaseElement el) {
-		this.el = el;
-	}
 	@Override
 	public void add(AztecWriter dmW, Canvas canvas, Rectangle bounds, ImageData locLogo, ImageData entropiaLogo, PdfFont monoFont) {
 		float pageWidth = PageSize.A4.getWidth();
@@ -82,7 +80,7 @@ public class CrateElement implements LabelElement {
 		element.setMargin(0);
 		element.add(new Text("CRATE").addStyle(new Style().setFontSize(30))).add("\n");
 		element.add("ID").add(new Tab()).add(el.getId().toString()).add("\n");
-		element.add("OC").add(new Tab()).add(el.getOperationCenter().getName()).add("\n");
+		element.add("OC").add(new Tab()).add(el.getOperationCenter().getLiteral()).add("\n");
 		element.add("NAME").add(new Tab()).add(el.getName());
 		element.setMaxWidth(bounds.getWidth()-20-dim-5-5);
 		div.add(element);
