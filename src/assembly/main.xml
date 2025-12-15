@@ -9,7 +9,7 @@
     <fileSets>
         <fileSet>
             <outputDirectory>frontend</outputDirectory>
-            <directory>frontend-ang/build</directory>
+            <directory>frontend-sv/build</directory>
         </fileSet>
         <fileSet>
             <includes>

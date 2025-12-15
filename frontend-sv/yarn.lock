@@ -3089,9 +3089,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"frontend-ang-2@workspace:.":
+"frontend-sv@workspace:.":
   version: 0.0.0-use.local
-  resolution: "frontend-ang-2@workspace:."
+  resolution: "frontend-sv@workspace:."
   dependencies:
     "@graphql-codegen/cli": "npm:^6.0.0"
     "@graphql-codegen/client-preset": "npm:^5.0.0"
