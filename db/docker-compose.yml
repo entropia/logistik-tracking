@@ -14,16 +14,5 @@ services:
     restart: no
     ports:
       - "23646:8080"
-#  nginx:
-#    image: nginx
-#    volumes:
-#      - ./templates:/etc/nginx/templates
-##    ports:
-##      - "8000:8000"
-#    environment:
-#      - NGINX_HOST=127.0.0.1
-#      - NGINX_PORT=8000
-#    network_mode: host
-
 volumes:
   pgdata:
