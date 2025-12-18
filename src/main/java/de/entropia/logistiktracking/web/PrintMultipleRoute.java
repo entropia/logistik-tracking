@@ -70,12 +70,12 @@ public class PrintMultipleRoute implements PrintMultipleApi {
 			float labelWidth = pageWidth / cols;
 			float labelHeight = pageHeight / rows;
 
-			for(int baseIndex = 0; baseIndex < elements.size(); baseIndex += 8) {
+			for (int baseIndex = 0; baseIndex < elements.size(); baseIndex += 8) {
 				int inThisPartition = Math.min(elements.size() - baseIndex, 8);
 				PdfPage page = pdf.addNewPage();
 				PdfCanvas pdfc = new PdfCanvas(page);
 
-				for(int i = 0; i < inThisPartition; i++) {
+				for (int i = 0; i < inThisPartition; i++) {
 					int row = i / 2;
 					int col = i % 2;
 					float x = col * labelWidth;
@@ -113,12 +113,13 @@ public class PrintMultipleRoute implements PrintMultipleApi {
 		}
 		return bb.array();
 	}
+
 	private LabelElement resolve(PrintMultipleDtoInner it) {
 		return switch (it.getType()) {
 			case PrintMultipleDtoInner.TypeEnum.CRATE ->
-					new CrateElement(euroCrateDatabaseService.getById(it.getId()).orElseThrow());
+				  new CrateElement(euroCrateDatabaseService.fetchById(it.getId()).orElseThrow());
 			case PrintMultipleDtoInner.TypeEnum.LIST ->
-					new ListElement(packingListDatabaseService.getById(it.getId()).orElseThrow());
+				  new ListElement(packingListDatabaseService.fetchById(it.getId()).orElseThrow());
 		};
 	}
 }

@@ -20,25 +20,18 @@ import static de.entropia.logistiktracking.jooq.Tables.LOGITRACK_AUTHORITY;
 import static de.entropia.logistiktracking.jooq.Tables.LOGITRACK_USER;
 
 @Repository
-public class UserDatabaseService {
-	private final DSLContext dSLContext;
-
+public class UserDatabaseService extends JooqRepository<LogitrackUserRecord, String> {
 	public UserDatabaseService(DSLContext dSLContext) {
-		this.dSLContext = dSLContext;
+		super(LOGITRACK_USER, LOGITRACK_USER.USERNAME, dSLContext);
 	}
 
-	public LogitrackUserRecord[] getAll() {
-		return dSLContext.selectFrom(LOGITRACK_USER)
-			  .fetchArray();
-	}
-
-	public UserWithAuthorities[] getAllWithAuthorities() {
-		try (@NotNull Stream<Record2<LogitrackUserRecord, UserAuthority[]>> userWithAuthoritiesStream = dSLContext.select(LOGITRACK_USER,
-			  	DSL.arrayAgg(LOGITRACK_AUTHORITY.AUTHORITY).filterWhere(LOGITRACK_AUTHORITY.AUTHORITY.isNotNull()).as("authorities")
+	public UserWithAuthorities[] fetchAllWithAuthorities() {
+		try (@NotNull Stream<Record2<LogitrackUserRecord, UserAuthority[]>> userWithAuthoritiesStream = dsl.select(LOGITRACK_USER,
+					DSL.arrayAgg(LOGITRACK_AUTHORITY.AUTHORITY).filterWhere(LOGITRACK_AUTHORITY.AUTHORITY.isNotNull()).as("authorities")
 			  )
 			  .from(LOGITRACK_USER)
 			  .leftJoin(LOGITRACK_AUTHORITY)
-			  	.on(LOGITRACK_AUTHORITY.OWNING_USER.eq(LOGITRACK_USER.USERNAME))
+			  .on(LOGITRACK_AUTHORITY.OWNING_USER.eq(LOGITRACK_USER.USERNAME))
 			  .groupBy(LOGITRACK_USER.USERNAME)
 			  .fetchStream()) {
 			return userWithAuthoritiesStream
@@ -54,56 +47,32 @@ public class UserDatabaseService {
 		return new UserWithAuthorities(lur.getUsername(), lur.getEnabled(), lur.getHashedPw(), auth);
 	}
 
-	public Optional<UserWithAuthorities> getById(String id) {
-		return Optional.ofNullable(dSLContext.select(LOGITRACK_USER, DSL.arrayAgg(LOGITRACK_AUTHORITY.AUTHORITY).filterWhere(LOGITRACK_AUTHORITY.AUTHORITY.isNotNull()).as("authorities"))
-			  .from(LOGITRACK_USER)
-			  .leftJoin(LOGITRACK_AUTHORITY)
-			  .on(LOGITRACK_AUTHORITY.OWNING_USER.eq(LOGITRACK_USER.USERNAME))
-			  .where(LOGITRACK_USER.USERNAME.equal(id))
-			  .groupBy(LOGITRACK_USER.USERNAME)
-			  .fetchAny())
+	public Optional<UserWithAuthorities> fetchByIdWithAuthorities(String id) {
+		return Optional.ofNullable(dsl.select(LOGITRACK_USER, DSL.arrayAgg(LOGITRACK_AUTHORITY.AUTHORITY).filterWhere(LOGITRACK_AUTHORITY.AUTHORITY.isNotNull()).as("authorities"))
+					.from(LOGITRACK_USER)
+					.leftJoin(LOGITRACK_AUTHORITY)
+					.on(LOGITRACK_AUTHORITY.OWNING_USER.eq(LOGITRACK_USER.USERNAME))
+					.where(LOGITRACK_USER.USERNAME.equal(id))
+					.groupBy(LOGITRACK_USER.USERNAME)
+					.fetchAny())
 			  .map(UserDatabaseService::convToUWA);
 	}
 
-	public Optional<LogitrackUserRecord> getRecord(String id) {
-		return Optional.ofNullable(dSLContext.selectFrom(LOGITRACK_USER)
-			  .where(LOGITRACK_USER.USERNAME.equal(id))
-			  .fetchAny());
-	}
-
-	public int deleteById(String id) {
-		return dSLContext.deleteFrom(LOGITRACK_USER)
-			  .where(LOGITRACK_USER.USERNAME.equal(id))
-			  .execute();
-	}
-
-	public boolean existsById(String username) {
-		return dSLContext.fetchExists(LOGITRACK_USER, LOGITRACK_USER.USERNAME.eq(username));
-	}
-
-	public LogitrackUserRecord save(LogitrackUserRecord user) {
-		return dSLContext.insertInto(LOGITRACK_USER).set(user).returning().fetchOne();
-	}
-
-	public LogitrackUserRecord update(LogitrackUserRecord ecr) {
-		return dSLContext.update(LOGITRACK_USER).set(ecr).returning().fetchOne();
-	}
-
 	public int addAuthorities(String username, List<UserAuthority> list) {
-		return dSLContext.insertInto(LOGITRACK_AUTHORITY)
+		return dsl.insertInto(LOGITRACK_AUTHORITY)
 			  .set(list.stream().map(it -> new LogitrackAuthorityRecord(username, it)).toList())
 			  .onConflictOnConstraint(DSL.name("combination must be unique")).doNothing()
 			  .execute();
 	}
 
 	public int removeAuthorities(String username, List<UserAuthority> list) {
-		return dSLContext.deleteFrom(LOGITRACK_AUTHORITY)
+		return dsl.deleteFrom(LOGITRACK_AUTHORITY)
 			  .where(LOGITRACK_AUTHORITY.OWNING_USER.eq(username), LOGITRACK_AUTHORITY.AUTHORITY.in(list))
 			  .execute();
 	}
 
-	public List<UserAuthority> getAuthorities(String username) {
-		try (@NotNull Stream<Record1<UserAuthority>> record1Stream = dSLContext.select(LOGITRACK_AUTHORITY.AUTHORITY)
+	public List<UserAuthority> fetchAuthorities(String username) {
+		try (@NotNull Stream<Record1<UserAuthority>> record1Stream = dsl.select(LOGITRACK_AUTHORITY.AUTHORITY)
 			  .from(LOGITRACK_AUTHORITY)
 			  .where(LOGITRACK_AUTHORITY.OWNING_USER.eq(username))
 			  .fetchStream()) {

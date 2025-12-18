@@ -14,14 +14,14 @@ public class EuroCrateConverter {
 
 	public EuroCrate toGraphQl(EuroCrateRecord dbel) {
 		return EuroCrate.newBuilder()
-				.information(dbel.getInformation())
-				.deliveryState(deliveryStateConverter.toGraphql(dbel.getDeliveryState()))
-				.operationCenter(operationCenterConverter.toGraphQl(dbel.getOperationCenter()))
-				.name(dbel.getName())
-				.internalId(dbel.getId().toString())
-				// explicitly null, we map this later. we dont want to eager fetch
-				.packingList(null)
-				.jiraId(dbel.getJiraIssue())
-				.build();
+			  .information(dbel.getInformation())
+			  .deliveryState(deliveryStateConverter.toGraphql(dbel.getDeliveryState()))
+			  .operationCenter(operationCenterConverter.toGraphQl(dbel.getOperationCenter()))
+			  .name(dbel.getName())
+			  .internalId(dbel.getId().toString())
+			  // explicitly null, we map this later. we dont want to eager fetch
+			  .packingList(null)
+			  .jiraId(dbel.getJiraIssue())
+			  .build();
 	}
 }

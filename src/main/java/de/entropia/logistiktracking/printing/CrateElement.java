@@ -69,7 +69,6 @@ public class CrateElement implements LabelElement {
 		Div div = new Div();
 
 
-
 		div.setFixedPosition(bounds.getLeft() + 5, bounds.getBottom() + 5, bounds.getWidth() - 10);
 //		div.setBorder(new DashedBorder(ColorConstants.RED, 2));
 		div.setHeight(bounds.getHeight() - targetHeight - 15);
@@ -82,7 +81,7 @@ public class CrateElement implements LabelElement {
 		element.add("ID").add(new Tab()).add(el.getId().toString()).add("\n");
 		element.add("OC").add(new Tab()).add(el.getOperationCenter().getLiteral()).add("\n");
 		element.add("NAME").add(new Tab()).add(el.getName());
-		element.setMaxWidth(bounds.getWidth()-20-dim-5-5);
+		element.setMaxWidth(bounds.getWidth() - 20 - dim - 5 - 5);
 		div.add(element);
 
 		canvas.add(div);

@@ -43,7 +43,7 @@ public class EuroCrateGraphQlController {
 	@QueryMapping(DgsConstants.QUERY.GetEuroCrateById)
 	public EuroCrate getEuroCrateById(@Argument String id) {
 		long actualId = Long.parseLong(id);
-		return euroCrateDatabaseService.getById(actualId).map(euroCrateConverter::toGraphQl).orElse(null);
+		return euroCrateDatabaseService.fetchById(actualId).map(euroCrateConverter::toGraphQl).orElse(null);
 	}
 
 	@MutationMapping(DgsConstants.MUTATION.CreateEuroCrate)
@@ -54,7 +54,7 @@ public class EuroCrateGraphQlController {
 		  @Argument String info,
 		  @Argument String jiraIssue) {
 		EuroCrateRecord euroCrateRecord = new EuroCrateRecord(null, deliveryStateConverter.fromGraphql(deliveryState), info, jiraIssue, name, operationCenterConverter.fromGraphql(oc), null);
-		EuroCrateRecord returned = euroCrateDatabaseService.save(
+		EuroCrateRecord returned = euroCrateDatabaseService.insert(
 			  euroCrateRecord
 		);
 		return euroCrateConverter.toGraphQl(returned);
@@ -74,7 +74,7 @@ public class EuroCrateGraphQlController {
 		  @Argument String info,
 		  @Argument String jiraIssue
 	) {
-		Optional<EuroCrateRecord> found = euroCrateDatabaseService.getById(Long.parseLong(id));
+		Optional<EuroCrateRecord> found = euroCrateDatabaseService.fetchById(Long.parseLong(id));
 		if (found.isEmpty()) return null;
 
 		EuroCrateRecord the = found.get();
@@ -105,7 +105,7 @@ public class EuroCrateGraphQlController {
 		List<EuroCrate> ecs = new ArrayList<>(id.size());
 		for (String s : id) {
 			long actualId = Long.parseLong(s);
-			Optional<EuroCrateRecord> byId = euroCrateDatabaseService.getById(actualId);
+			Optional<EuroCrateRecord> byId = euroCrateDatabaseService.fetchById(actualId);
 			byId
 				  .map(euroCrateConverter::toGraphQl)
 				  .ifPresent(ecs::add);

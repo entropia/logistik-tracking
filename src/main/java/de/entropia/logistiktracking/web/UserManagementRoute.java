@@ -45,18 +45,18 @@ public class UserManagementRoute implements UsersApi {
 		if (authentication == null) throw new IllegalStateException("preauth doesnt seem to have triggered??");
 
 		UserDto udto = new UserDto(
-				authentication.getName(),
-				authentication.getAuthorities().stream()
+			  authentication.getName(),
+			  authentication.getAuthorities().stream()
 //						.peek(it -> {
 //							if (!(it instanceof AuthorityEnumAuthority)) {
 //								log.error("!!! UNKNOWN AUTHORITY TYPE, WHAT THE FUCK IS IT DOING HERE ??? auth {}, authority: {}: {}", authentication, it.getClass(), it);
 //							}
 //						})
-						.filter(f -> f instanceof AuthorityEnumAuthority)
-						.map(it -> ((AuthorityEnumAuthority) it))
-						.map(AuthorityEnumAuthority::authority)
-						.toList(),
-				true
+					.filter(f -> f instanceof AuthorityEnumAuthority)
+					.map(it -> ((AuthorityEnumAuthority) it))
+					.map(AuthorityEnumAuthority::authority)
+					.toList(),
+			  true
 		);
 		return ResponseEntity.ok(udto);
 	}
@@ -66,7 +66,7 @@ public class UserManagementRoute implements UsersApi {
 	@Transactional
 	public ResponseEntity<Void> modifyUser(ModifyUserRequest modifyUserRequest) {
 		String username = modifyUserRequest.getUsername();
-		Optional<LogitrackUserRecord> byId = userDatabaseService.getRecord(username);
+		Optional<LogitrackUserRecord> byId = userDatabaseService.fetchById(username);
 		if (byId.isEmpty()) return ResponseEntity.notFound().build();
 		LogitrackUserRecord theUser = byId.get();
 
@@ -76,7 +76,7 @@ public class UserManagementRoute implements UsersApi {
 		userDatabaseService.update(theUser);
 
 		List<UserAuthority> newAuthorities = modifyUserRequest.getAuthorities().stream().map(userConverter::fromGraphql).toList();
-		List<UserAuthority> existingAuthorities = userDatabaseService.getAuthorities(username);
+		List<UserAuthority> existingAuthorities = userDatabaseService.fetchAuthorities(username);
 		List<UserAuthority> removeAuth = existingAuthorities.stream().filter(it -> !newAuthorities.contains(it)).toList();
 		List<UserAuthority> addAuth = newAuthorities.stream().filter(it -> !existingAuthorities.contains(it)).toList();
 
@@ -112,7 +112,7 @@ public class UserManagementRoute implements UsersApi {
 		LogitrackUserRecord uae = new LogitrackUserRecord(createUserRequest.getUsername(), true, pe.encode(createUserRequest.getPassword()));
 
 //		UserDatabaseElement uae = new UserDatabaseElement(createUserRequest.getUsername(), pe.encode(createUserRequest.getPassword()), createUserRequest.getAuthorities(), true);
-		LogitrackUserRecord save = userDatabaseService.save(uae);
+		LogitrackUserRecord save = userDatabaseService.insert(uae);
 		List<UserAuthority> newAuthorities = createUserRequest.getAuthorities().stream().map(userConverter::fromGraphql).toList();
 		userDatabaseService.addAuthorities(save.getUsername(), newAuthorities);
 
@@ -123,15 +123,15 @@ public class UserManagementRoute implements UsersApi {
 	@Override
 	@HasAuthority(AuthorityEnumDto.MANAGE_USERS)
 	public ResponseEntity<UserDto> getSpecificUser(String name) {
-		Optional<UserWithAuthorities> byId = userDatabaseService.getById(name);
+		Optional<UserWithAuthorities> byId = userDatabaseService.fetchByIdWithAuthorities(name);
 		return byId
-				.map(userDatabaseElement -> ResponseEntity.ok(userConverter.toDto(userDatabaseElement)))
-				.orElseGet(() -> ResponseEntity.notFound().build());
+			  .map(userDatabaseElement -> ResponseEntity.ok(userConverter.toDto(userDatabaseElement)))
+			  .orElseGet(() -> ResponseEntity.notFound().build());
 	}
 
 	@Override
 	@HasAuthority(AuthorityEnumDto.MANAGE_USERS)
 	public ResponseEntity<List<UserDto>> getUsers() {
-		return ResponseEntity.ok(Arrays.stream(userDatabaseService.getAllWithAuthorities()).map(userConverter::toDto).toList());
+		return ResponseEntity.ok(Arrays.stream(userDatabaseService.fetchAllWithAuthorities()).map(userConverter::toDto).toList());
 	}
 }

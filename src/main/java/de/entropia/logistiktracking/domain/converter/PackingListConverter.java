@@ -13,11 +13,11 @@ public class PackingListConverter {
 
 	public PackingList toGraphQl(PackingListRecord dbel) {
 		return PackingList.newBuilder()
-				.packingListId(dbel.getId().toString())
-				.name(dbel.getName())
-				.deliveryStatet(deliveryStateConverter.toGraphql(dbel.getDeliveryState()))
-				// explicitly null, we map this later. we dont want to eager fetch
-				.packedCrates(null)
-				.build();
+			  .packingListId(dbel.getId().toString())
+			  .name(dbel.getName())
+			  .deliveryStatet(deliveryStateConverter.toGraphql(dbel.getDeliveryState()))
+			  // explicitly null, we map this later. we dont want to eager fetch
+			  .packedCrates(null)
+			  .build();
 	}
 }

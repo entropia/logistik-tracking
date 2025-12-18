@@ -32,47 +32,48 @@ public class JiraThings {
 	private final EuroCrateDatabaseService euroCrateDatabaseService;
 
 	@Async
-	public void checkUpdateJiraStatus(EuroCrateRecord ticketThatWasChanged) {
-		List<EuroCrateRecord> allByJiraIssue = List.of(euroCrateDatabaseService.getAllByJiraIssue(ticketThatWasChanged.getJiraIssue()));
-		assert !allByJiraIssue.isEmpty() : "keine boxen die dem jira issue entsprechen?";
-		DeliveryState targetDeliveryState = ticketThatWasChanged.getDeliveryState();
-		String issue = ticketThatWasChanged.getJiraIssue();
+	public void checkUpdateJiraStatus(EuroCrateRecord changedCrate) {
+		List<EuroCrateRecord> allCratesWithThisIssue = List.of(euroCrateDatabaseService.fetchByJiraIssue(changedCrate.getJiraIssue()));
+		assert !allCratesWithThisIssue.isEmpty() : "keine boxen die dem jira issue entsprechen?";
+
+		DeliveryState newState = changedCrate.getDeliveryState();
+		String issue = changedCrate.getJiraIssue();
 		Issue issueInstance = jrc.getIssueClient().getIssue(issue).claim();
-		 log.info("Resolved issue key {} for crate {}: {}", issue, ticketThatWasChanged.getId(), issueInstance.getCommentsUri());
+		log.info("Resolved issue key {} for crate {}: {}", issue, changedCrate.getId(), issueInstance.getCommentsUri());
 		// alle kisten müssen targetDeliveryState haben damit wir aktualisieren können - ansonsten notiz
-		if (allByJiraIssue.stream().allMatch(it -> it.getDeliveryState() == targetDeliveryState)) {
+		if (allCratesWithThisIssue.stream().allMatch(it -> it.getDeliveryState() == newState)) {
 			// wir können das ticket updaten, je nachdem welcher neuer status wir jetzt haben
-			switch (targetDeliveryState) {
+			switch (newState) {
 				case Packing -> {
 					// No state change, in general this should probably not happen because this is the initial status
 					// We shouldn't have to modify a crate to get back here
 					// Warn i guess?
-					jrc.getIssueClient().addComment(issueInstance.getCommentsUri(), Comment.valueOf(MESSAGE_PACKING_STATE.formatted(ticketThatWasChanged.getOperationCenter(), ticketThatWasChanged.getName(), ticketThatWasChanged.getId())));
+					jrc.getIssueClient().addComment(issueInstance.getCommentsUri(), Comment.valueOf(MESSAGE_PACKING_STATE.formatted(changedCrate.getOperationCenter(), changedCrate.getName(), changedCrate.getId())));
 				}
 				case WaitingForTransport, AtHome -> {
 					// Want state change: 'Disponieren'
 					Iterable<Transition> transitions = jrc.getIssueClient().getTransitions(issueInstance).claim();
 					Optional<Transition> dispTransition = StreamSupport.stream(transitions.spliterator(), false)
-							.filter(f -> f.getName().equals("Disponieren") && Iterables.isEmpty(f.getFields())).findAny();
+						  .filter(f -> f.getName().equals("Disponieren") && Iterables.isEmpty(f.getFields())).findAny();
 					if (dispTransition.isEmpty()) {
 						jrc.getIssueClient().addComment(issueInstance.getCommentsUri(),
-								Comment.valueOf(MESSAGE_ERROR_CANT_FIND_TRANSITION.formatted(ticketThatWasChanged.getOperationCenter(), ticketThatWasChanged.getName(), ticketThatWasChanged.getId(), targetDeliveryState.name(), "Disponieren")));
+							  Comment.valueOf(MESSAGE_ERROR_CANT_FIND_TRANSITION.formatted(changedCrate.getOperationCenter(), changedCrate.getName(), changedCrate.getId(), newState.name(), "Disponieren")));
 					} else {
 						jrc.getIssueClient().transition(issueInstance, new TransitionInput(dispTransition.get().getId()));
 					}
 				}
 				case Transport -> {
 					// No state change, notify that the box is now in transport
-					jrc.getIssueClient().addComment(issueInstance.getCommentsUri(), Comment.valueOf(MESSAGE_TRANSPORT_STATE.formatted(ticketThatWasChanged.getOperationCenter(), ticketThatWasChanged.getName(), ticketThatWasChanged.getId())));
+					jrc.getIssueClient().addComment(issueInstance.getCommentsUri(), Comment.valueOf(MESSAGE_TRANSPORT_STATE.formatted(changedCrate.getOperationCenter(), changedCrate.getName(), changedCrate.getId())));
 				}
 				case AtGpn -> {
 					// Want state change: @GPN angekommen
 					Iterable<Transition> transitions = jrc.getIssueClient().getTransitions(issueInstance).claim();
 					Optional<Transition> dispTransition = StreamSupport.stream(transitions.spliterator(), false)
-							.filter(f -> f.getName().equals("@GPN angekommen") && Iterables.isEmpty(f.getFields())).findAny();
+						  .filter(f -> f.getName().equals("@GPN angekommen") && Iterables.isEmpty(f.getFields())).findAny();
 					if (dispTransition.isEmpty()) {
 						jrc.getIssueClient().addComment(issueInstance.getCommentsUri(),
-								Comment.valueOf(MESSAGE_ERROR_CANT_FIND_TRANSITION.formatted(ticketThatWasChanged.getOperationCenter(), ticketThatWasChanged.getName(), ticketThatWasChanged.getId(), targetDeliveryState.name(), "@GPN angekommen")));
+							  Comment.valueOf(MESSAGE_ERROR_CANT_FIND_TRANSITION.formatted(changedCrate.getOperationCenter(), changedCrate.getName(), changedCrate.getId(), newState.name(), "@GPN angekommen")));
 					} else {
 						jrc.getIssueClient().transition(issueInstance, new TransitionInput(dispTransition.get().getId()));
 					}
@@ -80,7 +81,7 @@ public class JiraThings {
 			}
 		} else {
 			// nicht alle crates sind auf dem selben status
-			jrc.getIssueClient().addComment(issueInstance.getCommentsUri(), Comment.valueOf(MESSAGE_NOT_ALL_IN_SYNC.formatted(ticketThatWasChanged.getOperationCenter(), ticketThatWasChanged.getName(), ticketThatWasChanged.getId(), targetDeliveryState.name(), allByJiraIssue.size() - 1)));
+			jrc.getIssueClient().addComment(issueInstance.getCommentsUri(), Comment.valueOf(MESSAGE_NOT_ALL_IN_SYNC.formatted(changedCrate.getOperationCenter(), changedCrate.getName(), changedCrate.getId(), newState.name(), allCratesWithThisIssue.size() - 1)));
 		}
 	}
 }

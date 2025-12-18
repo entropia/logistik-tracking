@@ -54,7 +54,7 @@ public class PackingListGraphQlController {
 		  @Argument String name
 	) {
 		PackingListRecord dbel = new PackingListRecord(null, de.entropia.logistiktracking.jooq.enums.DeliveryState.Packing, name);
-		PackingListRecord newElement = packingListDatabaseService.save(dbel);
+		PackingListRecord newElement = packingListDatabaseService.insert(dbel);
 		return packingListConverter.toGraphQl(newElement);
 	}
 
@@ -63,20 +63,23 @@ public class PackingListGraphQlController {
 		  @Argument String id,
 		  @Argument DeliveryState deliveryState
 	) {
-		Optional<PackingListRecord> byId = packingListDatabaseService.getById(Long.parseLong(id));
+		Optional<PackingListRecord> byId = packingListDatabaseService.fetchById(Long.parseLong(id));
 		if (byId.isEmpty()) return null;
 		PackingListRecord packingListDatabaseElement = byId.get();
 
 		de.entropia.logistiktracking.jooq.enums.DeliveryState mapped = deliveryStateConverter.fromGraphql(deliveryState);
 		packingListDatabaseElement.setDeliveryState(mapped);
 
-		EuroCrateRecord[] byOwningList = euroCrateDatabaseService.getByOwningList(packingListDatabaseElement.getId());
+		// all records in this array have / had an outdated state and have a jira issue
+		EuroCrateRecord[] outdatedChildrenOfTheList = euroCrateDatabaseService.fetchByOwningListWithDifferentStateThanHavingJiraIssue(packingListDatabaseElement.getId(), mapped);
 
-		for (EuroCrateRecord euroCrateRecord : byOwningList) {
-			if (euroCrateRecord.getDeliveryState() != mapped && euroCrateRecord.getJiraIssue() != null && !euroCrateRecord.getJiraIssue().isBlank()) {
-				jiraThings.checkUpdateJiraStatus(euroCrateRecord);
-			}
-			euroCrateRecord.setDeliveryState(mapped);
+		// update all the states in bulk
+		euroCrateDatabaseService.updateDeliveryStateForChildrenOf(packingListDatabaseElement.getId(), mapped);
+
+		// notify relevant jira tickets that state has changed
+		for (EuroCrateRecord euroCrateRecord : outdatedChildrenOfTheList) {
+			// notify of new state
+			jiraThings.checkUpdateJiraStatus(euroCrateRecord);
 		}
 
 		PackingListRecord res = packingListDatabaseService.update(packingListDatabaseElement);
@@ -105,8 +108,7 @@ public class PackingListGraphQlController {
 
 	@MutationMapping(DgsConstants.MUTATION.DeletePackingList)
 	public boolean deletePackingList(@Argument String id) {
-		packingListDatabaseService.deleteById(Long.parseLong(id));
-		return true; // just return true always, we dont really care anyway
+		return packingListDatabaseService.deleteById(Long.parseLong(id)) >= 1;
 	}
 
 	@QueryMapping(DgsConstants.QUERY.GetMultipleListsById)
@@ -114,7 +116,7 @@ public class PackingListGraphQlController {
 		List<PackingList> ecs = new ArrayList<>(id.size());
 		for (String s : id) {
 			long actualId = Long.parseLong(s);
-			Optional<PackingListRecord> byId = packingListDatabaseService.getById(actualId);
+			Optional<PackingListRecord> byId = packingListDatabaseService.fetchById(actualId);
 			byId
 				  .map(packingListConverter::toGraphQl)
 				  .ifPresent(ecs::add);

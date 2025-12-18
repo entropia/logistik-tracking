@@ -1,7 +1,6 @@
 package de.entropia.logistiktracking.printing;
 
 import com.google.zxing.aztec.AztecWriter;
-import com.google.zxing.datamatrix.DataMatrixWriter;
 import com.itextpdf.io.image.ImageData;
 import com.itextpdf.kernel.font.PdfFont;
 import com.itextpdf.kernel.geom.Rectangle;

@@ -25,7 +25,7 @@ public class LogistikTrackingApplication {
 	@Bean
 	public CommonsRequestLoggingFilter logFilter() {
 		CommonsRequestLoggingFilter filter
-				= new CommonsRequestLoggingFilter();
+			  = new CommonsRequestLoggingFilter();
 		filter.setIncludeQueryString(true);
 		filter.setIncludePayload(false);
 		filter.setIncludeHeaders(false);

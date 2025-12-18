@@ -1,8 +1,6 @@
 package de.entropia.logistiktracking.domain.converter;
 
-import de.entropia.logistiktracking.auth.AuthorityEnumAuthority;
 import de.entropia.logistiktracking.jooq.enums.UserAuthority;
-import de.entropia.logistiktracking.jooq.tables.LogitrackUser;
 import de.entropia.logistiktracking.jooq.tables.records.LogitrackUserRecord;
 import de.entropia.logistiktracking.jpa.UserWithAuthorities;
 import de.entropia.logistiktracking.openapi.model.AuthorityEnumDto;

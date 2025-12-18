@@ -27,17 +27,17 @@ public class ManagePackingListUseCase {
 	private final EuroCrateDatabaseService euroCrateDatabaseService;
 
 	public List<PackingList> findAllPackingLists() {
-		return Arrays.stream(packingListDatabaseService.getAll())
-				.map(packingListConverter::toGraphQl)
-				.toList();
+		return Arrays.stream(packingListDatabaseService.fetchAll())
+			  .map(packingListConverter::toGraphQl)
+			  .toList();
 	}
 
 	public List<EuroCrate> findEuroCratesOfPackingList(long id) {
-		return Arrays.stream(euroCrateDatabaseService.getByOwningList(id)).map(euroCrateConverter::toGraphQl).toList();
+		return Arrays.stream(euroCrateDatabaseService.fetchByOwningList(id)).map(euroCrateConverter::toGraphQl).toList();
 	}
 
 	public PackingList findPackingList(long id) {
-		Optional<PackingListRecord> packingListOpt = packingListDatabaseService.getById(id);
+		Optional<PackingListRecord> packingListOpt = packingListDatabaseService.fetchById(id);
 
 		return packingListOpt.map(packingListConverter::toGraphQl).orElse(null);
 

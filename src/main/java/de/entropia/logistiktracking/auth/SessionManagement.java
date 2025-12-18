@@ -13,8 +13,8 @@ public class SessionManagement {
 
 	public void invalidateSessionsOf(String username) {
 		sessionRegistry.getAllPrincipals().stream()
-				.filter(f -> f instanceof UserDetails e && e.getUsername().equals(username))
-				.flatMap(f -> sessionRegistry.getAllSessions(f, false).stream())
-				.forEach(SessionInformation::expireNow);
+			  .filter(f -> f instanceof UserDetails e && e.getUsername().equals(username))
+			  .flatMap(f -> sessionRegistry.getAllSessions(f, false).stream())
+			  .forEach(SessionInformation::expireNow);
 	}
 }

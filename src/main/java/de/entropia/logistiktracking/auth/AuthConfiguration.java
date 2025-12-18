@@ -36,45 +36,45 @@ public class AuthConfiguration {
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity security) throws Exception {
 		return security
-				.authorizeHttpRequests(auth -> auth
-						.requestMatchers("/graphql").hasAuthority(AuthorityEnumDto.MANAGE_RESOURCES.getValue())
-						.anyRequest().permitAll() // per default allow everything, secure routes individually
-				)
-				.formLogin(fl -> {
-					fl.loginProcessingUrl("/api/login"); // POST /login to log in
-					SimpleUrlAuthenticationSuccessHandler handler = new SimpleUrlAuthenticationSuccessHandler();
-					handler.setDefaultTargetUrl(frontendBaseUrl + "/"); // default: no idea where to go
-					handler.setAlwaysUseDefaultTargetUrl(false);
-					handler.setTargetUrlParameter("redirect"); // ?redirect=/to/where/after/login
-					fl.successHandler(handler);
+			  .authorizeHttpRequests(auth -> auth
+					.requestMatchers("/graphql").hasAuthority(AuthorityEnumDto.MANAGE_RESOURCES.getValue())
+					.anyRequest().permitAll() // per default allow everything, secure routes individually
+			  )
+			  .formLogin(fl -> {
+				  fl.loginProcessingUrl("/api/login"); // POST /login to log in
+				  SimpleUrlAuthenticationSuccessHandler handler = new SimpleUrlAuthenticationSuccessHandler();
+				  handler.setDefaultTargetUrl(frontendBaseUrl + "/"); // default: no idea where to go
+				  handler.setAlwaysUseDefaultTargetUrl(false);
+				  handler.setTargetUrlParameter("redirect"); // ?redirect=/to/where/after/login
+				  fl.successHandler(handler);
 
-					fl.failureUrl(frontendBaseUrl + "/users/login?loginFailed=");
-				})
-				.logout(it -> {
-					it.logoutSuccessUrl(frontendBaseUrl + "/");
-					it.logoutUrl("/api/logout");
-				})
-				.cors((cors) -> cors.configurationSource(apiConfigurationSource()))
-				.csrf(AbstractHttpConfigurer::disable)
-				.exceptionHandling(it -> {
-					// wenn wir keine session haben sind wir nicht angemeldet; 401 unauth
-					// ansonsten haben wir eine session und wir haben trotzdem einen sec fehler; 403 forbidden
-					List<RequestMatcherEntry<AuthenticationEntryPoint>> l = new ArrayList<>();
-					l.add(new RequestMatcherEntry<>(
-						  req -> {
-							  if (req.getSession(false) == null) return true;
-							  Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-							  return authentication == null || authentication instanceof AnonymousAuthenticationToken;
-						  }, new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)
-					));
+				  fl.failureUrl(frontendBaseUrl + "/users/login?loginFailed=");
+			  })
+			  .logout(it -> {
+				  it.logoutSuccessUrl(frontendBaseUrl + "/");
+				  it.logoutUrl("/api/logout");
+			  })
+			  .cors((cors) -> cors.configurationSource(apiConfigurationSource()))
+			  .csrf(AbstractHttpConfigurer::disable)
+			  .exceptionHandling(it -> {
+				  // wenn wir keine session haben sind wir nicht angemeldet; 401 unauth
+				  // ansonsten haben wir eine session und wir haben trotzdem einen sec fehler; 403 forbidden
+				  List<RequestMatcherEntry<AuthenticationEntryPoint>> l = new ArrayList<>();
+				  l.add(new RequestMatcherEntry<>(
+						req -> {
+							if (req.getSession(false) == null) return true;
+							Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+							return authentication == null || authentication instanceof AnonymousAuthenticationToken;
+						}, new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)
+				  ));
 
-					it.authenticationEntryPoint(new DelegatingAuthenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.FORBIDDEN), l));
-				})
-				.sessionManagement(it -> it
-						.maximumSessions(32) // placeholder, das müssen wir eig nicht limitieren
-						.sessionRegistry(sessionRegistry())
-						.expiredSessionStrategy(expireStrategy()))
-				.build();
+				  it.authenticationEntryPoint(new DelegatingAuthenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.FORBIDDEN), l));
+			  })
+			  .sessionManagement(it -> it
+					.maximumSessions(32) // placeholder, das müssen wir eig nicht limitieren
+					.sessionRegistry(sessionRegistry())
+					.expiredSessionStrategy(expireStrategy()))
+			  .build();
 	}
 
 	@Bean

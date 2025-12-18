@@ -69,7 +69,6 @@ public class ListElement implements LabelElement {
 		Div div = new Div();
 
 
-
 		div.setFixedPosition(bounds.getLeft() + 5, bounds.getBottom() + 5, bounds.getWidth() - 10);
 //		div.setBorder(new DashedBorder(ColorConstants.RED, 2));
 		div.setHeight(bounds.getHeight() - targetHeight - 15);
@@ -81,7 +80,7 @@ public class ListElement implements LabelElement {
 		element.add(new Text("LIST").addStyle(new Style().setFontSize(30))).add("\n");
 		element.add("ID").add(new Tab()).add(pl.getId().toString()).add("\n");
 		element.add("NAME").add(new Tab()).add("%s".formatted(pl.getName()));
-		element.setMaxWidth(bounds.getWidth()-20-dim-5-5);
+		element.setMaxWidth(bounds.getWidth() - 20 - dim - 5 - 5);
 		div.add(element);
 
 		canvas.add(div);
