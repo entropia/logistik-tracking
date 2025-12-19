@@ -1,4 +1,4 @@
-package de.entropia.logistiktracking;
+package de.entropia.logistiktracking.jira;
 
 import com.atlassian.jira.rest.client.api.JiraRestClient;
 import com.atlassian.jira.rest.client.internal.async.AsynchronousJiraRestClientFactory;
@@ -12,7 +12,7 @@ import java.util.Objects;
 @Configuration
 public class JiraClient {
 	@Bean
-	public JiraRestClient bJiraClient(
+	public JiraRestClient gulaschJiraClient(
 		  @Value("${logitrack.jiraUrl}") String jiraUrl,
 		  @Value("#{environment.JIRA_KEY}") String jiraKey
 	) {

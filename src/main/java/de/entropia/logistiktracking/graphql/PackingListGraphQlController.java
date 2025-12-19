@@ -1,6 +1,5 @@
 package de.entropia.logistiktracking.graphql;
 
-import de.entropia.logistiktracking.JiraThings;
 import de.entropia.logistiktracking.domain.converter.DeliveryStateConverter;
 import de.entropia.logistiktracking.domain.converter.PackingListConverter;
 import de.entropia.logistiktracking.domain.packing_list.use_case.ManagePackingListUseCase;
@@ -8,6 +7,7 @@ import de.entropia.logistiktracking.graphql.gen.DgsConstants;
 import de.entropia.logistiktracking.graphql.gen.types.DeliveryState;
 import de.entropia.logistiktracking.graphql.gen.types.EuroCrate;
 import de.entropia.logistiktracking.graphql.gen.types.PackingList;
+import de.entropia.logistiktracking.jira.JiraManager;
 import de.entropia.logistiktracking.jooq.tables.records.EuroCrateRecord;
 import de.entropia.logistiktracking.jooq.tables.records.PackingListRecord;
 import de.entropia.logistiktracking.jpa.repo.EuroCrateDatabaseService;
@@ -30,7 +30,7 @@ public class PackingListGraphQlController {
 	private final ManagePackingListUseCase managePackingListUseCase;
 	private final PackingListDatabaseService packingListDatabaseService;
 	private final PackingListConverter packingListConverter;
-	private final JiraThings jiraThings;
+	private final JiraManager jiraThings;
 	private final DeliveryStateConverter deliveryStateConverter;
 	private final EuroCrateDatabaseService euroCrateDatabaseService;
 
@@ -77,10 +77,7 @@ public class PackingListGraphQlController {
 		euroCrateDatabaseService.updateDeliveryStateForChildrenOf(packingListDatabaseElement.getId(), mapped);
 
 		// notify relevant jira tickets that state has changed
-		for (EuroCrateRecord euroCrateRecord : outdatedChildrenOfTheList) {
-			// notify of new state
-			jiraThings.checkUpdateJiraStatus(euroCrateRecord);
-		}
+		jiraThings.runChangeSet(List.of(outdatedChildrenOfTheList));
 
 		PackingListRecord res = packingListDatabaseService.update(packingListDatabaseElement);
 		return packingListConverter.toGraphQl(res);

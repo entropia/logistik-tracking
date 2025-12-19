@@ -1,6 +1,5 @@
 package de.entropia.logistiktracking.graphql;
 
-import de.entropia.logistiktracking.JiraThings;
 import de.entropia.logistiktracking.domain.converter.DeliveryStateConverter;
 import de.entropia.logistiktracking.domain.converter.EuroCrateConverter;
 import de.entropia.logistiktracking.domain.converter.OperationCenterConverter;
@@ -10,6 +9,7 @@ import de.entropia.logistiktracking.graphql.gen.types.DeliveryState;
 import de.entropia.logistiktracking.graphql.gen.types.EuroCrate;
 import de.entropia.logistiktracking.graphql.gen.types.OperationCenter;
 import de.entropia.logistiktracking.graphql.gen.types.PackingList;
+import de.entropia.logistiktracking.jira.JiraManager;
 import de.entropia.logistiktracking.jooq.tables.records.EuroCrateRecord;
 import de.entropia.logistiktracking.jpa.repo.EuroCrateDatabaseService;
 import lombok.AllArgsConstructor;
@@ -31,7 +31,7 @@ public class EuroCrateGraphQlController {
 	private final EuroCrateUseCase euroCrateUseCase;
 	private final EuroCrateDatabaseService euroCrateDatabaseService;
 	private final EuroCrateConverter euroCrateConverter;
-	private final JiraThings jira;
+	private final JiraManager jira;
 	private final OperationCenterConverter operationCenterConverter;
 	private final DeliveryStateConverter deliveryStateConverter;
 
@@ -86,10 +86,10 @@ public class EuroCrateGraphQlController {
 
 		EuroCrateRecord updated = euroCrateDatabaseService.update(the);
 
-		if (oldStatus != deliveryState) {
+		if (oldStatus != deliveryState && updated.getJiraIssue() != null) {
 			// update ticket state or add note
 			// do last to flush changes to db first
-			jira.checkUpdateJiraStatus(updated);
+			jira.runChangeSet(List.of(updated));
 		}
 
 		return euroCrateConverter.toGraphQl(updated);
