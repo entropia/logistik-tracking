@@ -129,6 +129,10 @@
 	}
 </script>
 
+<svelte:head>
+    <title>Drucken</title>
+</svelte:head>
+
 <Button disabled={theCrates.length === 0} onclick={printIt}>
 	<Printer />
 	Drucken

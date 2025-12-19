@@ -113,6 +113,10 @@
 	}
 </script>
 
+<svelte:head>
+    <title>Liste {current.name}</title>
+</svelte:head>
+
 <svelte:document onkeydown={(ev: KeyboardEvent) => {
     if (ev.key === "C" || ev.key === "c") id_input?.focus()
 }}></svelte:document>

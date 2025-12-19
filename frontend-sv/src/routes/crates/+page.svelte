@@ -8,6 +8,10 @@
 
 </script>
 
+<svelte:head>
+    <title>Kisten</title>
+</svelte:head>
+
 <h2 class="text-2xl mb-2 font-bold">Kisten</h2>
 <div class="flex flex-row gap-5 m-5 text-inherit">
     <Button href="/crates/create">

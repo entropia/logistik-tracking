@@ -21,6 +21,10 @@
 	}
 </script>
 
+<svelte:head>
+    <title>Liste erstellen</title>
+</svelte:head>
+
 <h2 class="text-2xl mb-5 font-bold">Liste erstellen</h2>
 <form onsubmit={handle_submit} class="w-full max-w-md">
     <Field.Set>

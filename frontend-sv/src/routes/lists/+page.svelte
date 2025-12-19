@@ -50,6 +50,10 @@
 	let displayLists = $derived(filterCrates(data.lists, filter));
 </script>
 
+<svelte:head>
+    <title>Listen</title>
+</svelte:head>
+
 <h2 class="text-2xl mb-2 font-bold">Listen</h2>
 <div class="flex flex-row gap-5 m-5">
     <Button href="/lists/create">

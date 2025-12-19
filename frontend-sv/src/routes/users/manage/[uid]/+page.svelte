@@ -65,6 +65,10 @@
     }
 </script>
 
+<svelte:head>
+    <title>Nutzer {data.users.username}</title>
+</svelte:head>
+
 <h2 class="text-2xl mb-5 font-bold">Nutzer {data.users.username}</h2>
 
 <form onsubmit={handle_submit} class="w-full max-w-md mb-5">

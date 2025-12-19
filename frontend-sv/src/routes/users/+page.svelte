@@ -9,6 +9,10 @@
 	console.log(data)
 </script>
 
+<svelte:head>
+    <title>Nutzer</title>
+</svelte:head>
+
 <h2 class="text-2xl mb-2 font-bold">Nutzerverwaltung</h2>
 
 <div class="flex flex-row gap-5 m-5">

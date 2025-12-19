@@ -25,6 +25,10 @@
     }
 </script>
 
+<svelte:head>
+    <title>Listen Masseneintragung</title>
+</svelte:head>
+
 <svelte:document onkeydown={(ev: KeyboardEvent) => {
     if (ev.key === "L" || ev.key === "l") id_input?.focus()
 }}></svelte:document>

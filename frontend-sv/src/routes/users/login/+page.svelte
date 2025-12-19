@@ -24,6 +24,10 @@
     }
 </script>
 
+<svelte:head>
+    <title>Anmelden</title>
+</svelte:head>
+
 <div
     class="relative w-full md:w-md md:absolute md:left-1/2 md:top-1/2 md:-translate-1/2 flex flex-col gap-5"
 >

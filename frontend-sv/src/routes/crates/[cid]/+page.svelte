@@ -42,6 +42,10 @@
     }
 </script>
 
+<svelte:head>
+    <title>Kiste {current_state.operationCenter} / {current_state.name}</title>
+</svelte:head>
+
 <h2 class="text-2xl mb-5 font-bold">Box {current_state.operationCenter} / {current_state.name}</h2>
 
 <form onsubmit={handle_submit} class="w-full max-w-3xl mb-5 flex flex-col gap-5">
