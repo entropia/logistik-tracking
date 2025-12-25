@@ -24,30 +24,6 @@
             <li><Button variant="ghost" href="/crates">Kisten</Button></li>
             <li><Button variant="ghost" href="/lists">Listen</Button></li>
             <li><UserDropdown></UserDropdown></li>
-<!--            todo: user menu dropdown -->
-<!--            <li>-->
-<!--                <Dropdown bind:showTooltip={showTooltip}>-->
-<!--                    {#snippet trigger(flRef)}-->
-<!--                        <button use:flRef aria-label="account" onclick={() => showTooltip = true}>-->
-<!--                            <svg style="width: 21px; height: 21px" class="icon-[material-symbols&#45;&#45;account-circle]"></svg>-->
-<!--                        </button>-->
-<!--                    {/snippet}-->
-<!--                    {#snippet body()}-->
-<!--                        <ul class="dropdown menu w-52 rounded-box bg-base-100 shadow-sm">-->
-<!--                            <UserMenu></UserMenu>-->
-<!--                        </ul>-->
-<!--                    {/snippet}-->
-<!--                </Dropdown>-->
-<!--            </li>-->
-<!--            <li>-->
-<!--                <details>-->
-<!--                    <summary>Parent</summary>-->
-<!--                    <ul class="bg-base-100 rounded-t-none p-2">-->
-<!--                        <li><a href="/">Link 1</a></li>-->
-<!--                        <li><a href="/">Link 2</a></li>-->
-<!--                    </ul>-->
-<!--                </details>-->
-<!--            </li>-->
         </ul>
     </div>
 </div>

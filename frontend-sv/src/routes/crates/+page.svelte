@@ -20,8 +20,6 @@
     </Button>
 </div>
 
-
-
 <CratesDisplay crates={data.crates.getEuroCrates}>
 
 </CratesDisplay>

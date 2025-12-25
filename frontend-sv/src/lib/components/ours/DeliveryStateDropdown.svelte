@@ -11,11 +11,12 @@
 	};
     let {
 		value = $bindable(),
+        name,
         ...restProps
     }: TheProps = $props();
 </script>
 
-<Select.Root type="single" bind:value={value}>
+<Select.Root type="single" bind:value={value} name={name || undefined}>
     <Select.Trigger {...restProps}>{value}</Select.Trigger>
     <Select.Content>
         {#each Object.entries(DeliveryState) as oc}

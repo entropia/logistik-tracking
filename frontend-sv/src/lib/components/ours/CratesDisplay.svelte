@@ -60,6 +60,8 @@
     }
 </script>
 
+<!--fixme add jira column-->
+
 <InputGroup.Root class="w-full max-w-[400px]">
     <InputGroup.Input bind:value={filter} type="text" placeholder="Suchen..." />
     <InputGroup.Addon>

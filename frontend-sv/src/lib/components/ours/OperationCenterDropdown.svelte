@@ -11,15 +11,16 @@
 	};
     let {
 		value = $bindable(),
+        name,
         ...restProps
     }: TheProps = $props();
 </script>
 
-<Select.Root type="single" bind:value={value}>
+<Select.Root type="single" bind:value={value} name={name || undefined}>
     <Select.Trigger {...restProps}>{value}</Select.Trigger>
     <Select.Content>
         {#each Object.entries(OperationCenter) as oc}
-            <Select.Item value={oc[0]}>{oc[1]}</Select.Item>
+            <Select.Item value={oc[1]}>{oc[1]}</Select.Item>
         {/each}
     </Select.Content>
 </Select.Root>
