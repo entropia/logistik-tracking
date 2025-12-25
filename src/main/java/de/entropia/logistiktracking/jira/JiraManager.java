@@ -106,12 +106,12 @@ public class JiraManager {
 	}
 
 	private void transitionIssue(Issue issueInstance, Transition dispTransition) {
-		log.info("Transition {}: -> \n{}", issueInstance.getKey(), dispTransition.getName());
-//		jrc.getIssueClient().transition(issueInstance, new TransitionInput(dispTransition.getId()));
+//		log.info("Transition {}: -> \n{}", issueInstance.getKey(), dispTransition.getName());
+		jrc.getIssueClient().transition(issueInstance, new TransitionInput(dispTransition.getId()));
 	}
 
 	private void addComment(Issue issueToComment, String comment) {
-		log.info("Comment {}:\n{}", issueToComment.getKey(), comment);
-//		jrc.getIssueClient().addComment(issueToComment.getCommentsUri(), Comment.valueOf(comment));
+//		log.info("Comment {}:\n{}", issueToComment.getKey(), comment);
+		jrc.getIssueClient().addComment(issueToComment.getCommentsUri(), Comment.valueOf(comment));
 	}
 }
