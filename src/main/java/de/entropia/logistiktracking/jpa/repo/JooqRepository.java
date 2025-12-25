@@ -21,6 +21,7 @@ public abstract class JooqRepository<T extends Record, ID> {
 
 	public T[] fetchAll() {
 		return dsl.selectFrom(table)
+			  .orderBy(idField.asc())
 			  .fetchArray();
 	}
 
