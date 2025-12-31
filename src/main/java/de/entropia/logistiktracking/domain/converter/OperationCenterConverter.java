@@ -44,6 +44,43 @@ public class OperationCenterConverter {
 		};
 	}
 
+	public String convertToShortLabel(de.entropia.logistiktracking.jooq.enums.OperationCenter oc) {
+		return switch (oc) {
+			case Finanzen -> "FINZ";
+			case Merchdesk -> "MERCH";
+			case Schilder -> "SIGN";
+			case Badges -> "BADGE";
+			case Trolle -> "TROLL";
+			case Kueche -> "KÜCHE";
+			case WOC -> "WOC";
+			case Fruehstueck -> "FRÜH";
+			case RaumDer1000Namen -> "RD1K";
+			case Bar -> "BAR";
+			case Spaeti -> "SPÄTI";
+			case Backoffice -> "BACK";
+			case Aussenbar -> "AUBAR";
+			case Kaffeebar -> "KABAR";
+			case Cocktailbar -> "COBAR";
+			case NOC -> "NOC";
+			case POC -> "POC";
+			case VOC -> "VOC";
+			case BuildupAndTeardown -> "BUILD";
+			case Infrastruktur -> "INFRA";
+			case Deko -> "DEKO";
+			case SafeR -> "SAFER";
+			case Content -> "CONT";
+			case SilentHacking -> "SLNT";
+			case Projektleitung -> "PL";
+			case LOC -> "LOC";
+			case Heralding -> "HRLD";
+			case DesignUndMotto -> "MOTTO";
+			case PresseUndSocialMedia -> "PRESS";
+			case LoungeControl -> "LCONT";
+			case LoungeTechnik -> "LTECH";
+			case Infodesk -> "INFO";
+		};
+	}
+
 	public de.entropia.logistiktracking.jooq.enums.OperationCenter fromGraphql(OperationCenter oc) {
 		return switch (oc) {
 			case OperationCenter.Finanzen -> Finanzen;

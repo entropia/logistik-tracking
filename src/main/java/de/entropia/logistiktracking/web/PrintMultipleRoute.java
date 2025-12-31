@@ -2,19 +2,7 @@ package de.entropia.logistiktracking.web;
 
 import com.google.zxing.aztec.AztecWriter;
 import com.google.zxing.common.BitMatrix;
-import com.itextpdf.io.font.constants.StandardFonts;
-import com.itextpdf.io.image.ImageData;
-import com.itextpdf.io.image.ImageDataFactory;
-import com.itextpdf.kernel.colors.ColorConstants;
-import com.itextpdf.kernel.font.PdfFont;
-import com.itextpdf.kernel.font.PdfFontFactory;
-import com.itextpdf.kernel.geom.PageSize;
-import com.itextpdf.kernel.geom.Rectangle;
-import com.itextpdf.kernel.pdf.PdfDocument;
-import com.itextpdf.kernel.pdf.PdfPage;
-import com.itextpdf.kernel.pdf.PdfWriter;
-import com.itextpdf.kernel.pdf.canvas.PdfCanvas;
-import com.itextpdf.layout.Canvas;
+import de.entropia.logistiktracking.domain.converter.OperationCenterConverter;
 import de.entropia.logistiktracking.jpa.repo.EuroCrateDatabaseService;
 import de.entropia.logistiktracking.jpa.repo.PackingListDatabaseService;
 import de.entropia.logistiktracking.openapi.api.PrintMultipleApi;
@@ -22,8 +10,17 @@ import de.entropia.logistiktracking.openapi.model.PrintMultipleDtoInner;
 import de.entropia.logistiktracking.printing.CrateElement;
 import de.entropia.logistiktracking.printing.LabelElement;
 import de.entropia.logistiktracking.printing.ListElement;
+import de.entropia.logistiktracking.printing.ResourceSet;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.pdmodel.font.Standard14Fonts;
+import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
+import org.apache.pdfbox.util.Matrix;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
@@ -31,10 +28,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
-import java.nio.ByteBuffer;
+import java.io.File;
 import java.util.List;
-import java.util.Objects;
 
 @Controller
 @AllArgsConstructor
@@ -42,6 +40,7 @@ import java.util.Objects;
 public class PrintMultipleRoute implements PrintMultipleApi {
 	private final EuroCrateDatabaseService euroCrateDatabaseService;
 	private final PackingListDatabaseService packingListDatabaseService;
+	private final OperationCenterConverter operationCenterConverter;
 
 	@SneakyThrows
 	@Override
@@ -50,74 +49,84 @@ public class PrintMultipleRoute implements PrintMultipleApi {
 	public ResponseEntity<Resource> printMultipleThings(List<PrintMultipleDtoInner> printMultipleDtoInner) {
 		List<LabelElement> elements = printMultipleDtoInner.stream().map(this::resolve).toList();
 
-		ImageData entropiaLogo = ImageDataFactory.createPng(Objects.requireNonNull(getClass().getClassLoader().getResource("Entropia.png")));
-		ImageData locLogo = ImageDataFactory.createPng(Objects.requireNonNull(getClass().getClassLoader().getResource("LOC.png")));
-		PdfFont courierFont = PdfFontFactory.createFont(StandardFonts.COURIER);
-
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		PageSize somewhatCompatiblePageSize = PageSize.A4;
-		float pageWidth = somewhatCompatiblePageSize.getWidth();
-		float pageHeight = somewhatCompatiblePageSize.getHeight();
 
 		AztecWriter cw = new AztecWriter();
 
-		try (PdfWriter pdfWriter = new PdfWriter(baos);
-			 PdfDocument pdf = new PdfDocument(pdfWriter)) {
-			pdf.setDefaultPageSize(somewhatCompatiblePageSize);
-			int cols = 2;
-			int rows = 4;
+		float labelWidth  = PDRectangle.A4.getWidth() / 2;
+		float labelHeight = PDRectangle.A4.getHeight() / 4;
 
-			float labelWidth = pageWidth / cols;
-			float labelHeight = pageHeight / rows;
+		try (PDDocument pdDocument = new PDDocument()) {
 
-			for (int baseIndex = 0; baseIndex < elements.size(); baseIndex += 8) {
-				int inThisPartition = Math.min(elements.size() - baseIndex, 8);
-				PdfPage page = pdf.addNewPage();
-				PdfCanvas pdfc = new PdfCanvas(page);
+			int labelIndex = 0;
 
-				for (int i = 0; i < inThisPartition; i++) {
-					int row = i / 2;
-					int col = i % 2;
-					float x = col * labelWidth;
-					float y = pageHeight - (row + 1) * labelHeight;
+			PDType1Font boldFont = new PDType1Font(Standard14Fonts.FontName.COURIER_BOLD);
+			PDType1Font font = new PDType1Font(Standard14Fonts.FontName.COURIER);
 
-					Rectangle labelRect = new Rectangle(x, y, labelWidth, labelHeight);
+			PDImageXObject entropiaLogo = PDImageXObject.createFromFileByContent(
+				  new File(getClass().getClassLoader().getResource("Entropia.png").toURI()),
+				  pdDocument
+			);
 
-					// Optional: draw a border around the label
-					pdfc.rectangle(labelRect).setStrokeColor(ColorConstants.BLACK).stroke();
+			PDImageXObject locLogo = PDImageXObject.createFromFileByContent(
+				  new File(getClass().getClassLoader().getResource("LOC.png").toURI()),
+				  pdDocument
+			);
 
-					// Put some content in each label
-					Canvas canvas = new Canvas(pdfc, labelRect);
-
-					elements.get(baseIndex + i).add(cw, canvas, labelRect, locLogo, entropiaLogo, courierFont);
-
-					canvas.close();
+			for (LabelElement element : elements) {
+				// neue seite erstellen wenn die jetzige voll ist
+				if (labelIndex % 8 == 0) {
+					pdDocument.addPage(new PDPage(PDRectangle.A4));
 				}
+
+				PDPage targetPage = pdDocument.getPage(pdDocument.getNumberOfPages() - 1);
+
+				int position = labelIndex % 8;
+				int col = position % 2;
+				int row = position / 2;
+
+				float x = col * labelWidth;
+				float y = PDRectangle.A4.getHeight() - ((row + 1) * labelHeight);
+
+				try (PDPageContentStream contentStream = new PDPageContentStream(pdDocument, targetPage, PDPageContentStream.AppendMode.APPEND, true, false)) {
+					contentStream.saveGraphicsState();
+					contentStream.transform(Matrix.getTranslateInstance(x, y));
+
+					// 2 units on, 2 off
+					contentStream.setLineDashPattern(new float[] {2}, 0);
+					contentStream.addRect(0, 0, labelWidth, labelHeight);
+					contentStream.setStrokingColor(Color.GRAY);
+					contentStream.stroke();
+					contentStream.setLineDashPattern(new float[0], 0);
+
+					element.add(cw, pdDocument, targetPage, contentStream, labelWidth, labelHeight, new ResourceSet(locLogo, entropiaLogo, font, boldFont));
+					contentStream.restoreGraphicsState();
+				}
+
+				labelIndex++;
 			}
+
+			pdDocument.save(baos);
 		}
+
 		return ResponseEntity.ok(new ByteArrayResource(baos.toByteArray()));
 	}
 
-	public static byte[] convertToBlackWhiteRawData(BitMatrix bm) {
-		int lineWidth = Math.ceilDiv(bm.getWidth(), 8);
-		ByteBuffer bb = ByteBuffer.allocate(lineWidth * bm.getHeight());
-		for (int ix = 0; ix < bm.getWidth(); ix++) {
-			for (int iy = 0; iy < bm.getHeight(); iy++) {
-				int actualIdx = lineWidth * iy + ix / 8;
-				int offset = ix % 8;
-				byte existing = bb.get(actualIdx);
-				byte newValue = (byte) (bm.get(ix, iy) ? 1 : 0);
-				newValue = (byte) (newValue << (7 - offset));
-				bb.put(actualIdx, (byte) (existing | newValue));
+	public static BufferedImage convertToBI(BitMatrix bm) {
+		BufferedImage bi = new BufferedImage(bm.getWidth(), bm.getHeight(), BufferedImage.TYPE_BYTE_BINARY);
+		for (int y = 0; y < bm.getHeight(); y++) {
+			for (int x = 0; x < bm.getWidth(); x++) {
+				boolean b = bm.get(x, y);
+				bi.setRGB(x, y, b ? 0xFFFFFFFF : 0x00000000);
 			}
 		}
-		return bb.array();
+		return bi;
 	}
 
 	private LabelElement resolve(PrintMultipleDtoInner it) {
 		return switch (it.getType()) {
 			case PrintMultipleDtoInner.TypeEnum.CRATE ->
-				  new CrateElement(euroCrateDatabaseService.fetchById(it.getId()).orElseThrow());
+				  new CrateElement(euroCrateDatabaseService.fetchById(it.getId()).orElseThrow(), operationCenterConverter);
 			case PrintMultipleDtoInner.TypeEnum.LIST ->
 				  new ListElement(packingListDatabaseService.fetchById(it.getId()).orElseThrow());
 		};

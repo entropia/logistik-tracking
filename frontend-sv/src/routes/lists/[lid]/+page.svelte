@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type {PageProps} from './$types';
+	import type {ActionData, PageProps} from './$types';
 	import {addCratesToList, execute, removeCratesFromList, updateListPacking} from "$lib/graphql";
 	import {prepare_id} from "$lib/id_parser";
 	import {client} from "$lib/http_api";
@@ -13,27 +13,27 @@
 	import {tick} from "svelte";
 	import {ChevronsUpDown, Plus as PlusIcon} from "@lucide/svelte";
 	import DeliveryStateDropdown from "$lib/components/ours/DeliveryStateDropdown.svelte";
+    import { superForm } from 'sveltekit-superforms';
+    import GenericFormField from '$lib/components/ours/GenericFormField.svelte';
 
 	let {data}: PageProps = $props();
 
 	let current = $state(data.list)
 
-	let form_deliverystate = $state(current.deliveryStatet);
-
-	async function handle_submit(event: SubmitEvent) {
-		event.preventDefault()
-		let resp = await execute(updateListPacking, fetch, {
-			id: current.packingListId,
-			newstate: form_deliverystate
-		})
-		let updated = resp.data?.setPackingListDeliveryState
-		if (updated) {
-			// display new info
-			current.deliveryStatet = updated.deliveryStatet
-			current.packedCrates = updated.packedCrates
+	let theForm = superForm(data.form, {
+		resetForm: false,
+		invalidateAll: false,
+		onResult(x) {
+			if (x.result.type != "redirect") {
+				let data: ActionData = 
+				//@ts-expect-error .data existiert nicht im typ aber bei laufzeit
+					x.result.data;
+				current.packedCrates = data!!.res!!.packedCrates;
+			}
 		}
-		toast.success("Liste gespeichert")
-	}
+	});
+
+	let {form, enhance,tainted, isTainted} = theForm;
 
 	async function run_del(ev: MouseEvent, id: string) {
 		(ev.currentTarget as Element).setAttribute("disabled", "true")
@@ -126,14 +126,16 @@
 	Liste Drucken
 </Button>
 
-<form onsubmit={handle_submit} class="w-full max-w-md mb-5">
+<form method="POST" class="w-full max-w-md mb-5" use:enhance>
 	<Field.Set>
+		<GenericFormField superform={theForm} field="deliveryState">
+			{#snippet children({labProps, inpProps})}
+				<Field.Label {...labProps}>Status</Field.Label>
+            	<DeliveryStateDropdown bind:value={$form.deliveryState} {...inpProps}></DeliveryStateDropdown>
+			{/snippet}
+		</GenericFormField>
 		<Field.Field>
-			<Field.Label for="status">Status</Field.Label>
-            <DeliveryStateDropdown id="status" bind:value={form_deliverystate}></DeliveryStateDropdown>
-		</Field.Field>
-		<Field.Field>
-			<Button type="submit">Speichern</Button>
+			<Button type="submit" disabled={!isTainted($tainted)}>Speichern</Button>
 		</Field.Field>
 	</Field.Set>
 </form>

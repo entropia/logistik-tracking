@@ -1,60 +1,72 @@
 <script lang="ts">
-	import {DeliveryState} from "$lib/../gen/graphql";
-	import {execute, updateListPacking} from "$lib/graphql";
-	import {prepare_id} from "$lib/id_parser";
-	import * as Field from "$lib/components/ui/field";
-	import * as InputGroup from "$lib/components/ui/input-group";
-	import {Button} from "$lib/components/ui/button";
-	import DeliveryStateDropdown from "$lib/components/ours/DeliveryStateDropdown.svelte";
+    import { DeliveryState } from "$lib/../gen/graphql";
+    import { execute, updateListPacking } from "$lib/graphql";
+    import { prepare_id } from "$lib/id_parser";
+    import * as Field from "$lib/components/ui/field";
+    import * as InputGroup from "$lib/components/ui/input-group";
+    import { Button } from "$lib/components/ui/button";
+    import DeliveryStateDropdown from "$lib/components/ours/DeliveryStateDropdown.svelte";
     import { QrCode } from "@lucide/svelte";
+    import { superForm } from "sveltekit-superforms";
+    import type { PageProps } from "./$types";
+    import GenericFormField from "$lib/components/ours/GenericFormField.svelte";
 
-	let list_id = $state("");
-	let id_input = $state<HTMLInputElement>(null!);
-	let form_deliverystate = $state(DeliveryState.AtGpn);
-	let feedback = $state<HTMLParagraphElement>();
+    let id_input = $state<HTMLInputElement>(null!);
 
-	async function do_update(ev: SubmitEvent) {
-		ev.preventDefault()
-        let theid = prepare_id(list_id);
-        let ret = await execute(updateListPacking, window.fetch, {
-            id:theid,
-            newstate: form_deliverystate
-        });
-		list_id = ""
-        feedback!.textContent = `Liste ${theid} / ${ret.data!!.setPackingListDeliveryState!!.name} hat jetzt Status ${form_deliverystate}`;
-    }
+    let { data }: PageProps = $props();
+
+    let sf = superForm(data.form, {
+        resetForm: false,
+        invalidateAll: false,
+        onUpdate({form}) {
+            if (form.valid) {
+                // wir sind durch
+                form.data.id = "";
+            }
+        }
+    });
+
+    let { form, enhance, tainted, isTainted, message } = sf;
 </script>
 
 <svelte:head>
     <title>Listen Masseneintragung</title>
 </svelte:head>
 
-<svelte:document onkeydown={(ev: KeyboardEvent) => {
-    if (ev.key === "L" || ev.key === "l") id_input?.focus()
-}}></svelte:document>
+<svelte:document
+    onkeydown={(ev: KeyboardEvent) => {
+        if (ev.key === "L" || ev.key === "l") id_input?.focus();
+    }}
+/>
 
 <h2 class="text-2xl mb-5 font-bold">Masseneintragung</h2>
 <p>Hier kannst du viele Listen kontinuierlich auf einen bestimmten Status setzen.</p>
 <p>Am besten funktioniert das mit einem Barcodescanner. Wenn ein Barcode erkannt wird, wird er automatisch eingetragen.</p>
 <p>Wenn du nur eine bestimmte Liste ändern willst bist du <a class="link" href="/lists">woanders</a> besser aufgehoben.</p>
 
-<form onsubmit={do_update} class="w-full max-w-2xl mb-5 mt-5">
+<form method="POST" use:enhance class="w-full max-w-2xl mb-5 mt-5">
     <Field.Group>
-        <Field.Field>
-            <Field.Label for="status">Neuer Status</Field.Label>
-            <DeliveryStateDropdown id="status" bind:value={form_deliverystate}></DeliveryStateDropdown>
-        </Field.Field>
-        <Field.Field>
-            <Field.Label for="lid">Listen-ID (L...)</Field.Label>
-            <InputGroup.Root>
-                <InputGroup.Input type="text" placeholder="ID hier" required pattern="[lL]?\d+" bind:value={list_id} bind:ref={id_input} />
-                <InputGroup.Addon>
-                    <QrCode />
-                </InputGroup.Addon>
-            </InputGroup.Root>
-        </Field.Field>
-        <Button type="submit">Aktualisieren</Button>
+        <GenericFormField superform={sf} field="deliveryState">
+            {#snippet children({ inpProps, labProps })}
+                <Field.Label {...labProps}>Neuer Status</Field.Label>
+                <DeliveryStateDropdown bind:value={$form.deliveryState} {...inpProps}></DeliveryStateDropdown>
+            {/snippet}
+        </GenericFormField>
+        <GenericFormField superform={sf} field="id">
+            {#snippet children({ inpProps, labProps })}
+                <Field.Label {...labProps}>Listen-ID (L...)</Field.Label>
+                <InputGroup.Root>
+                    <InputGroup.Input type="text" placeholder="ID hier" bind:value={$form.id} bind:ref={id_input} {...inpProps} />
+                    <InputGroup.Addon>
+                        <QrCode />
+                    </InputGroup.Addon>
+                </InputGroup.Root>
+            {/snippet}
+        </GenericFormField>
+        <Button type="submit" disabled={!isTainted($tainted)}>Aktualisieren</Button>
     </Field.Group>
 </form>
 
-<p bind:this={feedback} class="mt-4"></p>
+{#if $message}
+<p class="mt-4">{$message}</p>
+{/if}

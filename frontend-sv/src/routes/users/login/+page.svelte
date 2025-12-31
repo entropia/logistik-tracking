@@ -28,15 +28,11 @@
     <title>Anmelden</title>
 </svelte:head>
 
-<div
-    class="relative w-full md:w-md md:absolute md:left-1/2 md:top-1/2 md:-translate-1/2 flex flex-col gap-5"
->
+<div class="relative w-full md:w-md md:absolute md:left-1/2 md:top-1/2 md:-translate-1/2 flex flex-col gap-5">
     {#if redirUrlWarning != null}
         <Alert.Root variant="destructive">
             <CircleAlert />
-            <Alert.Title
-                >Die Redirect URL ist nicht auf dieser Seite!</Alert.Title
-            >
+            <Alert.Title>Die Redirect URL ist nicht auf dieser Seite!</Alert.Title>
             <Alert.Description>
                 <p class="m-4"><code>{redirUrlWarning}</code></p>
                 <p>Du wirst auf / weitergeleitet.</p>
@@ -56,13 +52,7 @@
             <Field.Field class="grow">
                 <Field.Label for="uname">Nutzername</Field.Label>
                 <InputGroup.Root>
-                    <InputGroup.Input
-                        id="uname"
-                        name="username"
-                        placeholder="Nutzername"
-                        required
-                        autofocus
-                    />
+                    <InputGroup.Input id="uname" name="username" placeholder="Nutzername" required autofocus />
                     <InputGroup.Addon>
                         <User />
                     </InputGroup.Addon>
@@ -72,14 +62,7 @@
                 <Field.Label for="passwd">Passwort</Field.Label>
 
                 <InputGroup.Root>
-                    <InputGroup.Input
-                        id="passwd"
-                    name="password"
-                    placeholder="Passwort"
-                    type="password"
-                    required
-                    autofocus
-                    />
+                    <InputGroup.Input id="passwd" name="password" placeholder="Passwort" type="password" required autofocus />
                     <InputGroup.Addon>
                         <KeyRound />
                     </InputGroup.Addon>

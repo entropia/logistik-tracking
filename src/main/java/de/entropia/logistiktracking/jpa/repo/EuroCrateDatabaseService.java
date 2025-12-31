@@ -18,12 +18,14 @@ public class EuroCrateDatabaseService extends JooqRepository<EuroCrateRecord, Lo
 	public EuroCrateRecord[] fetchByOwningList(long listId) {
 		return dsl.selectFrom(EURO_CRATE)
 			  .where(EURO_CRATE.OWNING_LIST.eq(listId))
+			  .orderBy(EURO_CRATE.ID.asc())
 			  .fetchArray();
 	}
 
 	public EuroCrateRecord[] fetchByJiraIssue(String jiraIssue) {
 		return dsl.selectFrom(EURO_CRATE)
 			  .where(EURO_CRATE.JIRA_ISSUE.eq(jiraIssue))
+			  .orderBy(EURO_CRATE.ID.asc())
 			  .fetchArray();
 	}
 
