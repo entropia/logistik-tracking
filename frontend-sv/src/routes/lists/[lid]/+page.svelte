@@ -1,102 +1,104 @@
 <script lang="ts">
-	import type {ActionData, PageProps} from './$types';
-	import {addCratesToList, execute, removeCratesFromList, updateListPacking} from "$lib/graphql";
-	import {prepare_id} from "$lib/id_parser";
-	import {client} from "$lib/http_api";
-	import {Button} from "$lib/components/ui/button";
+	import type { ActionData, PageProps } from "./$types";
+	import { addCratesToList, execute, removeCratesFromList, updateListPacking } from "$lib/graphql";
+	import { stripIndicatorAndZeros } from "$lib/id_parser";
+	import { client } from "$lib/http_api";
+	import { Button } from "$lib/components/ui/button";
 	import * as Field from "$lib/components/ui/field";
 	import * as Command from "$lib/components/ui/command";
 	import * as Popover from "$lib/components/ui/popover";
 	import * as Table from "$lib/components/ui/table";
-	import {toast} from "svelte-sonner";
-	import {Input} from "$lib/components/ui/input";
-	import {tick} from "svelte";
-	import {ChevronsUpDown, Plus as PlusIcon} from "@lucide/svelte";
+	import { toast } from "svelte-sonner";
+	import { Input } from "$lib/components/ui/input";
+	import { tick } from "svelte";
+	import { ChevronsUpDown, Plus as PlusIcon } from "@lucide/svelte";
 	import DeliveryStateDropdown from "$lib/components/ours/DeliveryStateDropdown.svelte";
-    import { superForm } from 'sveltekit-superforms';
-    import GenericFormField from '$lib/components/ours/GenericFormField.svelte';
+	import { superForm } from "sveltekit-superforms";
+	import GenericFormField from "$lib/components/ours/GenericFormField.svelte";
 
-	let {data}: PageProps = $props();
+	let { data }: PageProps = $props();
 
-	let current = $state(data.list)
+	let current = $state(data.list);
 
 	let theForm = superForm(data.form, {
 		resetForm: false,
 		invalidateAll: false,
 		onResult(x) {
 			if (x.result.type != "redirect") {
-				let data: ActionData = 
-				//@ts-expect-error .data existiert nicht im typ aber bei laufzeit
+				let data: ActionData =
+					//@ts-expect-error .data existiert nicht im typ aber bei laufzeit
 					x.result.data;
 				current.packedCrates = data!!.res!!.packedCrates;
 			}
-		}
+		},
 	});
 
-	let {form, enhance,tainted, isTainted} = theForm;
+	let { form, enhance, tainted, isTainted } = theForm;
 
 	async function run_del(ev: MouseEvent, id: string) {
-		(ev.currentTarget as Element).setAttribute("disabled", "true")
+		(ev.currentTarget as Element).setAttribute("disabled", "true");
 		let resp = await execute(removeCratesFromList, fetch, {
 			pl: current.packingListId,
-			crates: [id]
-		})
-		let updated = resp.data?.removeCratesFromPackingList
+			crates: [id],
+		});
+		let updated = resp.data?.removeCratesFromPackingList;
 		if (updated) {
 			// display new info
-			current.packedCrates = updated.packedCrates
+			current.packedCrates = updated.packedCrates;
 		} else {
 			// something went wrong
-			(ev.currentTarget as Element).removeAttribute("disabled")
+			(ev.currentTarget as Element).removeAttribute("disabled");
 		}
-		toast.success("Kiste entfernt")
+		toast.success("Kiste entfernt");
 	}
 
 	async function add(id: string) {
-		id = prepare_id(id);
+		id = stripIndicatorAndZeros(id);
 		let resp = await execute(addCratesToList, fetch, {
 			pl: current.packingListId,
-			crates: [id]
-		})
-		let updated = resp.data?.addCratesToPackingList
+			crates: [id],
+		});
+		let updated = resp.data?.addCratesToPackingList;
 		if (updated) {
 			// display new info
-			current.packedCrates = updated.packedCrates
+			current.packedCrates = updated.packedCrates;
 		}
-		toast.success("Kiste hinzugefügt")
+		toast.success("Kiste hinzugefügt");
 	}
 
 	let crate_id = $state<string>();
 
 	async function add_crate(ev: SubmitEvent) {
 		// jens war hier :)
-		ev.preventDefault()
+		ev.preventDefault();
 		await add(crate_id!!);
-		(ev.target as HTMLFormElement).reset()
+		(ev.target as HTMLFormElement).reset();
 	}
-
 
 	let id_input = $state<HTMLInputElement | null>(null);
 
-	function printThisList() {
-		client.POST("/printMultiple", {
-			body: [
-				{id: parseInt(current.packingListId), type: "List"},
-				...current.packedCrates.map<{ type: "Crate", id: number }>(it => {
-					return {type: "Crate", id: parseInt(it.internalId)}
-				})
-			],
-			parseAs: "stream"
-		})
-			.then(it => it.response.blob())
-			.then(it => {
-				let theOU = URL.createObjectURL(it)
-				let opened = window.open(theOU, "_blank")
-				if (!opened) {
-					alert("Konnte kein Fenster öffnen! Bitte erlaube für diese Webseite popups.")
-				}
-				URL.revokeObjectURL(theOU)
+	function printThisList(withCrates: boolean) {
+		client
+			.POST("/printMultiple", {
+				body: [
+					{ id: parseInt(current.packingListId), type: "List" },
+					...(withCrates
+						? current.packedCrates.map<{ type: "Crate"; id: number }>((it) => {
+								return { type: "Crate", id: parseInt(it.internalId) };
+							})
+						: []),
+				],
+				parseAs: "stream",
 			})
+			.then((it) => it.response.blob())
+			.then((it) => {
+				let theOU = URL.createObjectURL(it);
+				let opened = window.open(theOU, "_blank");
+				if (!opened) {
+					alert("Konnte kein Fenster öffnen! Bitte erlaube für diese Webseite popups.");
+				}
+				URL.revokeObjectURL(theOU);
+			});
 	}
 
 	let open = $state(false);
@@ -114,24 +116,27 @@
 </script>
 
 <svelte:head>
-    <title>Liste {current.name}</title>
+	<title>Liste {current.name}</title>
 </svelte:head>
 
-<svelte:document onkeydown={(ev: KeyboardEvent) => {
-    if (ev.key === "C" || ev.key === "c") id_input?.focus()
-}}></svelte:document>
+<svelte:document
+	onkeydown={(ev: KeyboardEvent) => {
+		if (ev.key === "C" || ev.key === "c") id_input?.focus();
+	}}
+/>
 
 <h2 class="text-2xl mb-5 font-bold">Liste {current.name}</h2>
-<Button onclick={printThisList} class="mb-5">
-	Liste Drucken
-</Button>
+<div class="flex flex-row gap-2 m-5">
+	<Button onclick={() => printThisList(true)}>Liste+Kisten Drucken</Button>
+	<Button onclick={() => printThisList(false)}>Liste Drucken</Button>
+</div>
 
 <form method="POST" class="w-full max-w-md mb-5" use:enhance>
 	<Field.Set>
 		<GenericFormField superform={theForm} field="deliveryState">
-			{#snippet children({labProps, inpProps})}
+			{#snippet children({ labProps, inpProps })}
 				<Field.Label {...labProps}>Status</Field.Label>
-            	<DeliveryStateDropdown bind:value={$form.deliveryState} {...inpProps}></DeliveryStateDropdown>
+				<DeliveryStateDropdown bind:value={$form.deliveryState} {...inpProps}></DeliveryStateDropdown>
 			{/snippet}
 		</GenericFormField>
 		<Field.Field>
@@ -144,32 +149,25 @@
 
 <form onsubmit={add_crate} class="flex flex-row flex-wrap gap-4 items-baseline w-full max-w-xl">
 	<Field.Field orientation="horizontal" class="flex-1 min-w-[200px]">
-		<Input type="text" class="input" placeholder="Kisten-ID" required pattern="[cC]?\d+" bind:value={crate_id}
-			   bind:ref={id_input}></Input>
+		<Input type="text" class="input" placeholder="Kisten-ID" required pattern="[cC]?\d+" bind:value={crate_id} bind:ref={id_input}></Input>
 		<Button type="submit">
-			<PlusIcon/>
+			<PlusIcon />
 		</Button>
 	</Field.Field>
 	<span class="flex-0">oder</span>
 	<div class="flex-0">
 		<Popover.Root bind:open>
 			<Popover.Trigger bind:ref={triggerRef}>
-				{#snippet child({props})}
-					<Button
-						{...props}
-						variant="outline"
-						class="w-[200px] justify-between"
-						role="combobox"
-						aria-expanded={open}
-					>
+				{#snippet child({ props })}
+					<Button {...props} variant="outline" class="w-[200px] justify-between" role="combobox" aria-expanded={open}>
 						Kiste Suchen
-						<ChevronsUpDown class="opacity-50"/>
+						<ChevronsUpDown class="opacity-50" />
 					</Button>
 				{/snippet}
 			</Popover.Trigger>
 			<Popover.Content class="w-[200px] p-0">
 				<Command.Root>
-					<Command.Input placeholder="Kiste suchen..."/>
+					<Command.Input placeholder="Kiste suchen..." />
 					<Command.List>
 						<Command.Empty>¯\_(ツ)_/¯</Command.Empty>
 						<Command.Group value="crates">
@@ -178,9 +176,9 @@
 									value="{crate.operationCenter}/{crate.name}"
 									onSelect={() => {
 										closeAndFocusTrigger();
-										add(crate.internalId)
-                                    }}
-									disabled={current.packedCrates.some(it => it.internalId === crate.internalId)}
+										add(crate.internalId);
+									}}
+									disabled={current.packedCrates.some((it) => it.internalId === crate.internalId)}
 								>
 									{crate.operationCenter} / {crate.name}
 								</Command.Item>
@@ -214,9 +212,7 @@
 				</Table.Cell>
 				<Table.Cell>{crate.deliveryState}</Table.Cell>
 				<Table.Cell>
-					<Button size="sm" variant="destructive" onclick={(ev) => run_del(ev, crate.internalId)}>
-						Entf.
-					</Button>
+					<Button size="sm" variant="destructive" onclick={(ev) => run_del(ev, crate.internalId)}>Entf.</Button>
 				</Table.Cell>
 			</Table.Row>
 		{/each}

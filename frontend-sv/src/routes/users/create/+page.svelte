@@ -29,8 +29,6 @@
 	<title>Nutzer erstellen</title>
 </svelte:head>
 
-<SuperDebug data={form}></SuperDebug>
-
 <h2 class="text-2xl mb-5 font-bold">Nutzer erstellen</h2>
 
 <form method="POST" class="w-full max-w-md mb-5" use:enhance>

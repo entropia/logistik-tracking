@@ -1,7 +1,7 @@
 <script lang="ts">
     import { DeliveryState } from "$lib/../gen/graphql";
     import { execute, updateListPacking } from "$lib/graphql";
-    import { prepare_id } from "$lib/id_parser";
+    import { stripIndicatorAndZeros } from "$lib/id_parser";
     import * as Field from "$lib/components/ui/field";
     import * as InputGroup from "$lib/components/ui/input-group";
     import { Button } from "$lib/components/ui/button";

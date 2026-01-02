@@ -10,7 +10,7 @@ import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import java.io.IOException;
 import java.util.List;
 
-public interface LabelElement {
+public interface LabelElement<T> {
 	static void addData(PDPageContentStream contentStream, ResourceSet resourceSet, float x, float y, float w,
 						List<Pair<String, String>> values) throws IOException {
 //		float textWidth = labelWidth - 5 - 5 - 5 - codeDimensions - 5;
@@ -60,5 +60,5 @@ public interface LabelElement {
 		contentStream.endText();
 	}
 
-	void add(AztecWriter dmW, PDDocument pdDocument, PDPage targetPage, PDPageContentStream contentStream, float labelWidth, float labelHeight, ResourceSet resourceSet) throws IOException;
+	void add(T element, AztecWriter dmW, PDDocument pdDocument, PDPage targetPage, PDPageContentStream contentStream, float labelWidth, float labelHeight, ResourceSet resourceSet) throws IOException;
 }

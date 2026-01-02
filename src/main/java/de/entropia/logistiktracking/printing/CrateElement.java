@@ -5,12 +5,14 @@ import com.google.zxing.aztec.AztecWriter;
 import com.google.zxing.common.BitMatrix;
 import de.entropia.logistiktracking.domain.converter.OperationCenterConverter;
 import de.entropia.logistiktracking.jooq.tables.records.EuroCrateRecord;
+import de.entropia.logistiktracking.jpa.repo.EuroCrateDatabaseService;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
+import org.springframework.stereotype.Service;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -21,14 +23,15 @@ import java.util.List;
 
 import static de.entropia.logistiktracking.web.PrintMultipleRoute.convertToBI;
 
+@Service
 @AllArgsConstructor
-public class CrateElement implements LabelElement {
-
-	private final EuroCrateRecord el;
+public class CrateElement implements LabelElement<Long> {
 	private final OperationCenterConverter ocConv;
+	private final EuroCrateDatabaseService euroCrateDatabaseService;
 
 	@Override
-	public void add(AztecWriter dmW, PDDocument pdDocument, PDPage targetPage, PDPageContentStream contentStream, float labelWidth, float labelHeight, ResourceSet resourceSet) throws IOException {
+	public void add(Long elId, AztecWriter dmW, PDDocument pdDocument, PDPage targetPage, PDPageContentStream contentStream, float labelWidth, float labelHeight, ResourceSet resourceSet) throws IOException {
+		EuroCrateRecord el = euroCrateDatabaseService.fetchById(elId).orElseThrow();
 		float codeDimensions = labelHeight * 0.7f;
 
 		int codeMargin = 4;

@@ -2,9 +2,6 @@ package de.entropia.logistiktracking.web;
 
 import com.google.zxing.aztec.AztecWriter;
 import com.google.zxing.common.BitMatrix;
-import de.entropia.logistiktracking.domain.converter.OperationCenterConverter;
-import de.entropia.logistiktracking.jpa.repo.EuroCrateDatabaseService;
-import de.entropia.logistiktracking.jpa.repo.PackingListDatabaseService;
 import de.entropia.logistiktracking.openapi.api.PrintMultipleApi;
 import de.entropia.logistiktracking.openapi.model.PrintMultipleDtoInner;
 import de.entropia.logistiktracking.printing.CrateElement;
@@ -38,16 +35,16 @@ import java.util.List;
 @AllArgsConstructor
 @RequestMapping("/api")
 public class PrintMultipleRoute implements PrintMultipleApi {
-	private final EuroCrateDatabaseService euroCrateDatabaseService;
-	private final PackingListDatabaseService packingListDatabaseService;
-	private final OperationCenterConverter operationCenterConverter;
+private final CrateElement cratePrinter;
+	private final ListElement listPrinter;
+
 
 	@SneakyThrows
 	@Override
 //	@HasAuthority(AuthorityEnumDto.PRINT)
 	@Transactional
 	public ResponseEntity<Resource> printMultipleThings(List<PrintMultipleDtoInner> printMultipleDtoInner) {
-		List<LabelElement> elements = printMultipleDtoInner.stream().map(this::resolve).toList();
+//		List<LabelElement> elements = printMultipleDtoInner.stream().map(this::resolve).toList();
 
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
@@ -73,7 +70,7 @@ public class PrintMultipleRoute implements PrintMultipleApi {
 				  pdDocument
 			);
 
-			for (LabelElement element : elements) {
+			for (PrintMultipleDtoInner multipleDtoInner : printMultipleDtoInner) {
 				// neue seite erstellen wenn die jetzige voll ist
 				if (labelIndex % 8 == 0) {
 					pdDocument.addPage(new PDPage(PDRectangle.A4));
@@ -99,7 +96,13 @@ public class PrintMultipleRoute implements PrintMultipleApi {
 					contentStream.stroke();
 					contentStream.setLineDashPattern(new float[0], 0);
 
-					element.add(cw, pdDocument, targetPage, contentStream, labelWidth, labelHeight, new ResourceSet(locLogo, entropiaLogo, font, boldFont));
+					LabelElement<Long> printer = switch(multipleDtoInner.getType()) {
+						case LIST -> listPrinter;
+						case CRATE -> cratePrinter;
+					};
+
+					printer.add(multipleDtoInner.getId(), cw, pdDocument, targetPage, contentStream, labelWidth, labelHeight, new ResourceSet(locLogo, entropiaLogo, font, boldFont));
+
 					contentStream.restoreGraphicsState();
 				}
 
@@ -121,14 +124,5 @@ public class PrintMultipleRoute implements PrintMultipleApi {
 			}
 		}
 		return bi;
-	}
-
-	private LabelElement resolve(PrintMultipleDtoInner it) {
-		return switch (it.getType()) {
-			case PrintMultipleDtoInner.TypeEnum.CRATE ->
-				  new CrateElement(euroCrateDatabaseService.fetchById(it.getId()).orElseThrow(), operationCenterConverter);
-			case PrintMultipleDtoInner.TypeEnum.LIST ->
-				  new ListElement(packingListDatabaseService.fetchById(it.getId()).orElseThrow());
-		};
 	}
 }

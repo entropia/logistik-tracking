@@ -6,7 +6,7 @@ import { fail, superValidate, message, setError } from 'sveltekit-superforms';
 import { updateListDeliveryState, updateTargettedListState } from '$lib/schemas/lists';
 import { zod4 } from 'sveltekit-superforms/adapters';
 import { updateListPacking } from '$lib/graphql';
-import { prepare_id } from '$lib/id_parser';
+import { stripIndicatorAndZeros } from '$lib/id_parser';
 
 export const load = async (event) => {
     const form = await superValidate(zod4(updateTargettedListState));
@@ -25,7 +25,7 @@ export const actions = {
         }
 
         let res = (await graphqlWithAuthHandling(event.url, updateListPacking, event.fetch, {
-            id: prepare_id(form.data.id),
+            id: stripIndicatorAndZeros(form.data.id),
             newstate: form.data.deliveryState
         })).data!!.setPackingListDeliveryState;
 
