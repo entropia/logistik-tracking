@@ -21,8 +21,6 @@ export const actions = {
             return fail(400, { form });
         }
 
-        console.log(form.data)
-
         let x = await client.POST("/users", {
 			body: {
                 authorities: form.data.authorities,
@@ -32,7 +30,6 @@ export const actions = {
             },
             fetch: event.fetch
 		});
-        console.log(x)
 
         return redirect(303, "/users/manage/"+x.data!!.username);
     }

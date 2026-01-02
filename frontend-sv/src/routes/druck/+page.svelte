@@ -1,11 +1,7 @@
 <script lang="ts">
 	import { persisted } from "svelte-persisted-store";
 	import type { ShoppingCart } from "$lib/printing_shopping_cart";
-	import {
-		execute,
-		getCratesByIdMultiple,
-		getListsByIdMultiple,
-	} from "$lib/graphql";
+	import { execute, getCratesByIdMultiple, getListsByIdMultiple } from "$lib/graphql";
 	import { untrack } from "svelte";
 
 	import * as Table from "$lib/components/ui/table";
@@ -13,7 +9,7 @@
 	import { client } from "$lib/http_api";
 	import { Button } from "$lib/components/ui/button";
 	import { Checkbox } from "$lib/components/ui/checkbox";
-    import { Printer, Trash } from "@lucide/svelte";
+	import { Printer, Trash } from "@lucide/svelte";
 
 	interface Printable {
 		id: string;
@@ -46,16 +42,10 @@
 				})
 					.then((value) => {
 						let intermediate: Record<string, Printable> = {};
-						for (let multipleCratesByIdElement of value.data!!
-							.getMultipleCratesById) {
-							intermediate[
-								"C" + multipleCratesByIdElement.internalId
-							] = {
+						for (let multipleCratesByIdElement of value.data!!.getMultipleCratesById) {
+							intermediate["C" + multipleCratesByIdElement.internalId] = {
 								id: "C" + multipleCratesByIdElement.internalId,
-								label:
-									multipleCratesByIdElement.operationCenter +
-									"/" +
-									multipleCratesByIdElement.name,
+								label: multipleCratesByIdElement.operationCenter + "/" + multipleCratesByIdElement.name,
 							};
 						}
 						Object.assign(theCache, intermediate);
@@ -81,9 +71,7 @@
 		}
 	});
 
-	let theCrates = $derived(
-		$printStore.items.map((it) => theCache[it]).filter((v) => !!v),
-	);
+	let theCrates = $derived($printStore.items.map((it) => theCache[it]).filter((v) => !!v));
 	// $inspect(theCrates)
 	function printIt() {
 		client
@@ -101,9 +89,7 @@
 				let theOU = URL.createObjectURL(it);
 				let opened = window.open(theOU, "_blank");
 				if (!opened) {
-					alert(
-						"Konnte kein Fenster öffnen! Bitte erlaube für diese Webseite popups.",
-					);
+					alert("Konnte kein Fenster öffnen! Bitte erlaube für diese Webseite popups.");
 				}
 				URL.revokeObjectURL(theOU);
 			});
@@ -116,11 +102,7 @@
 		});
 	}
 
-	function toggle(
-		internalId: string,
-		it: ShoppingCart,
-		targetState: boolean,
-	) {
+	function toggle(internalId: string, it: ShoppingCart, targetState: boolean) {
 		let el = internalId;
 		let has = it.items.includes(el);
 		if (!targetState && has) it.items = it.items.filter((f) => f != el);
@@ -130,19 +112,23 @@
 </script>
 
 <svelte:head>
-    <title>Drucken</title>
+	<title>Drucken</title>
 </svelte:head>
 
-<Button disabled={theCrates.length === 0} onclick={printIt}>
-	<Printer />
-	Drucken
-</Button>
-<Button variant="destructive" disabled={theCrates.length === 0} onclick={empty}>
-	<Trash />
-	Leeren
-</Button>
+<h2 class="text-2xl mb-2 font-bold">Drucken</h2>
 
-<Table.Root class="w-full mt-5">
+<div class="flex flex-row gap-5 m-5 text-inherit">
+	<Button disabled={theCrates.length === 0} onclick={printIt}>
+		<Printer />
+		Drucken
+	</Button>
+	<Button variant="destructive" disabled={theCrates.length === 0} onclick={empty}>
+		<Trash />
+		Leeren
+	</Button>
+</div>
+
+<Table.Root class="w-full">
 	<Table.Header>
 		<Table.Row>
 			<!--            w-0 für fit -->
@@ -159,9 +145,7 @@
 						bind:checked={
 							() => $printStore.items.includes(crate.id),
 							(v) => {
-								printStore.update((it) =>
-									toggle(crate.id, it, v),
-								);
+								printStore.update((it) => toggle(crate.id, it, v));
 							}
 						}
 					></Checkbox>
@@ -169,13 +153,9 @@
 				<Table.Cell>{crate.id}</Table.Cell>
 				<Table.Cell>
 					{#if crate.id.startsWith("L")}
-						<a class="link" href="/lists/{crate.id.substring(1)}"
-							>{crate.label}</a
-						>
+						<a class="link" href="/lists/{crate.id.substring(1)}">{crate.label}</a>
 					{:else}
-						<a class="link" href="/crates/{crate.id.substring(1)}"
-							>{crate.label}</a
-						>
+						<a class="link" href="/crates/{crate.id.substring(1)}">{crate.label}</a>
 					{/if}
 				</Table.Cell>
 			</Table.Row>

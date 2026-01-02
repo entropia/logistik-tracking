@@ -6,7 +6,6 @@
     import { Plus } from '@lucide/svelte';
 
 	let {data}: PageProps = $props();
-	console.log(data)
 </script>
 
 <svelte:head>

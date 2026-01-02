@@ -32,13 +32,7 @@
         searcher.indexEntities(
             crates,
             (x) => x.internalId,
-            (x) => [
-                x.operationCenter,
-                x.name,
-                `${x.operationCenter}/${x.name}`,
-                x.deliveryState,
-                x.internalId,
-            ],
+            (x) => [x.operationCenter, x.name, `${x.operationCenter}/${x.name}`, x.deliveryState, x.internalId],
         );
     });
     let displayCrates = $derived(filterCrates(crates, filter));
@@ -47,16 +41,27 @@
         items: [],
     });
 
-    function toggle(
-        internalId: string,
-        it: ShoppingCart,
-        targetState: boolean,
-    ) {
+    function setState(internalId: string, it: ShoppingCart, targetState: boolean | null) {
         let el = "C" + internalId;
         let has = it.items.includes(el);
-        if (!targetState && has) it.items = it.items.filter((f) => f != el);
-        else if (targetState && !has) it.items.push(el);
+        if (targetState == null) {
+            // plain toggle
+            if (has) it.items = it.items.filter((f) => f != el);
+            else it.items.push(el);
+        } else {
+            // set
+            if (!targetState && has) it.items = it.items.filter((f) => f != el);
+            else if (targetState && !has) it.items.push(el);
+        }
         return it;
+    }
+
+    function getPrintStateCallback(id: string) {
+        return () => $printStore.items.includes("C" + id);
+    }
+
+    function getPrintStateSetCallback(id: string) {
+        return (v: boolean) => printStore.update((it) => setState(id, it, v));
     }
 </script>
 
@@ -81,28 +86,16 @@
     </Table.Header>
     <Table.Body>
         {#each displayCrates as crate (crate.internalId)}
-            <Table.Row>
+            <Table.Row onclick={() => printStore.update((it) => setState(crate.internalId, it, null))}>
                 <Table.Cell>
-                    <Checkbox
-                        bind:checked={
-                            () =>
-                                $printStore.items.includes(
-                                    "C" + crate.internalId,
-                                ),
-                            (v) => {
-                                printStore.update((it) =>
-                                    toggle(crate.internalId, it, v),
-                                );
-                            }
-                        }
-                    ></Checkbox>
+                    <!-- see below -->
+                    <Checkbox onclick={(v) => v.stopPropagation()} bind:checked={getPrintStateCallback(crate.internalId), getPrintStateSetCallback(crate.internalId)}></Checkbox>
                 </Table.Cell>
                 <Table.Cell>{crate.internalId}</Table.Cell>
                 <Table.Cell>{crate.operationCenter}</Table.Cell>
                 <Table.Cell>
-                    <a class="link" href="/crates/{crate.internalId}"
-                        >{crate.name}</a
-                    >
+                    <!-- stop bubbling to prevent print toggle handler being triggered for link clicks -->
+                    <a class="link" href="/crates/{crate.internalId}" onclick={(v) => v.stopPropagation()}>{crate.name}</a>
                 </Table.Cell>
                 <Table.Cell>{crate.deliveryState}</Table.Cell>
             </Table.Row>

@@ -9,3 +9,9 @@ export const createUser = z.strictObject({
     password: z.string().min(8),
     authorities: z.enum(allowedAuthorities).array()
 })
+
+export const modifyUser = z.strictObject({
+    active: z.boolean().default(true),
+    password: z.string().min(8).optional(),
+    authorities: z.enum(allowedAuthorities).array()
+})

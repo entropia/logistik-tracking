@@ -17,7 +17,6 @@ export const load = async (event) => {
 
 export const actions = {
     default: async (event) => {
-        console.log("updated")
         const form = await superValidate(event.request, zod4(updateTargettedListState));
 
         if (!form.valid) {

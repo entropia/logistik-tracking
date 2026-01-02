@@ -31,13 +31,28 @@
 		items: []
 	})
 
-	function toggle(internalId: string, it: ShoppingCart, targetState: boolean) {
-		let el = "L"+internalId;
-		let has = it.items.includes(el);
-		if (!targetState && has) it.items = it.items.filter(f => f != el)
-		else if (targetState && !has) it.items.push(el)
-		return it;
-	}
+	function setState(internalId: string, it: ShoppingCart, targetState: boolean | null) {
+        let el = "L" + internalId;
+        let has = it.items.includes(el);
+        if (targetState == null) {
+            // plain toggle
+            if (has) it.items = it.items.filter((f) => f != el);
+            else it.items.push(el);
+        } else {
+            // set
+            if (!targetState && has) it.items = it.items.filter((f) => f != el);
+            else if (targetState && !has) it.items.push(el);
+        }
+        return it;
+    }
+
+    function getPrintStateCallback(id: string) {
+        return () => $printStore.items.includes("L" + id);
+    }
+
+    function getPrintStateSetCallback(id: string) {
+        return (v: boolean) => printStore.update((it) => setState(id, it, v));
+    }
 
 	let filter = $state("");
 	$effect(() => {
@@ -84,18 +99,14 @@
     </Table.Header>
     <Table.Body>
         {#each displayLists as crate (crate.packingListId)}
-            <Table.Row>
+            <Table.Row onclick={() => printStore.update((it) => setState(crate.packingListId, it, null))}>
                 <Table.Cell>
-                    <Checkbox bind:checked={
-                () => $printStore.items.includes("L"+crate.packingListId),
-                (v) => {printStore.update(it => toggle(crate.packingListId, it, v))}
-                }>
-
-                    </Checkbox>
+                    <!-- see below -->
+                    <Checkbox onclick={(v) => v.stopPropagation()} bind:checked={getPrintStateCallback(crate.packingListId), getPrintStateSetCallback(crate.packingListId)}></Checkbox>
                 </Table.Cell>
                 <Table.Cell>{crate.packingListId}</Table.Cell>
                 <Table.Cell>
-                    <a class="link" href="/lists/{crate.packingListId}">{crate.name}</a>
+                    <a class="link" href="/lists/{crate.packingListId}" onclick={(v) => v.stopPropagation()}>{crate.name}</a>
                 </Table.Cell>
                 <Table.Cell>{crate.deliveryStatet}</Table.Cell>
             </Table.Row>

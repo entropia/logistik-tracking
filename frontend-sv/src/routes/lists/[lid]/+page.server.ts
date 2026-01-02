@@ -8,7 +8,6 @@ import { zod4 } from 'sveltekit-superforms/adapters';
 import { updateListPacking } from '$lib/graphql';
 
 export const load = async (event) => {
-	console.log("fetch")
 	let list = (await graphqlWithAuthHandling(event.url, getListByIdAndAlsoGetAllCrates, event.fetch, {
 		i: event.params.lid
 	})).data!!;
@@ -27,7 +26,6 @@ export const load = async (event) => {
 
 export const actions = {
 	default: async (event) => {
-		console.log("updated")
 		const form = await superValidate(event.request, zod4(updateListDeliveryState));
 
 		if (!form.valid) {

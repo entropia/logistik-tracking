@@ -28,7 +28,6 @@
         invalidateAll: false,
         onUpdated({form}) {
             if (form.data.createMultiple) {
-                console.log(the_name)
                 the_name?.focus()
             }
         }
