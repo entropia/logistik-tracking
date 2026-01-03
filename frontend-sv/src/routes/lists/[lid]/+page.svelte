@@ -3,7 +3,7 @@
 	import { addCratesToList, execute, removeCratesFromList, updateListPacking } from "$lib/graphql";
 	import { stripIndicatorAndZeros } from "$lib/id_parser";
 	import { client } from "$lib/http_api";
-	import { Button } from "$lib/components/ui/button";
+	import { Button, buttonVariants } from "$lib/components/ui/button";
 	import * as Field from "$lib/components/ui/field";
 	import * as Command from "$lib/components/ui/command";
 	import * as Popover from "$lib/components/ui/popover";
@@ -15,6 +15,7 @@
 	import DeliveryStateDropdown from "$lib/components/ours/DeliveryStateDropdown.svelte";
 	import { superForm } from "sveltekit-superforms";
 	import GenericFormField from "$lib/components/ours/GenericFormField.svelte";
+	import * as AlertDialog from "$lib/components/ui/alert-dialog";
 
 	let { data }: PageProps = $props();
 
@@ -131,7 +132,7 @@
 	<Button onclick={() => printThisList(false)}>Liste Drucken</Button>
 </div>
 
-<form method="POST" class="w-full max-w-md mb-5" use:enhance>
+<form method="POST" class="w-full max-w-md mb-5" use:enhance action="?/update">
 	<Field.Set>
 		<GenericFormField superform={theForm} field="deliveryState">
 			{#snippet children({ labProps, inpProps })}
@@ -139,8 +140,23 @@
 				<DeliveryStateDropdown bind:value={$form.deliveryState} {...inpProps}></DeliveryStateDropdown>
 			{/snippet}
 		</GenericFormField>
-		<Field.Field>
+		<Field.Field orientation="horizontal">
 			<Button type="submit" disabled={!isTainted($tainted)}>Speichern</Button>
+			<AlertDialog.Root>
+				<AlertDialog.Trigger type="button" class={buttonVariants({ variant: "destructive" })}>Löschen</AlertDialog.Trigger>
+				<AlertDialog.Content>
+					<AlertDialog.Header>
+						<AlertDialog.Title>Sicher?</AlertDialog.Title>
+						<AlertDialog.Description>Löschen ist permanent!</AlertDialog.Description>
+					</AlertDialog.Header>
+					<AlertDialog.Footer>
+						<form method="POST" action="?/delete">
+							<AlertDialog.Cancel type="button">Abbrechen</AlertDialog.Cancel>
+							<AlertDialog.Action type="submit">Löschen</AlertDialog.Action>
+						</form>
+					</AlertDialog.Footer>
+				</AlertDialog.Content>
+			</AlertDialog.Root>
 		</Field.Field>
 	</Field.Set>
 </form>

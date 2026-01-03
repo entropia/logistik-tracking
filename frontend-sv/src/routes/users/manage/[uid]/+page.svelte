@@ -14,6 +14,7 @@
     let sf = superForm(data.form, {
         resetForm: false,
         invalidateAll: false, // durch das update kann nur der inhalt der form aktualisiert werden. ein refetch ist nicht notwendig
+        dataType: "json"
     });
 
     let { form, enhance, tainted, isTainted, message, errors } = sf;

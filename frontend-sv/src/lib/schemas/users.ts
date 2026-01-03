@@ -5,13 +5,13 @@ export const allowedAuthorities = ["MANAGE_RESOURCES", "MANAGE_USERS", "PRINT"] 
 
 export const createUser = z.strictObject({
     name: z.string().regex(/^[a-zA-Z0-9_\-]+$/),
-    active: z.boolean().default(true),
+    active: z.boolean(),
     password: z.string().min(8),
     authorities: z.enum(allowedAuthorities).array()
 })
 
 export const modifyUser = z.strictObject({
-    active: z.boolean().default(true),
+    active: z.boolean(),
     password: z.string().min(8).optional(),
     authorities: z.enum(allowedAuthorities).array()
 })

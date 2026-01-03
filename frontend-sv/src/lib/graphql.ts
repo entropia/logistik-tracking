@@ -152,6 +152,18 @@ export const getListsByIdMultiple = graphql(`
 	}
 `)
 
+export const deleteCrate = graphql(`
+	mutation DeleteCrate($i: ID!) {
+		deleteEuroCrate(id: $i)
+	}
+`)
+
+export const deleteList = graphql(`
+	mutation DeleteList($i: ID!) {
+		deletePackingList(id: $i)
+	}
+`)
+
 import { PUBLIC_API_URL } from '$env/static/public';
 
 export class NetworkResponseNotOkError extends Error {

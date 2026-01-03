@@ -109,7 +109,7 @@ public class UserManagementRoute implements UsersApi {
 			return ResponseEntity.badRequest().build();
 		}
 
-		LogitrackUserRecord uae = new LogitrackUserRecord(createUserRequest.getUsername(), true, pe.encode(createUserRequest.getPassword()));
+		LogitrackUserRecord uae = new LogitrackUserRecord(createUserRequest.getUsername(), createUserRequest.getEnabled(), pe.encode(createUserRequest.getPassword()));
 
 //		UserDatabaseElement uae = new UserDatabaseElement(createUserRequest.getUsername(), pe.encode(createUserRequest.getPassword()), createUserRequest.getAuthorities(), true);
 		LogitrackUserRecord save = userDatabaseService.insert(uae);

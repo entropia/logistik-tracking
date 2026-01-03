@@ -1,6 +1,6 @@
 import type { Actions } from './$types';
-import { getListByIdAndAlsoGetAllCrates } from "$lib/graphql";
-import { error } from "@sveltejs/kit";
+import { deleteList, getListByIdAndAlsoGetAllCrates } from "$lib/graphql";
+import { error, redirect } from "@sveltejs/kit";
 import { graphqlWithAuthHandling } from "$lib/auth_util";
 import { fail, superValidate, message } from 'sveltekit-superforms';
 import { updateListDeliveryState } from '$lib/schemas/lists';
@@ -25,7 +25,7 @@ export const load = async (event) => {
 };
 
 export const actions = {
-	default: async (event) => {
+	update: async (event) => {
 		const form = await superValidate(event.request, zod4(updateListDeliveryState));
 
 		if (!form.valid) {
@@ -42,5 +42,13 @@ export const actions = {
 			form,
 			res
 		};
+	},
+	delete: async (event) => {
+		// ok
+		(await graphqlWithAuthHandling(event.url, deleteList, event.fetch, {
+			i: event.params.lid
+		}));
+
+		return redirect(303, "/lists");
 	}
 } satisfies Actions;

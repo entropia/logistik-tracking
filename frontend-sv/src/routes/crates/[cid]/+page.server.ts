@@ -3,8 +3,8 @@ import { message, superValidate } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
 import { updateCrate as schema } from "$lib/schemas/crates";
 import { graphqlWithAuthHandling } from "$lib/auth_util";
-import { execute, getSpecificCrate, NetworkResponseNotOkError, updateCrate } from "$lib/graphql";
-import { error, fail } from "@sveltejs/kit";
+import { deleteCrate, execute, getSpecificCrate, NetworkResponseNotOkError, updateCrate } from "$lib/graphql";
+import { error, fail, redirect } from "@sveltejs/kit";
 
 export const load = async (event) => {
 	let res = (await graphqlWithAuthHandling(event.url, getSpecificCrate, event.fetch, {
@@ -28,7 +28,7 @@ export const load = async (event) => {
 };
 
 export const actions = {
-	default: async (event) => {
+	update: async (event) => {
 		const form = await superValidate(event.request, zod4(schema));
 
 		if (!form.valid) {
@@ -45,5 +45,13 @@ export const actions = {
 		}));
 
 		return message(form, "Gespeichert!");
+	},
+	delete: async (event) => {
+		// ok
+		(await graphqlWithAuthHandling(event.url, deleteCrate, event.fetch, {
+			i: event.params.cid
+		}));
+
+		return redirect(303, "/crates");
 	}
 } satisfies Actions;

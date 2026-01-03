@@ -262,6 +262,20 @@ export type GetMoreListsQueryVariables = Exact<{
 
 export type GetMoreListsQuery = { getMultipleListsById: Array<{ __typename: 'PackingList', packingListId: string, name: string }> };
 
+export type DeleteCrateMutationVariables = Exact<{
+  i: Scalars['ID']['input'];
+}>;
+
+
+export type DeleteCrateMutation = { deleteEuroCrate: boolean };
+
+export type DeleteListMutationVariables = Exact<{
+  i: Scalars['ID']['input'];
+}>;
+
+
+export type DeleteListMutation = { deletePackingList: boolean };
+
 export class TypedDocumentString<TResult, TVariables>
   extends String
   implements DocumentTypeDecoration<TResult, TVariables>
@@ -432,3 +446,13 @@ export const GetMoreListsDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<GetMoreListsQuery, GetMoreListsQueryVariables>;
+export const DeleteCrateDocument = new TypedDocumentString(`
+    mutation DeleteCrate($i: ID!) {
+  deleteEuroCrate(id: $i)
+}
+    `) as unknown as TypedDocumentString<DeleteCrateMutation, DeleteCrateMutationVariables>;
+export const DeleteListDocument = new TypedDocumentString(`
+    mutation DeleteList($i: ID!) {
+  deletePackingList(id: $i)
+}
+    `) as unknown as TypedDocumentString<DeleteListMutation, DeleteListMutationVariables>;

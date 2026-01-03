@@ -29,7 +29,10 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
+import java.util.Objects;
 
 @Controller
 @AllArgsConstructor
@@ -38,6 +41,13 @@ public class PrintMultipleRoute implements PrintMultipleApi {
 private final CrateElement cratePrinter;
 	private final ListElement listPrinter;
 
+
+	private byte[] getResourceBytes(String path) throws IOException {
+		try (InputStream resourceAsStream = getClass().getClassLoader().getResourceAsStream(path)) {
+			Objects.requireNonNull(resourceAsStream);
+			return resourceAsStream.readAllBytes();
+		}
+	}
 
 	@SneakyThrows
 	@Override
@@ -60,14 +70,16 @@ private final CrateElement cratePrinter;
 			PDType1Font boldFont = new PDType1Font(Standard14Fonts.FontName.COURIER_BOLD);
 			PDType1Font font = new PDType1Font(Standard14Fonts.FontName.COURIER);
 
-			PDImageXObject entropiaLogo = PDImageXObject.createFromFileByContent(
-				  new File(getClass().getClassLoader().getResource("Entropia.png").toURI()),
-				  pdDocument
+			PDImageXObject entropiaLogo = PDImageXObject.createFromByteArray(
+				  pdDocument,
+				  getResourceBytes("Entropia.png"),
+				  "Entropia.png"
 			);
 
-			PDImageXObject locLogo = PDImageXObject.createFromFileByContent(
-				  new File(getClass().getClassLoader().getResource("LOC.png").toURI()),
-				  pdDocument
+			PDImageXObject locLogo = PDImageXObject.createFromByteArray(
+				  pdDocument,
+				  getResourceBytes("LOC.png"),
+				  "LOC.png"
 			);
 
 			for (PrintMultipleDtoInner multipleDtoInner : printMultipleDtoInner) {

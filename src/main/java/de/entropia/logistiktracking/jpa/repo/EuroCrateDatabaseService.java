@@ -43,6 +43,13 @@ public class EuroCrateDatabaseService extends JooqRepository<EuroCrateRecord, Lo
 			  .execute();
 	}
 
+	public int leavePackingList(long listToLeave) {
+		return dsl.update(EURO_CRATE)
+			  .set(EURO_CRATE.OWNING_LIST, (Long) null)
+			  .where(EURO_CRATE.OWNING_LIST.eq(listToLeave))
+			  .execute();
+	}
+
 	/// Returns all crates that are children of `parentList`, have a delivery state other than `state` and have a jira issue assigned
 	public EuroCrateRecord[] fetchByOwningListWithDifferentStateThanHavingJiraIssue(long parentList, DeliveryState state) {
 		return dsl.selectFrom(EURO_CRATE)

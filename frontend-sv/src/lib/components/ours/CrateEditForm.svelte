@@ -10,8 +10,9 @@
     import { Textarea } from "$lib/components/ui/textarea";
     import GenericFormField from "./GenericFormField.svelte";
     import type { HTMLAttributes } from "svelte/elements";
-    import { Button } from "../ui/button";
+    import { Button, buttonVariants } from "../ui/button";
     import { Save } from "@lucide/svelte";
+    import * as AlertDialog from "../ui/alert-dialog";
 
     let {
         data,
@@ -25,9 +26,11 @@
     });
 
     const { form, enhance, isTainted, tainted, message } = sf;
+
+    let theForm = $state<HTMLFormElement>();
 </script>
 
-<form class="flex flex-col gap-5" method="POST" use:enhance {...onForm}>
+<form class="flex flex-col gap-5" method="POST" action="?/update" use:enhance {...onForm} bind:this={theForm}>
     <Field.Group class="grid grid-cols-1 md:grid-cols-2">
         <GenericFormField superform={sf} field="operationCenter">
             {#snippet children({ labProps, inpProps })}
@@ -72,6 +75,21 @@
             <Save />
             Speichern
         </Button>
+        <AlertDialog.Root>
+            <AlertDialog.Trigger type="button" class={buttonVariants({ variant: "destructive" })}>Löschen</AlertDialog.Trigger>
+            <AlertDialog.Content>
+                <AlertDialog.Header>
+                    <AlertDialog.Title>Sicher?</AlertDialog.Title>
+                    <AlertDialog.Description>Löschen ist permanent!</AlertDialog.Description>
+                </AlertDialog.Header>
+                <AlertDialog.Footer>
+                    <form method="POST" action="?/delete">
+                        <AlertDialog.Cancel type="button">Abbrechen</AlertDialog.Cancel>
+                        <AlertDialog.Action type="submit">Löschen</AlertDialog.Action>
+                    </form>
+                </AlertDialog.Footer>
+            </AlertDialog.Content>
+        </AlertDialog.Root>
         {#if $message}
             <p>{$message}</p>
         {/if}

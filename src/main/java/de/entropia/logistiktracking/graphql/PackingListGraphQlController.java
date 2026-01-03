@@ -105,6 +105,7 @@ public class PackingListGraphQlController {
 
 	@MutationMapping(DgsConstants.MUTATION.DeletePackingList)
 	public boolean deletePackingList(@Argument String id) {
+		euroCrateDatabaseService.leavePackingList(Long.parseLong(id));
 		return packingListDatabaseService.deleteById(Long.parseLong(id)) >= 1;
 	}
 

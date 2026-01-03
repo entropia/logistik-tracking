@@ -19,7 +19,8 @@
 	let {data}: PageProps = $props();
 
 	let sf = superForm(data.form, {
-		invalidateAll: false
+		invalidateAll: false,
+		dataType: "json"
 	});
 
 	let {form, enhance, constraints, errors} = sf;
