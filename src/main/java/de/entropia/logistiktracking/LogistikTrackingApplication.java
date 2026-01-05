@@ -23,7 +23,7 @@ public class LogistikTrackingApplication {
 
 	@Profile("entw")
 	@Bean
-	public CommonsRequestLoggingFilter logFilter() {
+	public CommonsRequestLoggingFilter debugLogFilter() {
 		CommonsRequestLoggingFilter filter
 			  = new CommonsRequestLoggingFilter();
 		filter.setIncludeQueryString(true);
@@ -33,7 +33,7 @@ public class LogistikTrackingApplication {
 	}
 
 	@Bean
-	Settings jooqS() {
+	Settings jooqSettings() {
 		return new Settings().withMapRecordComponentParameterNames(true);
 	}
 }

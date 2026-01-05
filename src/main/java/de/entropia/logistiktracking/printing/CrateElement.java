@@ -3,9 +3,10 @@ package de.entropia.logistiktracking.printing;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.aztec.AztecWriter;
 import com.google.zxing.common.BitMatrix;
-import de.entropia.logistiktracking.domain.converter.OperationCenterConverter;
+import de.entropia.logistiktracking.api.Printer;
+import de.entropia.logistiktracking.api.converter.OperationCenterConverter;
 import de.entropia.logistiktracking.jooq.tables.records.EuroCrateRecord;
-import de.entropia.logistiktracking.jpa.repo.EuroCrateDatabaseService;
+import de.entropia.logistiktracking.api.db.EuroCrateDatabaseService;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -21,13 +22,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
 
-import static de.entropia.logistiktracking.web.PrintMultipleRoute.convertToBI;
-
 @Service
 @AllArgsConstructor
 public class CrateElement implements LabelElement<Long> {
 	private final OperationCenterConverter ocConv;
 	private final EuroCrateDatabaseService euroCrateDatabaseService;
+	private final Printer printer;
 
 	@Override
 	public void add(Long elId, AztecWriter dmW, PDDocument pdDocument, PDPage targetPage, PDPageContentStream contentStream, float labelWidth, float labelHeight, ResourceSet resourceSet) throws IOException {
@@ -39,7 +39,7 @@ public class CrateElement implements LabelElement<Long> {
 		int dim = (int) Math.floor(codeDimensions) - codeMargin * 2;
 
 		BitMatrix bm = dmW.encode(String.format("C%09d", el.getId()), BarcodeFormat.AZTEC, dim, dim);
-		BufferedImage data = convertToBI(bm);
+		BufferedImage data = printer.convertToBI(bm);
 		ByteArrayOutputStream imageData = new ByteArrayOutputStream();
 		ImageIO.write(data, "png", imageData);
 		PDImageXObject code = PDImageXObject.createFromByteArray(pdDocument, imageData.toByteArray(), "image.png");

@@ -8,7 +8,7 @@ import com.atlassian.jira.rest.client.api.domain.input.TransitionInput;
 import com.google.common.collect.Iterables;
 import de.entropia.logistiktracking.jooq.enums.DeliveryState;
 import de.entropia.logistiktracking.jooq.tables.records.EuroCrateRecord;
-import de.entropia.logistiktracking.jpa.repo.EuroCrateDatabaseService;
+import de.entropia.logistiktracking.api.db.EuroCrateDatabaseService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;

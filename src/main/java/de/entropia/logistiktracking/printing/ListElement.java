@@ -3,16 +3,15 @@ package de.entropia.logistiktracking.printing;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.aztec.AztecWriter;
 import com.google.zxing.common.BitMatrix;
-import de.entropia.logistiktracking.domain.converter.OperationCenterConverter;
+import de.entropia.logistiktracking.api.Printer;
+import de.entropia.logistiktracking.api.converter.OperationCenterConverter;
 import de.entropia.logistiktracking.jooq.enums.OperationCenter;
 import de.entropia.logistiktracking.jooq.tables.records.EuroCrateRecord;
 import de.entropia.logistiktracking.jooq.tables.records.PackingListRecord;
-import de.entropia.logistiktracking.jpa.repo.EuroCrateDatabaseService;
-import de.entropia.logistiktracking.jpa.repo.PackingListDatabaseService;
+import de.entropia.logistiktracking.api.db.EuroCrateDatabaseService;
+import de.entropia.logistiktracking.api.db.PackingListDatabaseService;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.commons.text.WordUtils;
-import org.apache.http.impl.nio.reactor.DefaultConnectingIOReactor;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -28,8 +27,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static de.entropia.logistiktracking.web.PrintMultipleRoute.convertToBI;
-
 @Service
 @AllArgsConstructor
 public class ListElement implements LabelElement<Long> {
@@ -37,6 +34,7 @@ public class ListElement implements LabelElement<Long> {
 	private final OperationCenterConverter ocConv;
 	private final EuroCrateDatabaseService euroCrateDatabaseService;
 	private final PackingListDatabaseService packingListDatabaseService;
+	private final Printer printer;
 
 	@Override
 	public void add(Long elId, AztecWriter dmW, PDDocument pdDocument, PDPage targetPage, PDPageContentStream contentStream, float labelWidth, float labelHeight, ResourceSet resourceSet) throws IOException {
@@ -49,7 +47,7 @@ public class ListElement implements LabelElement<Long> {
 		int dim = (int) Math.floor(codeDimensions) - codeMargin * 2;
 
 		BitMatrix bm = dmW.encode(String.format("L%09d", el.getId()), BarcodeFormat.AZTEC, dim, dim);
-		BufferedImage data = convertToBI(bm);
+		BufferedImage data = printer.convertToBI(bm);
 		ByteArrayOutputStream imageData = new ByteArrayOutputStream();
 		ImageIO.write(data, "png", imageData);
 		PDImageXObject code = PDImageXObject.createFromByteArray(pdDocument, imageData.toByteArray(), "image.png");
