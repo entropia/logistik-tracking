@@ -34,7 +34,6 @@ public class ListElement implements LabelElement<Long> {
 	private final OperationCenterConverter ocConv;
 	private final EuroCrateDatabaseService euroCrateDatabaseService;
 	private final PackingListDatabaseService packingListDatabaseService;
-	private final Printer printer;
 
 	@Override
 	public void add(Long elId, AztecWriter dmW, PDDocument pdDocument, PDPage targetPage, PDPageContentStream contentStream, float labelWidth, float labelHeight, ResourceSet resourceSet) throws IOException {
@@ -47,7 +46,7 @@ public class ListElement implements LabelElement<Long> {
 		int dim = (int) Math.floor(codeDimensions) - codeMargin * 2;
 
 		BitMatrix bm = dmW.encode(String.format("L%09d", el.getId()), BarcodeFormat.AZTEC, dim, dim);
-		BufferedImage data = printer.convertToBI(bm);
+		BufferedImage data = LabelElement.convertToBI(bm);
 		ByteArrayOutputStream imageData = new ByteArrayOutputStream();
 		ImageIO.write(data, "png", imageData);
 		PDImageXObject code = PDImageXObject.createFromByteArray(pdDocument, imageData.toByteArray(), "image.png");

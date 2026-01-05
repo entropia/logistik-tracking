@@ -1,12 +1,14 @@
 package de.entropia.logistiktracking.printing;
 
 import com.google.zxing.aztec.AztecWriter;
+import com.google.zxing.common.BitMatrix;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.text.WordUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.List;
 
@@ -58,6 +60,17 @@ public interface LabelElement<T> {
 		contentStream.setFont(resourceSet.font(), fontSize);
 		contentStream.showText(String.valueOf(indicator));
 		contentStream.endText();
+	}
+
+	static BufferedImage convertToBI(BitMatrix bm) {
+		BufferedImage bi = new BufferedImage(bm.getWidth(), bm.getHeight(), BufferedImage.TYPE_BYTE_BINARY);
+		for (int y = 0; y < bm.getHeight(); y++) {
+			for (int x = 0; x < bm.getWidth(); x++) {
+				boolean b = bm.get(x, y);
+				bi.setRGB(x, y, b ? 0xFFFFFFFF : 0x00000000);
+			}
+		}
+		return bi;
 	}
 
 	void add(T element, AztecWriter dmW, PDDocument pdDocument, PDPage targetPage, PDPageContentStream contentStream, float labelWidth, float labelHeight, ResourceSet resourceSet) throws IOException;

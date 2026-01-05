@@ -39,17 +39,6 @@ public class Printer {
 		}
 	}
 
-	public BufferedImage convertToBI(BitMatrix bm) {
-		BufferedImage bi = new BufferedImage(bm.getWidth(), bm.getHeight(), BufferedImage.TYPE_BYTE_BINARY);
-		for (int y = 0; y < bm.getHeight(); y++) {
-			for (int x = 0; x < bm.getWidth(); x++) {
-				boolean b = bm.get(x, y);
-				bi.setRGB(x, y, b ? 0xFFFFFFFF : 0x00000000);
-			}
-		}
-		return bi;
-	}
-
 	public void runPrint(OutputStream stream, List<PrintMultipleDtoInner> printMultipleDtoInner) throws IOException {
 		AztecWriter cw = new AztecWriter();
 
