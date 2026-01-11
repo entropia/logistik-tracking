@@ -1,4 +1,4 @@
-> [!DANGER]
+> [!CAUTION]
 > Diese repository wurde migriert: https://codeberg.org/entropia/logistik-tracking
 
 
