@@ -1,3 +1,7 @@
+> [!DANGER]
+> Diese repository wurde migriert: https://codeberg.org/entropia/logistik-tracking
+
+
 # Logitrack
 Internal tracking tool of GPN Logistik.
 
